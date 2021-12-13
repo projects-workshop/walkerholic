@@ -43,7 +43,14 @@ public class Activity {
         this.description = description;
     }
 
+    // 비지니스 로직
+    public Activity updateActivity( Activity requestActivity) {
+        this.name = requestActivity.name;
+        this.description = requestActivity.description;
+        this.score = requestActivity.score;
 
+        return this;
+    }
 
 
 }

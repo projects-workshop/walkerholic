@@ -15,7 +15,7 @@ public class ActivityController {
 
     private final ActivityService activityService;
 
-  @PostMapping("/activity/save")
+    @PostMapping("/activity/save")
     public ActivityCreateDTO saveActivity(@RequestParam(value = "id", required = false) Integer id,
         @RequestParam("name") String name,
         @RequestParam("score") Integer score,
@@ -23,7 +23,8 @@ public class ActivityController {
         @RequestParam(value = "multipartFile", required = false) MultipartFile multipartFile) {
 
         ActivityCreateDTO activityCreateDTO = new ActivityCreateDTO(id, name, score, description);
-        return activityService.saveActivity(activityCreateDTO, multipartFile);
+        return id != null ? activityService.updateActivity(activityCreateDTO, multipartFile)
+            : activityService.createActivity(activityCreateDTO, multipartFile);
     }
 
     @GetMapping("/activity/{id}")

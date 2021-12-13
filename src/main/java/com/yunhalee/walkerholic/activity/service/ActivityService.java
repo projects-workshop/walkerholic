@@ -20,58 +20,28 @@ public class ActivityService {
 
     private final ActivityRepository activityRepository;
 
-    
-    private void saveActivityImage(Activity activity, MultipartFile multipartFile, boolean isNew) {
-        try {
-            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-            String uploadDir = "activityUploads/" + activity.getId();
-
-            if (!isNew) {
-                FileUploadUtils.cleanDir(uploadDir);
-            }
-
-            FileUploadUtils.saveFile(uploadDir, fileName, multipartFile);
-            activity.setImageUrl("/activityUploads/" + activity.getId() + "/" + fileName);
-
-            activityRepository.save(activity);
-
-        } catch (IOException ex) {
-            new IOException("Could not save file : " + multipartFile.getOriginalFilename());
-        }
-    }
-
-    public ActivityCreateDTO saveActivity(ActivityCreateDTO activityCreateDTO,
+    public ActivityCreateDTO createActivity(ActivityCreateDTO activityCreateDTO,
         MultipartFile multipartFile) {
+        Activity activity = activityCreateDTO.toActivity();
+        activityRepository.save(activity);
 
-        if (activityCreateDTO.getId() != null) {
-            Activity existingActivity = activityRepository.findById(activityCreateDTO.getId())
-                .get();
-            existingActivity.setName(activityCreateDTO.getName());
-            existingActivity.setDescription(activityCreateDTO.getDescription());
-            existingActivity.setScore(activityCreateDTO.getScore());
+        saveActivityImage(activity, multipartFile, true);
+        activityRepository.save(activity);
 
-            if (multipartFile != null) {
-                saveActivityImage(existingActivity, multipartFile, false);
-            }
-            activityRepository.save(existingActivity);
-            return new ActivityCreateDTO(existingActivity);
-        } else {
-            Activity activity = new Activity();
-            activity.setName(activityCreateDTO.getName());
-            activity.setDescription(activityCreateDTO.getDescription());
-            activity.setScore(activityCreateDTO.getScore());
-            activityRepository.save(activity);
-
-            if (multipartFile != null) {
-                saveActivityImage(activity, multipartFile, true);
-            }
-            activityRepository.save(activity);
-            return new ActivityCreateDTO(activity);
-        }
-
-
+        return new ActivityCreateDTO(activity);
     }
 
+    public ActivityCreateDTO updateActivity(ActivityCreateDTO activityCreateDTO,
+        MultipartFile multipartFile) {
+        Activity existingActivity = activityRepository.findById(activityCreateDTO.getId())
+            .get();
+        Activity requestActivity = activityCreateDTO.toActivity();
+        Activity updatedActivity = existingActivity.updateActivity(requestActivity);
+
+        saveActivityImage(updatedActivity, multipartFile, false);
+        activityRepository.save(existingActivity);
+        return new ActivityCreateDTO(existingActivity);
+    }
 
 
     public ActivityDTO getActivity(Integer id) {
@@ -95,4 +65,26 @@ public class ActivityService {
         return "Activity Deleted Successfully.";
     }
 
+    private void saveActivityImage(Activity activity, MultipartFile multipartFile, boolean isNew) {
+        if(multipartFile == null){
+            return ;
+        }
+
+        try {
+            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+            String uploadDir = "activityUploads/" + activity.getId();
+
+            if (!isNew) {
+                FileUploadUtils.cleanDir(uploadDir);
+            }
+
+            FileUploadUtils.saveFile(uploadDir, fileName, multipartFile);
+            activity.setImageUrl("/activityUploads/" + activity.getId() + "/" + fileName);
+
+            activityRepository.save(activity);
+
+        } catch (IOException ex) {
+            new IOException("Could not save file : " + multipartFile.getOriginalFilename());
+        }
+    }
 }

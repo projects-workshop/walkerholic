@@ -40,5 +40,9 @@ public class ActivityCreateDTO {
         this.description = description;
     }
 
+    public Activity toActivity(){
+        return new Activity(name, score, description);
+    }
+
 
 }
