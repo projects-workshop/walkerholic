@@ -12,7 +12,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-public class ActivityDTO {
+public class ActivityDetailResponse {
 
     private Integer id;
 
@@ -26,7 +26,7 @@ public class ActivityDTO {
 
     private List<ActivityUser> activityUsers;
 
-    public ActivityDTO(Activity activity) {
+    public ActivityDetailResponse(Activity activity) {
         this.id = activity.getId();
         this.name = activity.getName();
         this.score = activity.getScore();

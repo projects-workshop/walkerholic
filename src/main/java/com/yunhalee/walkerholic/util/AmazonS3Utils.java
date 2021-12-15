@@ -2,6 +2,7 @@ package com.yunhalee.walkerholic.util;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,20 @@ public class AmazonS3Utils {
 
     private final AmazonS3 s3;
 
+    public String saveImageByFolder(String uploadDir, MultipartFile multipartFile,
+        boolean isCreated)
+        throws IOException {
+        try {
+            if (!isCreated) {
+                removeFolder(uploadDir);
+            }
+            return uploadFile(uploadDir, multipartFile);
+        } catch (IOException ex) {
+            new IOException("Could not save file : " + multipartFile.getOriginalFilename());
+        }
+        return "";
+    }
+
     public List<String> listFolder(String folder) {
 
         ListObjectsV2Request listObjectsV2Request = new ListObjectsV2Request()
@@ -65,6 +80,10 @@ public class AmazonS3Utils {
     public void deleteFile(String fileName) {
         DeleteObjectRequest request = new DeleteObjectRequest(bucket, fileName);
         s3.deleteObject(request);
+    }
+
+    public boolean isEmpty(MultipartFile multipartFile) {
+        return Objects.isNull(multipartFile) || multipartFile.isEmpty();
     }
 
     public void removeFolder(String folderName) {

@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ActivityCreateDTO {
+public class ActivityResponse {
 
     private Integer id;
 
@@ -19,14 +19,7 @@ public class ActivityCreateDTO {
 
     private String imageUrl;
 
-    public ActivityCreateDTO(Integer id, String name, Integer score, String description) {
-        this.id = id;
-        this.name = name;
-        this.score = score;
-        this.description = description;
-    }
-
-    public ActivityCreateDTO(Activity activity) {
+    public ActivityResponse(Activity activity) {
         this.id = activity.getId();
         this.name = activity.getName();
         this.score = activity.getScore();
@@ -34,15 +27,8 @@ public class ActivityCreateDTO {
         this.imageUrl = activity.getImageUrl();
     }
 
-    public ActivityCreateDTO(String name, Integer score, String description) {
-        this.name = name;
-        this.score = score;
-        this.description = description;
-    }
-
-    public Activity toActivity(){
+    public Activity toActivity() {
         return new Activity(name, score, description);
     }
-
 
 }

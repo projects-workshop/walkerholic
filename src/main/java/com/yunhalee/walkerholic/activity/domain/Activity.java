@@ -44,12 +44,16 @@ public class Activity {
     }
 
     // 비지니스 로직
-    public Activity updateActivity( Activity requestActivity) {
+    public Activity update(Activity requestActivity) {
         this.name = requestActivity.name;
         this.description = requestActivity.description;
         this.score = requestActivity.score;
 
         return this;
+    }
+
+    public void changeImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
 

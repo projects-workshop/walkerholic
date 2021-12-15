@@ -1,12 +1,14 @@
 package com.yunhalee.walkerholic.activity.service;
 
-import com.yunhalee.walkerholic.activity.dto.ActivityCreateDTO;
-import com.yunhalee.walkerholic.activity.dto.ActivityDTO;
+import com.yunhalee.walkerholic.activity.dto.ActivityRequest;
+import com.yunhalee.walkerholic.activity.dto.ActivityResponse;
+import com.yunhalee.walkerholic.activity.dto.ActivityDetailResponse;
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
-import com.yunhalee.walkerholic.activity.service.ActivityService;
+import java.io.IOException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -28,33 +30,37 @@ public class ActivityServiceTests {
     @Autowired
     ActivityRepository activityRepository;
 
+    @Value("${AWS_S3_BUCKET_URL}")
+    private String AWS_S3_BUCKET_URL;
+
     @Test
-    public void createActivity() {
+    public void createActivity() throws IOException {
         //given
         String name = "testActivity";
         Integer score = 1;
         String description = "This is test Activity.";
 
-        ActivityCreateDTO activityCreateDTO = new ActivityCreateDTO(name, score, description);
+        ActivityRequest activityRequest = new ActivityRequest(name, score, description);
         MultipartFile multipartFile = new MockMultipartFile("uploaded-file",
             "sampleFile.txt",
             "text/plain",
             "This is the file content".getBytes());
         //when
-        ActivityCreateDTO activityCreateDTO1 = activityService
-            .createActivity(activityCreateDTO, multipartFile);
+        ActivityResponse activityResponse1 = activityService
+            .create(activityRequest, multipartFile);
 
         //then
-        assertNotNull(activityCreateDTO1.getId());
-        assertEquals(name, activityCreateDTO1.getName());
-        assertEquals(score, activityCreateDTO1.getScore());
-        assertEquals(description, activityCreateDTO1.getDescription());
-        assertEquals("/activityUploads/" + activityCreateDTO1.getId() + "/" + "sampleFile.txt",
-            activityCreateDTO1.getImageUrl());
+        assertNotNull(activityResponse1.getId());
+        assertEquals(name, activityResponse1.getName());
+        assertEquals(score, activityResponse1.getScore());
+        assertEquals(description, activityResponse1.getDescription());
+        assertTrue(activityResponse1.getImageUrl()
+            .contains(AWS_S3_BUCKET_URL + "activityUploads/" + activityResponse1.getId() + "/"));
+        assertTrue(activityResponse1.getImageUrl().contains("sampleFile.txt"));
     }
 
     @Test
-    public void updateActivity() {
+    public void updateActivity() throws IOException {
         //given
         Integer id = 1;
         String originalName = activityRepository.findById(id).get().getName();
@@ -62,14 +68,14 @@ public class ActivityServiceTests {
         String name = "testUpdateActivity";
         Integer score = 1;
         String description = "This is test Activity.";
-        ActivityCreateDTO activityCreateDTO = new ActivityCreateDTO(id, name, score, description);
+        ActivityRequest activityRequest = new ActivityRequest(name, score, description);
 
         //when
-        ActivityCreateDTO activityCreateDTO1 = activityService
-            .updateActivity(activityCreateDTO, null);
+        ActivityResponse activityResponse1 = activityService
+            .update(id, activityRequest, null);
 
         //then
-        assertNotEquals(originalName, activityCreateDTO1.getName());
+        assertNotEquals(originalName, activityResponse1.getName());
     }
 
     @Test
@@ -78,10 +84,10 @@ public class ActivityServiceTests {
         Integer id = 1;
 
         //when
-        ActivityDTO activityDTO = activityService.getActivity(id);
+        ActivityDetailResponse activityDetailResponse = activityService.getActivity(id);
 
         //then
-        assertEquals(id, activityDTO.getId());
+        assertEquals(id, activityDetailResponse.getId());
     }
 
     @Test
@@ -89,10 +95,10 @@ public class ActivityServiceTests {
         //given
 
         //when
-        List<ActivityCreateDTO> activityCreateDTOS = activityService.getActivities();
+        List<ActivityResponse> activityResponses = activityService.getActivities();
 
         //then
-        assertEquals(1, activityCreateDTOS.size());
+        assertEquals(1, activityResponses.size());
     }
 
     @Test

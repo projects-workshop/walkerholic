@@ -1,16 +1,17 @@
 package com.yunhalee.walkerholic.activity.service;
 
-import com.yunhalee.walkerholic.util.FileUploadUtils;
-import com.yunhalee.walkerholic.activity.dto.ActivityCreateDTO;
-import com.yunhalee.walkerholic.activity.dto.ActivityDTO;
+import com.yunhalee.walkerholic.activity.dto.ActivityRequest;
+import com.yunhalee.walkerholic.activity.exception.ActivityNotFoundException;
+import com.yunhalee.walkerholic.util.AmazonS3Utils;
+import com.yunhalee.walkerholic.activity.dto.ActivityResponse;
+import com.yunhalee.walkerholic.activity.dto.ActivityDetailResponse;
 import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,71 +21,71 @@ public class ActivityService {
 
     private final ActivityRepository activityRepository;
 
-    public ActivityCreateDTO createActivity(ActivityCreateDTO activityCreateDTO,
-        MultipartFile multipartFile) {
-        Activity activity = activityCreateDTO.toActivity();
+    private final AmazonS3Utils amazonS3Utils;
+
+
+    public ActivityResponse create(ActivityRequest activityRequest,
+        MultipartFile multipartFile) throws IOException {
+        Activity activity = activityRequest.toActivity();
+        saveActivityImage(activity, multipartFile);
+
         activityRepository.save(activity);
 
-        saveActivityImage(activity, multipartFile, true);
-        activityRepository.save(activity);
-
-        return new ActivityCreateDTO(activity);
+        return new ActivityResponse(activity);
     }
 
-    public ActivityCreateDTO updateActivity(ActivityCreateDTO activityCreateDTO,
-        MultipartFile multipartFile) {
-        Activity existingActivity = activityRepository.findById(activityCreateDTO.getId())
-            .get();
-        Activity requestActivity = activityCreateDTO.toActivity();
-        Activity updatedActivity = existingActivity.updateActivity(requestActivity);
+    public ActivityResponse update(Integer id, ActivityRequest activityRequest,
+        MultipartFile multipartFile) throws IOException {
+        Activity existingActivity = activityRepository.findById(id)
+            .orElseThrow(() -> new ActivityNotFoundException(
+                "Activity not found with id : " + id));
+        Activity requestActivity = activityRequest.toActivity();
+        Activity updatedActivity = existingActivity.update(requestActivity);
+        saveActivityImage(updatedActivity, multipartFile);
 
-        saveActivityImage(updatedActivity, multipartFile, false);
-        activityRepository.save(existingActivity);
-        return new ActivityCreateDTO(existingActivity);
+        activityRepository.save(updatedActivity);
+
+        return new ActivityResponse(existingActivity);
     }
 
 
-    public ActivityDTO getActivity(Integer id) {
+    public ActivityDetailResponse getActivity(Integer id) {
         Activity activity = activityRepository.findByActivityId(id);
-        ActivityDTO activityDTO = new ActivityDTO(activity);
+        ActivityDetailResponse activityDetailResponse = new ActivityDetailResponse(activity);
 
-        return activityDTO;
+        return activityDetailResponse;
     }
 
-    public List<ActivityCreateDTO> getActivities() {
+    public List<ActivityResponse> getActivities() {
         List<Activity> activities = activityRepository.findAll();
-        List<ActivityCreateDTO> activityCreateDTOS = new ArrayList<>();
-        activities.forEach(activity -> activityCreateDTOS.add(new ActivityCreateDTO(activity)));
-        return activityCreateDTOS;
+        List<ActivityResponse> activityResponses = new ArrayList<>();
+        activities.forEach(activity -> activityResponses.add(new ActivityResponse(activity)));
+        return activityResponses;
     }
 
     public String deleteActivity(Integer id) {
-        String dir = "/activityUploads/" + id;
-        FileUploadUtils.deleteDir(dir);
+        String dir = "activityUploads/" + id;
+        amazonS3Utils.removeFolder(dir);
         activityRepository.deleteById(id);
+
         return "Activity Deleted Successfully.";
     }
 
-    private void saveActivityImage(Activity activity, MultipartFile multipartFile, boolean isNew) {
-        if(multipartFile == null){
-            return ;
+
+    private void saveActivityImage(Activity activity, MultipartFile multipartFile)
+        throws IOException {
+        if (amazonS3Utils.isEmpty(multipartFile)) {
+            return;
         }
 
-        try {
-            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-            String uploadDir = "activityUploads/" + activity.getId();
-
-            if (!isNew) {
-                FileUploadUtils.cleanDir(uploadDir);
-            }
-
-            FileUploadUtils.saveFile(uploadDir, fileName, multipartFile);
-            activity.setImageUrl("/activityUploads/" + activity.getId() + "/" + fileName);
-
+        boolean isCreated = activity.getId() == null;
+        if (isCreated) {
             activityRepository.save(activity);
-
-        } catch (IOException ex) {
-            new IOException("Could not save file : " + multipartFile.getOriginalFilename());
         }
+
+        String uploadDir = "activityUploads/" + activity.getId();
+        String imageUrl = amazonS3Utils
+            .saveImageByFolder(uploadDir, multipartFile, isCreated);
+        activity.changeImageUrl(imageUrl);
     }
 }
