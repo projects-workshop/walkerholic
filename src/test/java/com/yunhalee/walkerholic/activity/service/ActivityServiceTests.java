@@ -74,11 +74,11 @@ public class ActivityServiceTests {
         ActivityRequest activityRequest = new ActivityRequest(name, score, description);
 
         //when
-        ActivityResponse activityResponse1 = activityService
+        ActivityResponse activityResponse = activityService
             .update(id, activityRequest, null);
 
         //then
-        assertNotEquals(originalName, activityResponse1.getName());
+        assertNotEquals(originalName, activityResponse.getName());
     }
 
     @Test
