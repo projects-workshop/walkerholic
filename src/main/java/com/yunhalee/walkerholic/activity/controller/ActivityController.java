@@ -12,12 +12,15 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
 public class ActivityController {
 
     private final ActivityService activityService;
 
-    @PostMapping("/activity")
+    public ActivityController(ActivityService activityService) {
+        this.activityService = activityService;
+    }
+
+    @PostMapping("/activities")
     public ActivityResponse create(@RequestParam("name") String name,
         @RequestParam("score") Integer score,
         @RequestParam("description") String description,
@@ -27,7 +30,7 @@ public class ActivityController {
         return activityService.create(activityRequest, multipartFile);
     }
 
-    @PutMapping("/activity/{id}")
+    @PutMapping("/activities/{id}")
     public ActivityResponse update(@PathVariable("id") Integer id,
         @RequestParam("name") String name,
         @RequestParam("score") Integer score,
@@ -38,19 +41,19 @@ public class ActivityController {
         return activityService.update(id, activityRequest, multipartFile);
     }
 
-    @GetMapping("/activity/{id}")
-    public ActivityDetailResponse getActivity(@PathVariable("id") Integer id) {
-        return activityService.getActivity(id);
+    @GetMapping("/activities/{id}")
+    public ActivityDetailResponse activity(@PathVariable("id") Integer id) {
+        return activityService.activity(id);
     }
 
     @GetMapping("/activities")
-    public List<ActivityResponse> getActivities() {
-        return activityService.getActivities();
+    public List<ActivityResponse> activities() {
+        return activityService.activities();
     }
 
-    @DeleteMapping("/activity/{id}")
-    public String delete(@PathVariable("id") Integer id) {
-        return activityService.deleteActivity(id);
+    @DeleteMapping("/activities/{id}")
+    public void delete(@PathVariable("id") Integer id) {
+        activityService.delete(id);
     }
 
 }

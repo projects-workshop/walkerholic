@@ -1,6 +1,7 @@
 package com.yunhalee.walkerholic.common.exception;
 
 
+import com.yunhalee.walkerholic.activity.exception.ActivityNotFoundException;
 import com.yunhalee.walkerholic.product.exception.NotEnoughStockException;
 import com.yunhalee.walkerholic.user.exception.UserEmailAlreadyExistException;
 import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
@@ -67,6 +68,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, status);
     }
 
+    @ExceptionHandler(ActivityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleActivityNotFoundException(
+        ActivityNotFoundException e) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        errorResponse.setStatus(status.value());
+        errorResponse.setMessage(e.getMessage());
+
+        return new ResponseEntity<>(errorResponse, status);
+    }
 
     @ExceptionHandler(OAuthProviderMissMatchException.class)
     public ResponseEntity<ErrorResponse> handleOAuthProviderMissMatchException(
@@ -90,9 +101,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    protected ResponseEntity<ErrorResponse> handleException(Exception e) {
+    protected ResponseEntity<ErrorResponse> handleUnexpectedException(Exception e) {
         ErrorResponse errorResponse = new ErrorResponse();
-        HttpStatus status = HttpStatus.NOT_FOUND;
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        errorResponse.setStatus(status.value());
+        errorResponse.setMessage(e.getMessage());
+
+        return new ResponseEntity<>(errorResponse, status);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    protected ResponseEntity<ErrorResponse> handleUnexpectedRuntimeException(RuntimeException e) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        HttpStatus status = HttpStatus.BAD_REQUEST;
         errorResponse.setStatus(status.value());
         errorResponse.setMessage(e.getMessage());
 

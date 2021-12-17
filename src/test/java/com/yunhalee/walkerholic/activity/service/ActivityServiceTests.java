@@ -31,7 +31,9 @@ public class ActivityServiceTests {
     ActivityRepository activityRepository;
 
     @Value("${AWS_S3_BUCKET_URL}")
-    private String AWS_S3_BUCKET_URL;
+    private String bucketUrl;
+
+    private static final String UPLOAD_URL = "activityUploads/";
 
     @Test
     public void createActivity() throws IOException {
@@ -39,24 +41,25 @@ public class ActivityServiceTests {
         String name = "testActivity";
         Integer score = 1;
         String description = "This is test Activity.";
+        String fileName = "sampleFile.txt";
 
         ActivityRequest activityRequest = new ActivityRequest(name, score, description);
         MultipartFile multipartFile = new MockMultipartFile("uploaded-file",
-            "sampleFile.txt",
+            fileName,
             "text/plain",
             "This is the file content".getBytes());
         //when
-        ActivityResponse activityResponse1 = activityService
+        ActivityResponse activityResponse = activityService
             .create(activityRequest, multipartFile);
 
         //then
-        assertNotNull(activityResponse1.getId());
-        assertEquals(name, activityResponse1.getName());
-        assertEquals(score, activityResponse1.getScore());
-        assertEquals(description, activityResponse1.getDescription());
-        assertTrue(activityResponse1.getImageUrl()
-            .contains(AWS_S3_BUCKET_URL + "activityUploads/" + activityResponse1.getId() + "/"));
-        assertTrue(activityResponse1.getImageUrl().contains("sampleFile.txt"));
+        assertNotNull(activityResponse.getId());
+        assertEquals(name, activityResponse.getName());
+        assertEquals(score, activityResponse.getScore());
+        assertEquals(description, activityResponse.getDescription());
+        assertTrue(activityResponse.getImageUrl()
+            .contains(bucketUrl + UPLOAD_URL + activityResponse.getId() + "/"));
+        assertTrue(activityResponse.getImageUrl().contains(fileName));
     }
 
     @Test
@@ -84,7 +87,7 @@ public class ActivityServiceTests {
         Integer id = 1;
 
         //when
-        ActivityDetailResponse activityDetailResponse = activityService.getActivity(id);
+        ActivityDetailResponse activityDetailResponse = activityService.activity(id);
 
         //then
         assertEquals(id, activityDetailResponse.getId());
@@ -95,7 +98,7 @@ public class ActivityServiceTests {
         //given
 
         //when
-        List<ActivityResponse> activityResponses = activityService.getActivities();
+        List<ActivityResponse> activityResponses = activityService.activities();
 
         //then
         assertEquals(1, activityResponses.size());
@@ -107,7 +110,7 @@ public class ActivityServiceTests {
         Integer id = 1;
 
         //when
-        activityService.deleteActivity(id);
+        activityService.delete(id);
 
         //then
         assertNull(activityRepository.findById(id));

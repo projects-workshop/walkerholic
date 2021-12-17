@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.util;
 
-import com.yunhalee.walkerholic.util.AmazonS3Utils;
+import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +20,10 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Transactional
-public class AmazonS3UtilsTests {
+public class S3ImageUploaderTests {
 
     @Autowired
-    AmazonS3Utils amazonS3Utils;
+    S3ImageUploader s3ImageUploader;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -44,7 +44,7 @@ public class AmazonS3UtilsTests {
         String folderName = "postUploads";
 
         //when
-        List<String> list = amazonS3Utils.listFolder(folderName);
+        List<String> list = s3ImageUploader.listFolder(folderName);
 
         //then
         for (String s : list) {
@@ -68,7 +68,7 @@ public class AmazonS3UtilsTests {
         };
 
         //when
-        String imageUrl = amazonS3Utils.uploadFile(folderName, multipartFile);
+        String imageUrl = s3ImageUploader.uploadFile(folderName, multipartFile);
 
         //then
         System.out.println(imageUrl);
@@ -84,11 +84,11 @@ public class AmazonS3UtilsTests {
             "text/plain",
             "This is the file content".getBytes()) {
         };
-        amazonS3Utils.uploadFile(folderName, multipartFile);
+        s3ImageUploader.uploadFile(folderName, multipartFile);
 
         //when
-        amazonS3Utils.deleteFile("testUploads/sampleFile.txt");
-        List<String> list = amazonS3Utils.listFolder(folderName);
+        s3ImageUploader.deleteFile("testUploads/sampleFile.txt");
+        List<String> list = s3ImageUploader.listFolder(folderName);
 
         //then
         for (String s : list) {
@@ -106,11 +106,11 @@ public class AmazonS3UtilsTests {
             "text/plain",
             "This is the file content".getBytes()) {
         };
-        amazonS3Utils.uploadFile(folderName, multipartFile);
+        s3ImageUploader.uploadFile(folderName, multipartFile);
 
         //when
-        amazonS3Utils.removeFolder(folderName);
-        List<String> list = amazonS3Utils.listFolder(folderName);
+        s3ImageUploader.removeFolder(folderName);
+        List<String> list = s3ImageUploader.listFolder(folderName);
 
         //then
         assertEquals(list.size(), 0);

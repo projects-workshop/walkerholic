@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.post.service;
 
-import com.yunhalee.walkerholic.util.AmazonS3Utils;
+import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import com.yunhalee.walkerholic.util.FileUploadUtils;
 import com.yunhalee.walkerholic.post.dto.PostCreateDTO;
 import com.yunhalee.walkerholic.post.dto.PostDTO;
@@ -41,7 +41,7 @@ public class PostService {
 
     public static final int POST_PER_PAGE = 9;
 
-    private final AmazonS3Utils amazonS3Utils;
+    private final S3ImageUploader s3ImageUploader;
 
     @Value("${AWS_S3_BUCKET_URL}")
     private String AWS_S3_BUCKET_URL;
@@ -50,7 +50,7 @@ public class PostService {
         for (String deletedImage : deletedImages) {
             postImageRepository.deleteByFilePath(deletedImage);
             String fileName = deletedImage.substring(AWS_S3_BUCKET_URL.length() + 1);
-            amazonS3Utils.deleteFile(fileName);
+            s3ImageUploader.deleteFile(fileName);
         }
     }
 
@@ -61,7 +61,7 @@ public class PostService {
 
             try {
                 String uploadDir = "postUploads/" + post.getId();
-                String imageUrl = amazonS3Utils.uploadFile(uploadDir, multipartFile);
+                String imageUrl = s3ImageUploader.uploadFile(uploadDir, multipartFile);
                 String fileName = imageUrl
                     .substring(AWS_S3_BUCKET_URL.length() + uploadDir.length() + 2);
                 postImage.setName(fileName);

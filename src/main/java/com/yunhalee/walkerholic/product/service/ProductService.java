@@ -4,7 +4,7 @@ import com.yunhalee.walkerholic.product.dto.ProductCreateDTO;
 import com.yunhalee.walkerholic.product.dto.ProductDTO;
 import com.yunhalee.walkerholic.product.dto.ProductListDTO;
 import com.yunhalee.walkerholic.user.dto.UserSellerDTO;
-import com.yunhalee.walkerholic.util.AmazonS3Utils;
+import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import com.yunhalee.walkerholic.util.FileUploadUtils;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.product.domain.Product;
@@ -41,7 +41,7 @@ public class ProductService {
 
     public static final int PRODUCT_LIST_PER_PAGE = 10;
 
-    private final AmazonS3Utils amazonS3Utils;
+    private final S3ImageUploader s3ImageUploader;
 
     @Value("${AWS_S3_BUCKET_URL}")
     private String AWS_S3_BUCKET_URL;
@@ -50,7 +50,7 @@ public class ProductService {
         for (String deletedImage : deletedImages) {
             productImageRepository.deleteByFilePath(deletedImage);
             String fileName = deletedImage.substring(AWS_S3_BUCKET_URL.length()+1);
-            amazonS3Utils.deleteFile(fileName);
+            s3ImageUploader.deleteFile(fileName);
         }
     }
 
@@ -59,7 +59,7 @@ public class ProductService {
             ProductImage productImage = new ProductImage();
             try{
                 String uploadDir = "productUploads/" + product.getId();
-                String imageUrl = amazonS3Utils.uploadFile(uploadDir, multipartFile);
+                String imageUrl = s3ImageUploader.uploadFile(uploadDir, multipartFile);
                 String fileName = imageUrl.substring(AWS_S3_BUCKET_URL.length()+uploadDir.length()+2);
                 productImage.setName(fileName);
                 productImage.setFilePath(imageUrl);

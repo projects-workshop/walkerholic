@@ -13,7 +13,6 @@ import java.util.Set;
 @Table(name = "activity")
 @Getter
 @Setter
-@NoArgsConstructor
 public class Activity {
 
     @Id
@@ -36,6 +35,9 @@ public class Activity {
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdAt DESC")
     private Set<UserActivity> userActivities = new HashSet<>();
+
+    public Activity() {
+    }
 
     public Activity(String name, Integer score, String description) {
         this.name = name;

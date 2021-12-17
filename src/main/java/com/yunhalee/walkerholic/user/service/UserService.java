@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.user.service;
 
-import com.yunhalee.walkerholic.util.AmazonS3Utils;
+import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import com.yunhalee.walkerholic.util.FileUploadUtils;
 import com.yunhalee.walkerholic.user.dto.UserDTO;
 import com.yunhalee.walkerholic.user.dto.UserListDTO;
@@ -44,7 +44,7 @@ public class UserService {
     @Value("${spring.mail.username}")
     private String sender;
 
-    private final AmazonS3Utils amazonS3Utils;
+    private final S3ImageUploader s3ImageUploader;
 
 
     private void saveProfileFile(MultipartFile multipartFile, User user, boolean isNew)
@@ -52,9 +52,9 @@ public class UserService {
         try {
             String uploadDir = "profileUploads/" + user.getId();
             if (!isNew) {
-                amazonS3Utils.removeFolder(uploadDir);
+                s3ImageUploader.removeFolder(uploadDir);
             }
-            String imageUrl = amazonS3Utils.uploadFile(uploadDir, multipartFile);
+            String imageUrl = s3ImageUploader.uploadFile(uploadDir, multipartFile);
             user.setImageUrl(imageUrl);
 
         } catch (IOException ex) {
