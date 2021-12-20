@@ -1,10 +1,10 @@
 package com.yunhalee.walkerholic.common.exception;
 
 
-import com.yunhalee.walkerholic.activity.exception.ActivityNotFoundException;
-import com.yunhalee.walkerholic.product.exception.NotEnoughStockException;
-import com.yunhalee.walkerholic.user.exception.UserEmailAlreadyExistException;
-import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
+import com.yunhalee.walkerholic.security.oauth.exception.OAuthProviderMissMatchException;
+import java.util.stream.Collectors;
+import javax.validation.ConstraintViolationException;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,105 +18,75 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
         MethodArgumentNotValidException e) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        errorResponse.setStatus(status.value());
-        errorResponse.setMessage(e.getMessage());
-
-        return new ResponseEntity<>(errorResponse, status);
+        String errorMessage = e.getBindingResult().getAllErrors().stream()
+            .map(DefaultMessageSourceResolvable::getDefaultMessage)
+            .collect(Collectors.joining(" "));
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            errorMessage);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     protected ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
         MethodArgumentTypeMismatchException e) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        errorResponse.setStatus(status.value());
-        errorResponse.setMessage(e.getMessage());
-
-        return new ResponseEntity<>(errorResponse, status);
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException e) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        errorResponse.setStatus(status.value());
-        errorResponse.setMessage(e.getMessage());
-
-        return new ResponseEntity<>(errorResponse, status);
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<ErrorResponse> handleConstraintViolationException(
+        ConstraintViolationException e) {
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(UserEmailAlreadyExistException.class)
-    public ResponseEntity<ErrorResponse> handleUserEmailAlreadyExistException(
-        UserEmailAlreadyExistException e) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        errorResponse.setStatus(status.value());
-        errorResponse.setMessage(e.getMessage());
-
-        return new ResponseEntity<>(errorResponse, status);
+    @ExceptionHandler(InvalidValueException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidValueException(
+        InvalidValueException e) {
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(NotEnoughStockException.class)
-    public ResponseEntity<ErrorResponse> handleNotEnoughStockException(NotEnoughStockException e) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        errorResponse.setStatus(status.value());
-        errorResponse.setMessage(e.getMessage());
-
-        return new ResponseEntity<>(errorResponse, status);
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(ActivityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleActivityNotFoundException(
-        ActivityNotFoundException e) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        errorResponse.setStatus(status.value());
-        errorResponse.setMessage(e.getMessage());
-
-        return new ResponseEntity<>(errorResponse, status);
+    @ExceptionHandler(EntityNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> handleEntityNotFoundException(
+        EntityNotFoundException e) {
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.NOT_FOUND.value(),
+            e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(OAuthProviderMissMatchException.class)
-    public ResponseEntity<ErrorResponse> handleOAuthProviderMissMatchException(
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<ErrorResponse> handleAuthException(
         OAuthProviderMissMatchException e) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        errorResponse.setStatus(status.value());
-        errorResponse.setMessage(e.getMessage());
-
-        return new ResponseEntity<>(errorResponse, status);
-    }
-
-    @ExceptionHandler(IllegalAccessException.class)
-    protected ResponseEntity<ErrorResponse> handleIllegalAccessException(IllegalAccessException e) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        errorResponse.setStatus(status.value());
-        errorResponse.setMessage(e.getMessage());
-
-        return new ResponseEntity<>(errorResponse, status);
-    }
-
-    @ExceptionHandler(Exception.class)
-    protected ResponseEntity<ErrorResponse> handleUnexpectedException(Exception e) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        errorResponse.setStatus(status.value());
-        errorResponse.setMessage(e.getMessage());
-
-        return new ResponseEntity<>(errorResponse, status);
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.UNAUTHORIZED.value(),
+            e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(RuntimeException.class)
-    protected ResponseEntity<ErrorResponse> handleUnexpectedRuntimeException(RuntimeException e) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        errorResponse.setStatus(status.value());
-        errorResponse.setMessage(e.getMessage());
-
-        return new ResponseEntity<>(errorResponse, status);
+    protected ResponseEntity<ErrorResponse> handleUncheckedException(RuntimeException e) {
+        e.printStackTrace();
+        ErrorResponse errorResponse = new ErrorResponse(
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            e.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 }

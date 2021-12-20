@@ -1,6 +1,8 @@
-package com.yunhalee.walkerholic.common.exception;
+package com.yunhalee.walkerholic.security.oauth.exception;
 
-public class OAuthProviderMissMatchException extends RuntimeException {
+import com.yunhalee.walkerholic.common.exception.InvalidValueException;
+
+public class OAuthProviderMissMatchException extends InvalidValueException {
 
     public OAuthProviderMissMatchException(String message) {
         super(message);

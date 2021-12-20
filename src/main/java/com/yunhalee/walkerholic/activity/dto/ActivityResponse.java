@@ -26,8 +26,4 @@ public class ActivityResponse {
         this.imageUrl = activity.getImageUrl();
     }
 
-    public Activity toActivity() {
-        return new Activity(name, score, description);
-    }
-
 }

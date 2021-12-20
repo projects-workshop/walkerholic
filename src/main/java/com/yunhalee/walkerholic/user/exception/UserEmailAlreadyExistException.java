@@ -1,6 +1,8 @@
 package com.yunhalee.walkerholic.user.exception;
 
-public class UserEmailAlreadyExistException extends RuntimeException {
+import com.yunhalee.walkerholic.common.exception.InvalidValueException;
+
+public class UserEmailAlreadyExistException extends InvalidValueException {
 
     public UserEmailAlreadyExistException(String message) {
         super(message);

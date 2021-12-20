@@ -1,7 +1,9 @@
 package com.yunhalee.walkerholic.user.exception;
 
 
-public class UserNotFoundException extends RuntimeException {
+import com.yunhalee.walkerholic.common.exception.EntityNotFoundException;
+
+public class UserNotFoundException extends EntityNotFoundException {
 
     public UserNotFoundException(String message) {
         super(message);

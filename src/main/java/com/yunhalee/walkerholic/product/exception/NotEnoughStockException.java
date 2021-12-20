@@ -1,6 +1,8 @@
 package com.yunhalee.walkerholic.product.exception;
 
-public class NotEnoughStockException extends RuntimeException {
+import com.yunhalee.walkerholic.common.exception.BadRequestException;
+
+public class NotEnoughStockException extends BadRequestException {
 
     public NotEnoughStockException(String message) {
         super(message);

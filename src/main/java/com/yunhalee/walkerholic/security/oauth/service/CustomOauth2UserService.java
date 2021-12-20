@@ -5,7 +5,7 @@ import com.yunhalee.walkerholic.security.jwt.domain.JwtUserDetails;
 import com.yunhalee.walkerholic.user.domain.Level;
 import com.yunhalee.walkerholic.user.domain.Role;
 import com.yunhalee.walkerholic.user.domain.User;
-import com.yunhalee.walkerholic.common.exception.OAuthProviderMissMatchException;
+import com.yunhalee.walkerholic.security.oauth.exception.OAuthProviderMissMatchException;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.security.oauth.domain.OAuth2UserInfo;
 import com.yunhalee.walkerholic.security.oauth.domain.OAuth2UserInfoFactory;

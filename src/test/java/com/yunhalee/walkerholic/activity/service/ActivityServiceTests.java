@@ -33,7 +33,7 @@ public class ActivityServiceTests {
     @Value("${AWS_S3_BUCKET_URL}")
     private String bucketUrl;
 
-    private static final String UPLOAD_URL = "activityUploads/";
+    private static final String UPLOAD_DIR = "activity-uploads/";
 
     @Test
     public void createActivity() throws IOException {
@@ -42,24 +42,23 @@ public class ActivityServiceTests {
         Integer score = 1;
         String description = "This is test Activity.";
         String fileName = "sampleFile.txt";
+        String imageUrl = UPLOAD_DIR + fileName;
 
-        ActivityRequest activityRequest = new ActivityRequest(name, score, description);
-        MultipartFile multipartFile = new MockMultipartFile("uploaded-file",
-            fileName,
-            "text/plain",
-            "This is the file content".getBytes());
+        ActivityRequest activityRequest = ActivityRequest.builder()
+            .name(name)
+            .score(score)
+            .description(description)
+            .imageUrl(imageUrl).build();
+
         //when
-        ActivityResponse activityResponse = activityService
-            .create(activityRequest, multipartFile);
+        ActivityResponse activityResponse = activityService.create(activityRequest);
 
         //then
         assertNotNull(activityResponse.getId());
         assertEquals(name, activityResponse.getName());
         assertEquals(score, activityResponse.getScore());
         assertEquals(description, activityResponse.getDescription());
-        assertTrue(activityResponse.getImageUrl()
-            .contains(bucketUrl + UPLOAD_URL + activityResponse.getId() + "/"));
-        assertTrue(activityResponse.getImageUrl().contains(fileName));
+        assertEquals(imageUrl, activityResponse.getImageUrl());
     }
 
     @Test
@@ -67,18 +66,44 @@ public class ActivityServiceTests {
         //given
         Integer id = 1;
         String originalName = activityRepository.findById(id).get().getName();
-
         String name = "testUpdateActivity";
         Integer score = 1;
         String description = "This is test Activity.";
-        ActivityRequest activityRequest = new ActivityRequest(name, score, description);
+        String imageUrl = UPLOAD_DIR + "sampleFile.txt";
+
+        ActivityRequest activityRequest = ActivityRequest.builder()
+            .name(name)
+            .score(score)
+            .description(description)
+            .imageUrl(imageUrl).build();
 
         //when
-        ActivityResponse activityResponse = activityService
-            .update(id, activityRequest, null);
+        ActivityResponse activityResponse = activityService.update(id, activityRequest);
 
         //then
         assertNotEquals(originalName, activityResponse.getName());
+        assertEquals(name, activityResponse.getName());
+        assertEquals(score, activityResponse.getScore());
+        assertEquals(description, activityResponse.getDescription());
+        assertEquals(imageUrl, activityResponse.getImageUrl());
+    }
+
+    @Test
+    public void uploadImage() throws IOException {
+        //given
+        String fileName = "sampleFile.txt";
+        MultipartFile multipartFile = new MockMultipartFile("uploaded-file",
+            fileName,
+            "text/plain",
+            "This is the file content".getBytes());
+
+        //when
+        String imageUrl = activityService.uploadImage(multipartFile);
+
+        //then
+        assertTrue(imageUrl.contains(bucketUrl + UPLOAD_DIR));
+        assertTrue(imageUrl.contains(fileName));
+
     }
 
     @Test

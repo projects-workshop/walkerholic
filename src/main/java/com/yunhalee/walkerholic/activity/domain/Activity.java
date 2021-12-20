@@ -45,17 +45,27 @@ public class Activity {
         this.description = description;
     }
 
+    public Activity(String name, Integer score, String description, String imageUrl) {
+        this.name = name;
+        this.score = score;
+        this.description = description;
+        this.imageUrl = imageUrl;
+    }
+
     // 비지니스 로직
     public Activity update(Activity requestActivity) {
         this.name = requestActivity.name;
         this.description = requestActivity.description;
         this.score = requestActivity.score;
+        this.imageUrl = requestActivity.imageUrl;
 
         return this;
     }
 
-    public void changeImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setDefaultImageUrl(String imageUrl, String defaultImageUrl) {
+        if (imageUrl == null || imageUrl.isEmpty() || imageUrl.isBlank()) {
+            this.imageUrl = defaultImageUrl;
+        }
     }
 
 

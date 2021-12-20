@@ -5,6 +5,7 @@ import com.yunhalee.walkerholic.activity.dto.ActivityResponse;
 import com.yunhalee.walkerholic.activity.dto.ActivityDetailResponse;
 import com.yunhalee.walkerholic.activity.service.ActivityService;
 import java.io.IOException;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
+@RequestMapping("/activities")
 public class ActivityController {
 
     private final ActivityService activityService;
@@ -20,38 +22,34 @@ public class ActivityController {
         this.activityService = activityService;
     }
 
-    @PostMapping("/activities")
-    public ActivityResponse create(@RequestParam("name") String name,
-        @RequestParam("score") Integer score,
-        @RequestParam("description") String description,
-        @RequestParam(value = "multipartFile", required = false) MultipartFile multipartFile)
-        throws IOException {
-        ActivityRequest activityRequest = new ActivityRequest(name, score, description);
-        return activityService.create(activityRequest, multipartFile);
+    @PostMapping
+    public ActivityResponse create(@Valid @RequestBody ActivityRequest activityRequest) {
+        return activityService.create(activityRequest);
     }
 
-    @PutMapping("/activities/{id}")
+    @PutMapping("/{id}")
     public ActivityResponse update(@PathVariable("id") Integer id,
-        @RequestParam("name") String name,
-        @RequestParam("score") Integer score,
-        @RequestParam("description") String description,
-        @RequestParam(value = "multipartFile", required = false) MultipartFile multipartFile)
-        throws IOException {
-        ActivityRequest activityRequest = new ActivityRequest(name, score, description);
-        return activityService.update(id, activityRequest, multipartFile);
+        @Valid @RequestBody ActivityRequest activityRequest) {
+        return activityService.update(id, activityRequest);
     }
 
-    @GetMapping("/activities/{id}")
+    @PostMapping("/image")
+    public String uploadImage(@RequestParam("multipartFile") MultipartFile multipartFile)
+        throws IOException {
+        return activityService.uploadImage(multipartFile);
+    }
+
+    @GetMapping("/{id}")
     public ActivityDetailResponse activity(@PathVariable("id") Integer id) {
         return activityService.activity(id);
     }
 
-    @GetMapping("/activities")
+    @GetMapping
     public List<ActivityResponse> activities() {
         return activityService.activities();
     }
 
-    @DeleteMapping("/activities/{id}")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") Integer id) {
         activityService.delete(id);
     }

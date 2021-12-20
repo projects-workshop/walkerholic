@@ -1,6 +1,8 @@
 package com.yunhalee.walkerholic.activity.exception;
 
-public class ActivityNotFoundException extends RuntimeException {
+import com.yunhalee.walkerholic.common.exception.EntityNotFoundException;
+
+public class ActivityNotFoundException extends EntityNotFoundException {
 
     public ActivityNotFoundException(String message) {
         super(message);
@@ -13,5 +15,4 @@ public class ActivityNotFoundException extends RuntimeException {
     public ActivityNotFoundException(Throwable cause) {
         super(cause);
     }
-
 }
