@@ -4,6 +4,7 @@ import com.yunhalee.walkerholic.activity.domain.Activity;
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
@@ -19,18 +20,19 @@ public class ActivityRequest {
     @NotNull
     private String description;
 
-    private String imageUrl;
-
     @Builder
-    public ActivityRequest(String name, Integer score, String description, String imageUrl) {
+    public ActivityRequest(@NonNull String name, @NonNull Integer score,
+        @NonNull String description) {
         this.name = name;
         this.score = score;
         this.description = description;
-        this.imageUrl = imageUrl;
     }
 
     public Activity toActivity() {
-        return new Activity(name, score, description, imageUrl);
+        return Activity.builder()
+            .name(name)
+            .score(score)
+            .description(description).build();
     }
 
 }

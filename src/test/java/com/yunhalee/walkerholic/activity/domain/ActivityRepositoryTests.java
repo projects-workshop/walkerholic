@@ -25,8 +25,10 @@ public class ActivityRepositoryTests {
     @Test
     public void createActivity() {
         //given
-        Activity activity = new Activity("Plogging90", 100,
-            "Picking up trash while jogging for more than 90minutes.");
+        Activity activity = Activity.builder()
+            .name("Plogging90")
+            .score(100)
+            .description("Picking up trash while jogging for more than 90minutes.").build();
 
         //when
         Activity activity1 = repo.save(activity);
@@ -40,7 +42,6 @@ public class ActivityRepositoryTests {
         //given
         Integer id = 1;
         Activity activity = repo.findById(id).get();
-
         activity.setScore(3);
 
         //when

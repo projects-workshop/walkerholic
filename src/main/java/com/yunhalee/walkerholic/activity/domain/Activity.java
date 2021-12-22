@@ -1,8 +1,10 @@
 package com.yunhalee.walkerholic.activity.domain;
 
 import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -39,13 +41,9 @@ public class Activity {
     public Activity() {
     }
 
-    public Activity(String name, Integer score, String description) {
-        this.name = name;
-        this.score = score;
-        this.description = description;
-    }
-
-    public Activity(String name, Integer score, String description, String imageUrl) {
+    @Builder
+    public Activity(@NonNull String name, @NonNull Integer score, @NonNull String description,
+        String imageUrl) {
         this.name = name;
         this.score = score;
         this.description = description;
@@ -57,15 +55,12 @@ public class Activity {
         this.name = requestActivity.name;
         this.description = requestActivity.description;
         this.score = requestActivity.score;
-        this.imageUrl = requestActivity.imageUrl;
 
         return this;
     }
 
-    public void setDefaultImageUrl(String imageUrl, String defaultImageUrl) {
-        if (imageUrl == null || imageUrl.isEmpty() || imageUrl.isBlank()) {
-            this.imageUrl = defaultImageUrl;
-        }
+    public void changeImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
 

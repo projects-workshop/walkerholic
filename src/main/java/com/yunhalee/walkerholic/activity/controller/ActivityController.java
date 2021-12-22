@@ -33,10 +33,11 @@ public class ActivityController {
         return activityService.update(id, activityRequest);
     }
 
-    @PostMapping("/image")
-    public String uploadImage(@RequestParam("multipartFile") MultipartFile multipartFile)
+    @PostMapping("/{id}/images")
+    public String uploadImage(@PathVariable("id") Integer id,
+        @RequestParam("multipartFile") MultipartFile multipartFile)
         throws IOException {
-        return activityService.uploadImage(multipartFile);
+        return activityService.uploadImage(multipartFile, id);
     }
 
     @GetMapping("/{id}")
