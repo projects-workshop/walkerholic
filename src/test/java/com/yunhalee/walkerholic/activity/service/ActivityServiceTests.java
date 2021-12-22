@@ -32,9 +32,6 @@ public class ActivityServiceTests {
     @Autowired
     ActivityRepository activityRepository;
 
-    @Autowired
-    S3ImageUploader s3ImageUploader;
-
     @Value("${AWS_S3_BUCKET_URL}")
     private String bucketUrl;
 
