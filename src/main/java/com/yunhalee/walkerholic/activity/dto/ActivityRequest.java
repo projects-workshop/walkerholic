@@ -20,19 +20,23 @@ public class ActivityRequest {
     @NotNull
     private String description;
 
+    private String imageUrl;
+
     @Builder
     public ActivityRequest(@NonNull String name, @NonNull Integer score,
-        @NonNull String description) {
+        @NonNull String description, String imageUrl) {
         this.name = name;
         this.score = score;
         this.description = description;
+        this.imageUrl = imageUrl;
     }
 
     public Activity toActivity() {
         return Activity.builder()
             .name(name)
             .score(score)
-            .description(description).build();
+            .description(description)
+            .imageUrl(imageUrl).build();
     }
 
 }

@@ -1,7 +1,9 @@
 package com.yunhalee.walkerholic.util;
 
+import com.yunhalee.walkerholic.activity.dto.ActivityRequest;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +39,18 @@ public class S3ImageUploaderTests {
     @Value("${cloud.aws.credentials.secretKey}")
     private String secretKey;
 
+    private static final String FOLDER_NAME = "testUploads";
+    private static final String ORIGINAL_FILE_NAME = "sampleFile.txt";
+    private MultipartFile multipartFile;
+
+    @BeforeEach
+    public void setUp() {
+        multipartFile = new MockMultipartFile("uploaded-file",
+            ORIGINAL_FILE_NAME,
+            "text/plain",
+            "This is the file content".getBytes()) {
+        };
+    }
 
     @Test
     public void testListFolder() {
@@ -60,15 +74,9 @@ public class S3ImageUploaderTests {
     @Test
     public void testUploadFile() throws IOException {
         //given
-        String folderName = "testUploads";
-        MultipartFile multipartFile = new MockMultipartFile("uploaded-file",
-            "sampleFile.txt",
-            "text/plain",
-            "This is the file content".getBytes()) {
-        };
 
         //when
-        String imageUrl = s3ImageUploader.uploadFile(folderName, multipartFile);
+        String imageUrl = s3ImageUploader.uploadFile(FOLDER_NAME, multipartFile);
 
         //then
         System.out.println(imageUrl);
@@ -78,39 +86,26 @@ public class S3ImageUploaderTests {
     @Test
     public void testDeleteFile() throws IOException {
         //given
-        String folderName = "testUploads";
-        MultipartFile multipartFile = new MockMultipartFile("uploaded-file",
-            "sampleFile.txt",
-            "text/plain",
-            "This is the file content".getBytes()) {
-        };
-        s3ImageUploader.uploadFile(folderName, multipartFile);
+        s3ImageUploader.uploadFile(FOLDER_NAME, multipartFile);
 
         //when
-        s3ImageUploader.deleteFile("testUploads/sampleFile.txt");
-        List<String> list = s3ImageUploader.listFolder(folderName);
+        s3ImageUploader.deleteFile(FOLDER_NAME + "/" + ORIGINAL_FILE_NAME);
+        List<String> list = s3ImageUploader.listFolder(FOLDER_NAME);
 
         //then
         for (String s : list) {
             System.out.println(s);
         }
-
     }
 
     @Test
     public void testDeleteFolder() throws IOException {
         //given
-        String folderName = "testUploads";
-        MultipartFile multipartFile = new MockMultipartFile("uploaded-file",
-            "sampleFile.txt",
-            "text/plain",
-            "This is the file content".getBytes()) {
-        };
-        s3ImageUploader.uploadFile(folderName, multipartFile);
+        s3ImageUploader.uploadFile(FOLDER_NAME, multipartFile);
 
         //when
-        s3ImageUploader.removeFolder(folderName);
-        List<String> list = s3ImageUploader.listFolder(folderName);
+        s3ImageUploader.removeFolder(FOLDER_NAME);
+        List<String> list = s3ImageUploader.listFolder(FOLDER_NAME);
 
         //then
         assertEquals(list.size(), 0);

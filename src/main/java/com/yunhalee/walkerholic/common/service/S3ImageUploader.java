@@ -34,6 +34,9 @@ public class S3ImageUploader {
     @Value("${AWS_S3_BASE_IMAGE_URL}")
     private String defaultImageUrl;
 
+    @Value("${AWS_S3_BUCKET_URL}")
+    private String bucketUrl;
+
     private AmazonS3 s3;
 
     public S3ImageUploader(AmazonS3 s3) {
@@ -54,6 +57,13 @@ public class S3ImageUploader {
             new IOException("Could not save file : " + multipartFile.getOriginalFilename());
         }
         return "";
+    }
+
+    public void deleteOriginalImage(String originalImageUrl, String changedImageUrl) {
+        if (!originalImageUrl.equals(defaultImageUrl) ||
+            !originalImageUrl.equals(changedImageUrl)) {
+            deleteFile(originalImageUrl.replaceAll(bucketUrl, ""));
+        }
     }
 
     public List<String> listFolder(String folder) {

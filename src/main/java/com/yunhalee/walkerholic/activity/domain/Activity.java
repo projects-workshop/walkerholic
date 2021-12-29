@@ -10,6 +10,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Value;
 
 @Entity
 @Table(name = "activity")
@@ -55,7 +56,7 @@ public class Activity {
         this.name = requestActivity.name;
         this.description = requestActivity.description;
         this.score = requestActivity.score;
-
+        this.imageUrl = requestActivity.imageUrl;
         return this;
     }
 

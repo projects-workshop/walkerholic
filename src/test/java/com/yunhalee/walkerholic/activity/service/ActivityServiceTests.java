@@ -1,5 +1,6 @@
 package com.yunhalee.walkerholic.activity.service;
 
+import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.activity.dto.ActivityRequest;
 import com.yunhalee.walkerholic.activity.dto.ActivityResponse;
 import com.yunhalee.walkerholic.activity.dto.ActivityDetailResponse;
@@ -7,6 +8,7 @@ import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import java.io.IOException;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,31 +40,38 @@ public class ActivityServiceTests {
     @Value("${AWS_S3_BASE_IMAGE_URL}")
     private String defaultImageUrl;
 
+    private ActivityRequest activityRequest;
+
     private static final String UPLOAD_DIR = "activity-uploads/";
+    private static final String NAME = "testActivity";
+    private static final Integer SCORE = 1;
+    private static final String DESCRIPTION = "This is test Activity.";
+    private static final String IMAGE_URL = "http://testActivity/imageURL";
+
+    @BeforeEach
+    public void setUp() {
+        activityRequest = ActivityRequest.builder()
+            .name(NAME)
+            .score(SCORE)
+            .description(DESCRIPTION)
+            .imageUrl(IMAGE_URL).build();
+    }
 
 
     @DisplayName("액티비티를 생성한다.")
     @Test
     public void createActivity() {
         //given
-        String name = "testActivity";
-        Integer score = 1;
-        String description = "This is test Activity.";
-
-        ActivityRequest activityRequest = ActivityRequest.builder()
-            .name(name)
-            .score(score)
-            .description(description).build();
 
         //when
         ActivityResponse activityResponse = activityService.create(activityRequest);
 
         //then
         assertNotNull(activityResponse.getId());
-        assertEquals(name, activityResponse.getName());
-        assertEquals(score, activityResponse.getScore());
-        assertEquals(description, activityResponse.getDescription());
-        assertEquals(defaultImageUrl, activityResponse.getImageUrl());
+        assertEquals(NAME, activityResponse.getName());
+        assertEquals(SCORE, activityResponse.getScore());
+        assertEquals(DESCRIPTION, activityResponse.getDescription());
+        assertEquals(IMAGE_URL, activityResponse.getImageUrl());
     }
 
     @DisplayName("액티비티를 수정한다.")
@@ -71,42 +80,22 @@ public class ActivityServiceTests {
         //given
         Integer id = 1;
         String originalName = activityRepository.findById(id).get().getName();
-        String name = "testUpdateActivity";
-        Integer score = 1;
-        String description = "This is test Activity.";
-
-        ActivityRequest activityRequest = ActivityRequest.builder()
-            .name(name)
-            .score(score)
-            .description(description).build();
 
         //when
         ActivityResponse activityResponse = activityService.update(id, activityRequest);
 
         //then
         assertNotEquals(originalName, activityResponse.getName());
-        assertEquals(name, activityResponse.getName());
-        assertEquals(score, activityResponse.getScore());
-        assertEquals(description, activityResponse.getDescription());
+        assertEquals(NAME, activityResponse.getName());
+        assertEquals(SCORE, activityResponse.getScore());
+        assertEquals(DESCRIPTION, activityResponse.getDescription());
+        assertEquals(IMAGE_URL, activityResponse.getImageUrl());
     }
 
     @DisplayName("액티비티 이미지를 업로드한다.")
     @Test
     public void uploadImage() throws IOException {
-
         //given
-        String name = "testActivity";
-        Integer score = 1;
-        String description = "This is test Activity.";
-
-        ActivityRequest activityRequest = ActivityRequest.builder()
-            .name(name)
-            .score(score)
-            .description(description).build();
-
-        ActivityResponse activityResponse = activityService.create(activityRequest);
-
-        Integer activityId = activityResponse.getId();
         String fileName = "sampleFile.txt";
         MultipartFile multipartFile = new MockMultipartFile("uploaded-file",
             fileName,
@@ -114,12 +103,11 @@ public class ActivityServiceTests {
             "This is the file content".getBytes());
 
         //when
-        String imageUrl = activityService.uploadImage(multipartFile, activityId);
+        String imageUrl = activityService.uploadImage(multipartFile);
 
         //then
         assertTrue(imageUrl.contains(bucketUrl + UPLOAD_DIR));
         assertTrue(imageUrl.contains(fileName));
-
     }
 
     @DisplayName("단일 액티비티를 조회한다.")

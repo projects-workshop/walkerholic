@@ -29,9 +29,6 @@ public class ActivityService {
     @Value("${AWS_S3_BASE_IMAGE_URL}")
     private String defaultImageUrl;
 
-    @Value("${AWS_S3_BUCKET_URL}")
-    private String bucketUrl;
-
     public ActivityService(
         ActivityRepository activityRepository, S3ImageUploader s3ImageUploader) {
         this.activityRepository = activityRepository;
@@ -40,7 +37,9 @@ public class ActivityService {
 
     public ActivityResponse create(ActivityRequest activityRequest) {
         Activity activity = activityRequest.toActivity();
-        activity.changeImageUrl(defaultImageUrl);
+        activity.changeImageUrl(
+            activityRequest.getImageUrl() == null ?
+                defaultImageUrl : activityRequest.getImageUrl());
         activityRepository.save(activity);
         return new ActivityResponse(activity);
     }
@@ -50,6 +49,8 @@ public class ActivityService {
             .orElseThrow(() -> new ActivityNotFoundException(
                 "Activity not found with id : " + id));
         Activity requestActivity = activityRequest.toActivity();
+        s3ImageUploader.deleteOriginalImage(
+            existingActivity.getImageUrl(), activityRequest.getImageUrl());
         Activity updatedActivity = existingActivity.update(requestActivity);
         return new ActivityResponse(updatedActivity);
     }
@@ -78,21 +79,10 @@ public class ActivityService {
         return;
     }
 
-    public String uploadImage(MultipartFile multipartFile, Integer id)
+    public String uploadImage(MultipartFile multipartFile)
         throws IOException {
         String imageUrl = s3ImageUploader.uploadFile(UPLOAD_DIR, multipartFile);
-        Activity activity = activityRepository.findById(id)
-            .orElseThrow(() -> new ActivityNotFoundException(
-                "Activity not found with id : " + id));
-        deleteOriginalImage(activity.getImageUrl());
-        activity.changeImageUrl(imageUrl);
         return imageUrl;
-    }
-
-    private void deleteOriginalImage(String originalImageUrl) {
-        if (!originalImageUrl.equals(defaultImageUrl)) {
-            s3ImageUploader.deleteFile(originalImageUrl.replaceAll(bucketUrl, ""));
-        }
     }
 
 
