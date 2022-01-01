@@ -48,8 +48,7 @@ public class ActivityServiceTests {
     private static final String DESCRIPTION = "This is test Activity.";
     private static final String IMAGE_URL = "http://testActivity/imageURL";
 
-    @BeforeEach
-    public void setUp() {
+    void setUp() {
         activityRequest = ActivityRequest.builder()
             .name(NAME)
             .score(SCORE)
@@ -62,6 +61,7 @@ public class ActivityServiceTests {
     @Test
     public void createActivity() {
         //given
+        setUp();
 
         //when
         ActivityResponse activityResponse = activityService.create(activityRequest);
@@ -78,6 +78,7 @@ public class ActivityServiceTests {
     @Test
     public void updateActivity() {
         //given
+        setUp();
         Integer id = 1;
         String originalName = activityRepository.findById(id).get().getName();
 

@@ -5,10 +5,8 @@ import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 
 @Getter
-@Setter
 public class ActivityRequest {
 
     @NotNull

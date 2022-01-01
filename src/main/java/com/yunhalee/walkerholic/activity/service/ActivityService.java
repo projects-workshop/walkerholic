@@ -9,7 +9,6 @@ import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import java.io.IOException;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,9 +25,6 @@ public class ActivityService {
 
     private static final String UPLOAD_DIR = "activity-uploads";
 
-    @Value("${AWS_S3_BASE_IMAGE_URL}")
-    private String defaultImageUrl;
-
     public ActivityService(
         ActivityRepository activityRepository, S3ImageUploader s3ImageUploader) {
         this.activityRepository = activityRepository;
@@ -37,9 +33,7 @@ public class ActivityService {
 
     public ActivityResponse create(ActivityRequest activityRequest) {
         Activity activity = activityRequest.toActivity();
-        activity.changeImageUrl(
-            activityRequest.getImageUrl() == null ?
-                defaultImageUrl : activityRequest.getImageUrl());
+        activity.changeImageUrl(activityRequest.getImageUrl());
         activityRepository.save(activity);
         return new ActivityResponse(activity);
     }

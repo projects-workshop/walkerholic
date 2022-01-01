@@ -39,6 +39,9 @@ public class Activity {
     @OrderBy("createdAt DESC")
     private Set<UserActivity> userActivities = new HashSet<>();
 
+    private static final String DEFAULT_IMAGE_URL =
+        "https://walkerholic-with-you.s3.ap-northeast-2.amazonaws.com/globe-asia-solid.svg";
+
     public Activity() {
     }
 
@@ -61,7 +64,7 @@ public class Activity {
     }
 
     public void changeImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+        this.imageUrl = (imageUrl == null ? DEFAULT_IMAGE_URL : imageUrl);
     }
 
 
