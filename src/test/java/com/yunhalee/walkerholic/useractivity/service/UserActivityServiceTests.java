@@ -1,11 +1,14 @@
 package com.yunhalee.walkerholic.useractivity.service;
 
-import com.yunhalee.walkerholic.useractivity.dto.UserActivityCreateDTO;
-import com.yunhalee.walkerholic.useractivity.dto.UserActivityDTO;
 import com.yunhalee.walkerholic.user.domain.Level;
+import com.yunhalee.walkerholic.user.domain.Role;
+import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivityRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
-import com.yunhalee.walkerholic.useractivity.service.UserActivityService;
+import com.yunhalee.walkerholic.useractivity.dto.UserActivityListResponse;
+import com.yunhalee.walkerholic.useractivity.dto.UserActivityRequest;
+import com.yunhalee.walkerholic.useractivity.dto.UserActivityResponse;
+import java.util.NoSuchElementException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +16,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
 
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
@@ -32,75 +36,82 @@ public class UserActivityServiceTests {
     @Autowired
     UserRepository userRepository;
 
+    private Integer userId;
+    private static final Integer ACTIVITY_ID = 1;
+    private static final boolean FINISHED = false;
+
+    private UserActivityResponse userActivityResponse;
+
     @Test
-    public void createUserActivity() {
+    public void create_user_activity() {
         //given
-        Integer activityId = 1;
-        boolean finished = false;
-        Integer userId = 1;
-        UserActivityCreateDTO userActivityCreateDTO = new UserActivityCreateDTO(activityId,
-            finished);
+        createUserActivity();
 
         //when
-        HashMap<String, Object> response = userActivityService
-            .saveUserActivity(userActivityCreateDTO, userId);
-        UserActivityDTO userActivityDTO = (UserActivityDTO) response.get("activity");
 
         //then
-        assertEquals(userActivityDTO.getActivityId(), activityId);
-        assertEquals(userActivityDTO.isFinished(), finished);
+        assertEquals(userActivityResponse.getActivityId(), ACTIVITY_ID);
+        assertEquals(userActivityResponse.isFinished(), FINISHED);
+        assertEquals(userActivityResponse.getLevel(), Level.Starter.getName());
     }
 
     @Test
-    public void updateUserActivity() {
+    public void update_user_activity() {
         //given
-        Integer id = 1;
-        Integer activityId = 1;
-        boolean finished = true;
-        Integer userId = 1;
-        UserActivityCreateDTO userActivityCreateDTO = new UserActivityCreateDTO(id, activityId,
-            finished);
+        createUserActivity();
+        UserActivityRequest userActivityRequest = UserActivityRequest.builder()
+            .userId(userId)
+            .activityId(ACTIVITY_ID)
+            .finished(true).build();
 
         //when
-        HashMap<String, Object> response = userActivityService
-            .saveUserActivity(userActivityCreateDTO, userId);
-        UserActivityDTO userActivityDTO = (UserActivityDTO) response.get("activity");
-
+        UserActivityResponse updatedResponse = userActivityService
+            .update(userActivityRequest, userActivityResponse.getId());
         //then
-        assertEquals(userActivityDTO.getActivityId(), activityId);
-        assertEquals(userActivityDTO.isFinished(), finished);
-        assertEquals(userRepository.findById(userId).get().getLevel(), Level.Bronze);
+        assertEquals(updatedResponse.getActivityId(), ACTIVITY_ID);
+        assertEquals(updatedResponse.isFinished(), true);
+        assertEquals(updatedResponse.getLevel(), Level.Bronze.getName());
     }
 
     @Test
     public void getUserActivitiesByUserId() {
         //given
-        Integer page = 1;
-        Integer userId = 1;
+        createUserActivity();
 
         //when
-        HashMap<String, Object> response = userActivityService.getByUser(page, userId);
-        List<UserActivityDTO> userActivityDTOS = (List<UserActivityDTO>) response.get("activities");
+        UserActivityListResponse userActivities = userActivityService.userActivities(1, userId);
 
         //then
-        for (UserActivityDTO userActivityDTO : userActivityDTOS) {
-            assertEquals(
-                userActivityRepository.findById(userActivityDTO.getId()).get().getUser().getId(),
-                userId);
-        }
+        assertThat(userActivities.getActivities().size()).isGreaterThan(0);
+
     }
 
     @Test
     public void deleteUserActivity() {
         //given
-        Integer id = 1;
-        Integer userId = 1;
+        createUserActivity();
+        Integer id = userActivityResponse.getId();
 
         //when
         userActivityService.deleteUserActivity(id, userId);
 
         //then
-        assertNull(userActivityRepository.findById(id));
+        assertThatThrownBy(() -> userActivityRepository.findById(id).get())
+            .isInstanceOf(NoSuchElementException.class);
         assertEquals(userRepository.findById(userId).get().getLevel(), Level.Starter);
+    }
+
+
+    void createUserActivity() {
+        User user = new User("testName", "testName", "test@example.com", "12345678", Role.USER);
+        user.setLevel(Level.Starter);
+        userRepository.save(user);
+        userId = user.getId();
+        UserActivityRequest userActivityRequest = UserActivityRequest.builder()
+            .userId(user.getId())
+            .activityId(ACTIVITY_ID)
+            .finished(FINISHED).build();
+
+        userActivityResponse = userActivityService.create(userActivityRequest);
     }
 }

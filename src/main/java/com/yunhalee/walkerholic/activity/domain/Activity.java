@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 @Entity
 @Table(name = "activity")
 @Getter
-@Setter
 public class Activity {
 
     @Id

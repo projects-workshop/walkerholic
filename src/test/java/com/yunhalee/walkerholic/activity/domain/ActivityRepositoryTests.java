@@ -1,8 +1,6 @@
 package com.yunhalee.walkerholic.activity.domain;
 
 
-import com.yunhalee.walkerholic.activity.domain.Activity;
-import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -22,39 +20,40 @@ public class ActivityRepositoryTests {
     @Autowired
     ActivityRepository repo;
 
+    private Activity activity;
+
     @Test
     public void createActivity() {
         //given
-        Activity activity = Activity.builder()
-            .name("Plogging90")
-            .score(100)
-            .description("Picking up trash while jogging for more than 90minutes.").build();
+        createSetUp();
 
         //when
-        Activity activity1 = repo.save(activity);
+        Activity createdActivity = repo.save(activity);
 
         //then
-        assertThat(activity1.getId()).isGreaterThan(0);
+        checkEqual(createdActivity);
     }
 
     @Test
     public void updateActivity() {
         //given
-        Integer id = 1;
-        Activity activity = repo.findById(id).get();
-        activity.setScore(3);
+        createSetUp();
+        Activity requestActivity = updateSetUp();
+        activity.update(requestActivity);
 
         //when
-        Activity activity1 = repo.save(activity);
+        Activity updatedActivity = repo.save(activity);
 
         //then
-        assertThat(activity.getScore()).isNotEqualTo(activity1.getScore());
+        assertThat(activity.getId()).isEqualTo(updatedActivity.getId());
+        checkEqual(updatedActivity);
     }
 
     @Test
     public void getActivityById() {
         //given
-        Integer id = 1;
+        createSetUp();
+        Integer id = activity.getId();
 
         //when
         Activity activity = repo.findByActivityId(id);
@@ -71,19 +70,44 @@ public class ActivityRepositoryTests {
         List<Activity> list = repo.findAll();
 
         //then
-        assertThat(list.size()).isEqualTo(1);
+        assertThat(list.size()).isGreaterThan(0);
     }
 
     @Test
     public void deleteActivity() {
         //given
-        Integer id = 1;
+        createSetUp();
+        Integer id = activity.getId();
 
         //when
         repo.deleteById(id);
 
         //then
         assertThat(repo.findById(id)).isNull();
+    }
+
+
+    private void createSetUp() {
+        activity = Activity.builder()
+            .name("Plogging90")
+            .score(100)
+            .description("Picking up trash while jogging for more than 90minutes.").build();
+    }
+
+    private Activity updateSetUp() {
+        return Activity.builder()
+            .name("test")
+            .description("testUpdate")
+            .score(2)
+            .imageUrl("testImageUrl").build();
+    }
+
+    private void checkEqual(Activity changedActivity) {
+        assertThat(changedActivity.getId()).isNotNull();
+        assertThat(changedActivity.getName()).isEqualTo(activity.getName());
+        assertThat(changedActivity.getDescription()).isEqualTo(activity.getDescription());
+        assertThat(changedActivity.getScore()).isEqualTo(activity.getScore());
+        assertThat(changedActivity.getImageUrl()).isEqualTo(activity.getImageUrl());
     }
 
 

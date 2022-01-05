@@ -15,7 +15,7 @@ import com.yunhalee.walkerholic.order.domain.OrderRepository;
 import com.yunhalee.walkerholic.product.domain.ProductRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.user.domain.User;
-import com.yunhalee.walkerholic.useractivity.domain.Address;
+import com.yunhalee.walkerholic.order.domain.Address;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;

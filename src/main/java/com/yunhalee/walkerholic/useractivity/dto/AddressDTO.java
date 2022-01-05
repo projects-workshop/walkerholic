@@ -1,11 +1,9 @@
 package com.yunhalee.walkerholic.useractivity.dto;
 
-import com.yunhalee.walkerholic.useractivity.domain.Address;
+import com.yunhalee.walkerholic.order.domain.Address;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 public class AddressDTO {
 
     private String name;
@@ -21,9 +19,6 @@ public class AddressDTO {
     private Integer latitude;
 
     private Integer longitude;
-
-    public AddressDTO() {
-    }
 
     public AddressDTO(String name, String country, String city, String zipcode, String address) {
         this.name = name;

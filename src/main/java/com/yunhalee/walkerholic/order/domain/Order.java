@@ -2,7 +2,6 @@ package com.yunhalee.walkerholic.order.domain;
 
 import com.yunhalee.walkerholic.common.domain.BaseTimeEntity;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
-import com.yunhalee.walkerholic.useractivity.domain.Address;
 import com.yunhalee.walkerholic.user.domain.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

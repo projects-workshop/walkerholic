@@ -1,4 +1,4 @@
-package com.yunhalee.walkerholic.useractivity.domain;
+package com.yunhalee.walkerholic.order.domain;
 
 import lombok.Getter;
 

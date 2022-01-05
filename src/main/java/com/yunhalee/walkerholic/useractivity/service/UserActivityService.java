@@ -1,120 +1,108 @@
 package com.yunhalee.walkerholic.useractivity.service;
 
-import com.yunhalee.walkerholic.useractivity.dto.UserActivityCreateDTO;
-import com.yunhalee.walkerholic.useractivity.dto.UserActivityDTO;
+import com.yunhalee.walkerholic.activity.exception.ActivityNotFoundException;
+import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
+import com.yunhalee.walkerholic.useractivity.dto.UserActivityListResponse;
+import com.yunhalee.walkerholic.useractivity.dto.UserActivityRequest;
 import com.yunhalee.walkerholic.activity.domain.Activity;
-import com.yunhalee.walkerholic.activity.domain.ActivityStatus;
+import com.yunhalee.walkerholic.useractivity.domain.ActivityStatus;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivityRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
-import lombok.RequiredArgsConstructor;
+import com.yunhalee.walkerholic.useractivity.dto.UserActivityResponse;
+import com.yunhalee.walkerholic.useractivity.exception.UserActivityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
+@Transactional
 public class UserActivityService {
 
-    private final UserActivityRepository userActivityRepository;
+    private UserActivityRepository userActivityRepository;
 
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
 
-    private final ActivityRepository activityRepository;
+    private ActivityRepository activityRepository;
 
-    public static final int USERACTIVITY_PER_PAGE = 10;
+    public static final int USER_ACTIVITY_PER_PAGE = 10;
 
-    public HashMap<String, Object> getByUser(Integer page, Integer id) {
-        Pageable pageable = PageRequest.of(page - 1, USERACTIVITY_PER_PAGE);
-        Page<UserActivity> userActivityPage = userActivityRepository.findByUserId(pageable, id);
-        List<UserActivity> userActivities = userActivityPage.getContent();
-        List<UserActivityDTO> userActivityDTOS = new ArrayList<>();
-        Integer score = 0;
-
-        for (UserActivity userActivity : userActivities) {
-            userActivityDTOS.add(new UserActivityDTO(userActivity,
-                userActivity.getStatus() == ActivityStatus.FINISHED));
-            if (userActivity.getStatus() == ActivityStatus.FINISHED) {
-                score += userActivity.getActivity().getScore();
-            }
-        }
-
-        HashMap<String, Object> userActivityList = new HashMap<>();
-        userActivityList.put("activities", userActivityDTOS);
-        userActivityList.put("totalPage", userActivityPage.getTotalPages());
-        userActivityList.put("totalElement", userActivityPage.getTotalElements());
-        userActivityList.put("score", score);
-
-        return userActivityList;
+    public UserActivityService(UserActivityRepository userActivityRepository,
+        UserRepository userRepository, ActivityRepository activityRepository) {
+        this.userActivityRepository = userActivityRepository;
+        this.userRepository = userRepository;
+        this.activityRepository = activityRepository;
     }
 
-    public HashMap<String, Object> saveUserActivity(UserActivityCreateDTO userActivityCreateDTO,
-        Integer id) {
+    @Transactional(readOnly = true)
+    public UserActivityListResponse userActivities(Integer page, Integer id) {
+        Pageable pageable = PageRequest.of(page - 1, USER_ACTIVITY_PER_PAGE);
+        Page<UserActivity> userActivityPage = userActivityRepository.findByUserId(pageable, id);
+        List<UserActivity> userActivities = userActivityPage.getContent();
+        return new UserActivityListResponse(userActivities, userActivityPage,
+            score(userActivities));
+    }
 
-        HashMap<String, Object> map = new HashMap<>();
+    public UserActivityResponse create(UserActivityRequest userActivityRequest) {
+        User user = user(userActivityRequest.getUserId());
+        Activity activity = activity(userActivityRequest.getActivityId());
+        UserActivity userActivity = userActivityRequest.toUserActivity(user, activity);
+        updateScore(user, userActivity);
+        userActivityRepository.save(userActivity);
+        return new UserActivityResponse(userActivity, user.getLevel().getName());
+    }
 
-        if (userActivityCreateDTO.getId() != null) {
-            UserActivity existingUserActivity = userActivityRepository
-                .findById(userActivityCreateDTO.getId()).get();
-
-            if (userActivityCreateDTO.isFinished()) {
-                if (existingUserActivity.getStatus() != ActivityStatus.FINISHED) {
-                    existingUserActivity.setStatus(ActivityStatus.FINISHED);
-                    User user = userRepository.findById(id).get();
-                    user.addUserActivity(existingUserActivity);
-                    userRepository.save(user);
-                    map.put("level", user.getLevel().getName());
-                }
-            } else {
-                existingUserActivity.setStatus(ActivityStatus.ONGOING);
-            }
-            userActivityRepository.save(existingUserActivity);
-            UserActivityDTO userActivityDTO = new UserActivityDTO(existingUserActivity,
-                existingUserActivity.getStatus() == ActivityStatus.FINISHED);
-            map.put("activity", userActivityDTO);
-        } else {
-            UserActivity userActivity = new UserActivity();
-            User user = userRepository.findById(id).get();
-            Activity activity = activityRepository.findById(userActivityCreateDTO.getActivityId())
-                .get();
-
-            userActivity.setUser(user);
-            userActivity.setActivity(activity);
-            System.out.println(userActivityCreateDTO.isFinished());
-            if (userActivityCreateDTO.isFinished()) {
-                userActivity.setStatus(ActivityStatus.FINISHED);
-                user.addUserActivity(userActivity);
-                userRepository.save(user);
-            } else {
-                userActivity.setStatus(ActivityStatus.ONGOING);
-            }
-
-            userActivityRepository.save(userActivity);
-            UserActivityDTO userActivityDTO = new UserActivityDTO(userActivity,
-                userActivity.getStatus() == ActivityStatus.FINISHED);
-            map.put("activity", userActivityDTO);
-            map.put("level", user.getLevel().getName());
-        }
-        return map;
+    public UserActivityResponse update(UserActivityRequest userActivityRequest, Integer id) {
+        UserActivity userActivity = userActivity(id);
+        User user = user(userActivityRequest.getUserId());
+        Activity activity = activity(userActivityRequest.getActivityId());
+        UserActivity requestedUserActivity = userActivityRequest.toUserActivity(user, activity);
+        userActivity.update(requestedUserActivity);
+        return new UserActivityResponse(userActivity, user.getLevel().getName());
     }
 
     public String deleteUserActivity(Integer id, Integer userId) {
-        UserActivity userActivity = userActivityRepository.findById(id).get();
+        UserActivity userActivity = userActivity(id);
         userActivityRepository.delete(userActivity);
-
-        User user = userRepository.findById(userId).get();
+        User user = user(userId);
         user.deleteUserActivity();
-        userRepository.save(user);
-
-        String level = user.getLevel().getName();
-
-        return level;
+        return user.getLevel().getName();
     }
+
+    private int score(List<UserActivity> userActivities) {
+        return userActivities.stream()
+            .mapToInt(u -> u.getActivity().getScore())
+            .sum();
+    }
+
+    private void updateScore(User user, UserActivity userActivity) {
+        if (userActivity.getStatus() == ActivityStatus.FINISHED) {
+            user.addUserActivity(userActivity);
+        }
+    }
+
+    private UserActivity userActivity(Integer id) {
+        return userActivityRepository.findById(id)
+            .orElseThrow(() -> new UserActivityNotFoundException(
+                "UserActivity not found with id : " + id));
+    }
+
+    private User user(Integer id) {
+        return userRepository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException(
+                "User not found with id : " + id));
+    }
+
+    private Activity activity(Integer id) {
+        return activityRepository.findById(id)
+            .orElseThrow(() -> new ActivityNotFoundException(
+                "Activity not found with id : " + id));
+    }
+
+
 }

@@ -1,11 +1,6 @@
 package com.yunhalee.walkerholic.useractivity.domain;
 
-import com.yunhalee.walkerholic.activity.domain.Activity;
-import com.yunhalee.walkerholic.activity.domain.ActivityStatus;
-import com.yunhalee.walkerholic.user.domain.User;
-import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
-import com.yunhalee.walkerholic.useractivity.domain.UserActivityRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,55 +34,42 @@ public class UserActivityRepositoryTests {
 
     public static final int USER_ACTIVITY_PER_PAGE = 10;
 
+    private UserActivity userActivity;
+
     @Test
-    public void createUserActivity() {
+    public void create_user_activity() {
         //given
-        ActivityStatus activityStatus = ActivityStatus.ONGOING;
-        Integer userId = 1;
-        Integer activityId = 1;
-        User user = userRepository.findById(userId).get();
-        Activity activity = activityRepository.findById(activityId).get();
-
-        UserActivity userActivity = new UserActivity();
-        userActivity.setStatus(activityStatus);
-        userActivity.setUser(user);
-        userActivity.setActivity(activity);
-
+        createSetUp();
         //when
-        UserActivity userActivity1 = userActivityRepository.save(userActivity);
+        UserActivity createdUserActivity = userActivityRepository.save(userActivity);
 
         //then
-        assertThat(userActivity1.getId()).isNotNull();
-        assertThat(userActivity1.getStatus()).isEqualTo(activityStatus);
-        assertThat(userActivity1.getUser().getId()).isEqualTo(userId);
-        assertThat(userActivity1.getActivity().getId()).isEqualTo(activityId);
+        checkEqual(createdUserActivity);
     }
 
     @Test
-    public void updateUserActivity() {
+    public void update_user_activity() {
         //given
-        ActivityStatus updatedActivityStatus = ActivityStatus.FINISHED;
-        Integer id = 1;
-        UserActivity userActivity = userActivityRepository.findById(id).get();
-//        ActivityStatus originalActivityStatus = userActivity.getStatus();
-        userActivity.setStatus(updatedActivityStatus);
+        createSetUp();
+        UserActivity requestUserActivity = updateSetUp();
+        userActivity.update(requestUserActivity);
 
         //when
-        UserActivity userActivity1 = userActivityRepository.save(userActivity);
+        UserActivity updatedUserActivity = userActivityRepository.save(userActivity);
 
         //then
-        assertThat(userActivity1.getId()).isEqualTo(id);
-        assertThat(userActivity1.getStatus()).isEqualTo(updatedActivityStatus);
+        assertThat(updatedUserActivity.getId()).isEqualTo(userActivity.getId());
+        checkEqual(updatedUserActivity);
     }
 
     @Test
     public void getByUserId() {
         //given
-        Integer userId = 1;
-        Integer page = 1;
+        createSetUp();
+        Integer userId = userActivity.getUser().getId();
 
         //when
-        Pageable pageable = PageRequest.of(page - 1, USER_ACTIVITY_PER_PAGE);
+        Pageable pageable = PageRequest.of(0, USER_ACTIVITY_PER_PAGE);
         Page<UserActivity> userActivityPage = userActivityRepository.findByUserId(pageable, userId);
         List<UserActivity> userActivityList = userActivityPage.getContent();
 
@@ -100,12 +82,36 @@ public class UserActivityRepositoryTests {
     @Test
     public void deleteById() {
         //given
-        Integer id = 1;
+        createSetUp();
+        Integer userActivityId = userActivity.getId();
 
         //when
-        userActivityRepository.deleteById(1);
+        userActivityRepository.deleteById(userActivityId);
 
         //then
-        assertThat(userActivityRepository.findById(id)).isNull();
+        assertThat(userActivityRepository.findById(userActivityId)).isNull();
     }
+
+    private void createSetUp() {
+        userActivity = UserActivity.builder()
+            .status(ActivityStatus.ONGOING)
+            .user(userRepository.findById(1).get())
+            .activity(activityRepository.findById(1).get()).build();
+    }
+
+    private UserActivity updateSetUp() {
+        return UserActivity.builder()
+            .status(ActivityStatus.FINISHED)
+            .user(userActivity.getUser())
+            .activity(userActivity.getActivity()).build();
+    }
+
+    private void checkEqual(UserActivity changedUserActivity) {
+        assertThat(changedUserActivity.getId()).isNotNull();
+        assertThat(changedUserActivity.getStatus()).isEqualTo(userActivity.getStatus());
+        assertThat(changedUserActivity.getUser().getId()).isEqualTo(userActivity.getUser().getId());
+        assertThat(changedUserActivity.getActivity().getId())
+            .isEqualTo(userActivity.getActivity().getId());
+    }
+
 }

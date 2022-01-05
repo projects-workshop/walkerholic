@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.user.domain;
 
-import com.yunhalee.walkerholic.activity.domain.ActivityStatus;
+import com.yunhalee.walkerholic.useractivity.domain.ActivityStatus;
 import com.yunhalee.walkerholic.follow.domain.Follow;
 import com.yunhalee.walkerholic.likepost.domain.LikePost;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivity;

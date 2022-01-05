@@ -1,45 +1,45 @@
 package com.yunhalee.walkerholic.useractivity.controller;
 
-import com.yunhalee.walkerholic.useractivity.dto.UserActivityCreateDTO;
+import com.yunhalee.walkerholic.useractivity.dto.UserActivityRequest;
 import com.yunhalee.walkerholic.useractivity.service.UserActivityService;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-
 @RestController
+@RequestMapping("/user-activities")
 @RequiredArgsConstructor
 public class UserActivityController {
 
     private final UserActivityService userActivityService;
 
-    @GetMapping("/userActivities/{page}/{id}")
-    public ResponseEntity<?> getByUser(@PathVariable("page") String page,
-        @PathVariable("id") String id) {
-        Integer pageNumber = Integer.parseInt(page);
-        Integer userId = Integer.parseInt(id);
-        return new ResponseEntity<HashMap>(userActivityService.getByUser(pageNumber, userId),
+    @GetMapping("/users/{id}")
+    public ResponseEntity<?> userActivities(@RequestParam("page") String page,
+        @PathVariable("id") Integer id) {
+        return new ResponseEntity<>(userActivityService.userActivities(Integer.parseInt(page), id),
             HttpStatus.OK);
     }
 
-    @PostMapping("/userActivity/save/{id}")
-    public ResponseEntity<?> saveUserActivity(
-        @RequestBody UserActivityCreateDTO userActivityCreateDTO, @PathVariable("id") String id) {
-        Integer userId = Integer.parseInt(id);
-        System.out.println(userActivityCreateDTO.getActivityId());
-        return new ResponseEntity<HashMap<String, Object>>(
-            userActivityService.saveUserActivity(userActivityCreateDTO, userId), HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<?> create(@Valid @RequestBody UserActivityRequest userActivityRequest) {
+        return new ResponseEntity<>(
+            userActivityService.create(userActivityRequest), HttpStatus.OK);
     }
 
-    @DeleteMapping("/userActivity/delete/{id}/{userId}")
-    public ResponseEntity<?> deleteUserActivity(@PathVariable("id") String id,
-        @PathVariable("userId") String userId) {
-        Integer userActivityId = Integer.parseInt(id);
-        Integer userid = Integer.parseInt(userId);
-        return new ResponseEntity<String>(
-            userActivityService.deleteUserActivity(userActivityId, userid), HttpStatus.OK);
+    @PostMapping("/{id}")
+    public ResponseEntity<?> update(@Valid @RequestBody UserActivityRequest userActivityRequest,
+        @PathVariable("id") Integer id) {
+        return new ResponseEntity<>(
+            userActivityService.update(userActivityRequest, id), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/user-activities/{id}/users/{userId}")
+    public ResponseEntity<?> deleteUserActivity(@PathVariable("id") Integer id,
+        @PathVariable("userId") Integer userId) {
+        return new ResponseEntity<>(
+            userActivityService.deleteUserActivity(id, userId), HttpStatus.OK);
     }
 
 
