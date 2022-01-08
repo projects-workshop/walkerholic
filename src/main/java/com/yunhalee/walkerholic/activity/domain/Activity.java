@@ -17,6 +17,9 @@ import org.springframework.beans.factory.annotation.Value;
 @Getter
 public class Activity {
 
+    private static final String DEFAULT_IMAGE_URL =
+        "https://walkerholic-with-you.s3.ap-northeast-2.amazonaws.com/globe-asia-solid.svg";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "activity_id")
@@ -37,9 +40,6 @@ public class Activity {
     @OneToMany(mappedBy = "activity", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdAt DESC")
     private Set<UserActivity> userActivities = new HashSet<>();
-
-    private static final String DEFAULT_IMAGE_URL =
-        "https://walkerholic-with-you.s3.ap-northeast-2.amazonaws.com/globe-asia-solid.svg";
 
     public Activity() {
     }

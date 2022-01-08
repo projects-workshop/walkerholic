@@ -43,6 +43,12 @@ import static org.junit.Assert.*;
 @Transactional
 class ActivityServiceTests {
 
+    private static final String UPLOAD_DIR = "activity-uploads/";
+    private static final String NAME = "testActivity";
+    private static final Integer SCORE = 1;
+    private static final String DESCRIPTION = "This is test Activity.";
+    private static final String IMAGE_URL = "http://testActivity/imageURL";
+
     @Autowired
     private ActivityService activityService;
 
@@ -53,13 +59,6 @@ class ActivityServiceTests {
     private S3ImageUploader s3ImageUploader;
 
     private Activity activity;
-
-    private static final String UPLOAD_DIR = "activity-uploads/";
-    private static final String NAME = "testActivity";
-    private static final Integer SCORE = 1;
-    private static final String DESCRIPTION = "This is test Activity.";
-    private static final String IMAGE_URL = "http://testActivity/imageURL";
-
 
     @BeforeEach
     void setUp() {

@@ -24,13 +24,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserActivityService {
 
+    private static final int USER_ACTIVITY_PER_PAGE = 10;
+
     private UserActivityRepository userActivityRepository;
 
     private UserRepository userRepository;
 
     private ActivityRepository activityRepository;
-
-    private static final int USER_ACTIVITY_PER_PAGE = 10;
 
     public UserActivityService(UserActivityRepository userActivityRepository,
         UserRepository userRepository, ActivityRepository activityRepository) {

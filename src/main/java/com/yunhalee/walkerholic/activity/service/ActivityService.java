@@ -19,11 +19,11 @@ import java.util.List;
 @Transactional
 public class ActivityService {
 
+    private static final String UPLOAD_DIR = "activity-uploads";
+
     private ActivityRepository activityRepository;
 
     private S3ImageUploader s3ImageUploader;
-
-    private static final String UPLOAD_DIR = "activity-uploads";
 
     public ActivityService(
         ActivityRepository activityRepository, S3ImageUploader s3ImageUploader) {
