@@ -9,6 +9,7 @@ import com.yunhalee.walkerholic.post.domain.Post;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.review.domain.Review;
 import com.yunhalee.walkerholic.security.oauth.domain.ProviderType;
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -52,7 +53,7 @@ public class User {
 
     @Column(name = "level")
     @Enumerated(EnumType.STRING)
-    private Level level;
+    private Level level = Level.Starter;
 
     private String description;
 
@@ -113,23 +114,24 @@ public class User {
 
     //    비지니스 로직
     public void addUserActivity(UserActivity userActivity) {
+        levelUp(userActivity.getActivity().getScore());
+    }
+
+    public void levelUp(int userActivityScore) {
         Integer score = this.getScore();
-        score += userActivity.getActivity().getScore();
-        for (Level level : Level.values()) {
-            if (level.getMin() <= score && level.getMax() >= score) {
-                this.level = level;
-                return;
-            }
-        }
+        score += userActivityScore;
+        changeLevel(score);
     }
 
     public void deleteUserActivity() {
         Integer score = this.getScore();
-        for (Level level : Level.values()) {
-            if (level.getMin() <= score && level.getMax() >= score) {
-                this.level = level;
-                return;
-            }
-        }
+        changeLevel(score);
+    }
+
+    private void changeLevel(int score) {
+        this.level = Arrays.stream(Level.values())
+            .filter(level -> level.getMin() <= score && level.getMax() >= score)
+            .findFirst()
+            .orElse(this.level);
     }
 }

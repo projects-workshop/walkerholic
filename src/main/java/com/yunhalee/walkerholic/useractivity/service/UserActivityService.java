@@ -2,10 +2,10 @@ package com.yunhalee.walkerholic.useractivity.service;
 
 import com.yunhalee.walkerholic.activity.exception.ActivityNotFoundException;
 import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
-import com.yunhalee.walkerholic.useractivity.dto.UserActivityListResponse;
+import com.yunhalee.walkerholic.useractivity.domain.ActivityStatus;
+import com.yunhalee.walkerholic.useractivity.dto.UserActivityResponses;
 import com.yunhalee.walkerholic.useractivity.dto.UserActivityRequest;
 import com.yunhalee.walkerholic.activity.domain.Activity;
-import com.yunhalee.walkerholic.useractivity.domain.ActivityStatus;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
@@ -30,7 +30,7 @@ public class UserActivityService {
 
     private ActivityRepository activityRepository;
 
-    public static final int USER_ACTIVITY_PER_PAGE = 10;
+    private static final int USER_ACTIVITY_PER_PAGE = 10;
 
     public UserActivityService(UserActivityRepository userActivityRepository,
         UserRepository userRepository, ActivityRepository activityRepository) {
@@ -40,11 +40,11 @@ public class UserActivityService {
     }
 
     @Transactional(readOnly = true)
-    public UserActivityListResponse userActivities(Integer page, Integer id) {
+    public UserActivityResponses userActivities(Integer page, Integer id) {
         Pageable pageable = PageRequest.of(page - 1, USER_ACTIVITY_PER_PAGE);
         Page<UserActivity> userActivityPage = userActivityRepository.findByUserId(pageable, id);
         List<UserActivity> userActivities = userActivityPage.getContent();
-        return new UserActivityListResponse(userActivities, userActivityPage,
+        return new UserActivityResponses(userActivities, userActivityPage,
             score(userActivities));
     }
 
@@ -52,8 +52,8 @@ public class UserActivityService {
         User user = user(userActivityRequest.getUserId());
         Activity activity = activity(userActivityRequest.getActivityId());
         UserActivity userActivity = userActivityRequest.toUserActivity(user, activity);
-        updateScore(user, userActivity);
         userActivityRepository.save(userActivity);
+        updateLevel(user, userActivity);
         return new UserActivityResponse(userActivity, user.getLevel().getName());
     }
 
@@ -80,7 +80,7 @@ public class UserActivityService {
             .sum();
     }
 
-    private void updateScore(User user, UserActivity userActivity) {
+    private void updateLevel(User user, UserActivity userActivity) {
         if (userActivity.getStatus() == ActivityStatus.FINISHED) {
             user.addUserActivity(userActivity);
         }

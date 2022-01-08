@@ -47,13 +47,17 @@ public class UserActivity extends BaseTimeEntity {
 
     // 비지니스 로직
     public UserActivity update(UserActivity requestedUserActivity) {
-        if ((this.status != requestedUserActivity.getStatus())
-            && (requestedUserActivity.getStatus() == ActivityStatus.FINISHED)) {
-            this.user.addUserActivity(requestedUserActivity);
-        }
+        updateLevel(requestedUserActivity);
         this.status = requestedUserActivity.status;
         this.distance = requestedUserActivity.distance;
         return this;
+    }
+
+    private void updateLevel(UserActivity requestedUserActivity) {
+        if ((this.status != requestedUserActivity.getStatus())
+            && (requestedUserActivity.getStatus() == ActivityStatus.FINISHED)) {
+            this.user.levelUp(requestedUserActivity.getActivity().getScore());
+        }
     }
 
 

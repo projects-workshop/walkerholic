@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface UserActivityRepository extends JpaRepository<UserActivity, Integer> {
 
     @Query(value = "SELECT DISTINCT a FROM UserActivity a LEFT JOIN FETCH a.activity LEFT JOIN FETCH a.user u WHERE u.id=:id ORDER BY a.createdAt DESC",
-        countQuery = "SELECT count(DISTINCT a) FROM UserActivity")
+        countQuery = "SELECT count(DISTINCT a) FROM UserActivity a")
     Page<UserActivity> findByUserId(Pageable pageable, Integer id);
 
 }

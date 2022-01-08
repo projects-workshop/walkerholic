@@ -1,117 +1,112 @@
 package com.yunhalee.walkerholic.useractivity.domain;
 
+import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
+import com.yunhalee.walkerholic.user.domain.Role;
+import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import java.util.Arrays;
+import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Rollback(false)
-@SpringBootTest
-@ExtendWith(SpringExtension.class)
-@Transactional
+@RunWith(SpringRunner.class)
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class UserActivityRepositoryTests {
 
     @Autowired
-    UserActivityRepository userActivityRepository;
+    private UserActivityRepository userActivityRepository;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    ActivityRepository activityRepository;
-
-    public static final int USER_ACTIVITY_PER_PAGE = 10;
+    private ActivityRepository activityRepository;
 
     private UserActivity userActivity;
 
+    private Activity activity;
+
+    private User user;
+
+    @BeforeEach
+    void setUp() {
+        user = new User("testFirstName",
+            "TestLastName",
+            "test@example.com",
+            "12345678",
+            Role.USER);
+        userRepository.save(user);
+
+        activity = Activity.builder()
+            .name("testActivity")
+            .score(500)
+            .description("test-activity").build();
+        activityRepository.save(activity);
+
+        userActivity = UserActivity.builder()
+            .user(user)
+            .activity(activity)
+            .status(ActivityStatus.ONGOING).build();
+    }
+
     @Test
+    @DisplayName("주어진 정보대로 사용자 액티비티를 생성한다.")
     public void create_user_activity() {
         //given
-        createSetUp();
+        setUp();
+
         //when
         UserActivity createdUserActivity = userActivityRepository.save(userActivity);
 
         //then
-        checkEqual(createdUserActivity);
+        Assertions.assertAll(
+            () -> assertThat(createdUserActivity.getId()).isNotNull(),
+            () -> assertThat(createdUserActivity.getStatus()).isEqualTo(userActivity.getStatus()),
+            () -> assertThat(createdUserActivity.getUser().getId()).isEqualTo(user.getId()),
+            () -> assertThat(createdUserActivity.getActivity().getId()).isEqualTo(activity.getId())
+        );
     }
 
     @Test
-    public void update_user_activity() {
-        //given
-        createSetUp();
-        UserActivity requestUserActivity = updateSetUp();
-        userActivity.update(requestUserActivity);
-
-        //when
-        UserActivity updatedUserActivity = userActivityRepository.save(userActivity);
-
-        //then
-        assertThat(updatedUserActivity.getId()).isEqualTo(userActivity.getId());
-        checkEqual(updatedUserActivity);
-    }
-
-    @Test
+    @DisplayName("사용자 아이디를 이용하여 사용자 액티비티 목록을 특정 크기만큼 조회한다.")
     public void getByUserId() {
         //given
-        createSetUp();
-        Integer userId = userActivity.getUser().getId();
+        setUp();
+        UserActivity firstUserActivity = UserActivity.builder()
+            .user(user)
+            .activity(activity)
+            .status(ActivityStatus.ONGOING).build();
+        UserActivity secondUserActivity = UserActivity.builder()
+            .user(user)
+            .activity(activity)
+            .status(ActivityStatus.FINISHED).build();
+        userActivityRepository
+            .saveAll(Arrays.asList(userActivity, firstUserActivity, secondUserActivity));
 
         //when
-        Pageable pageable = PageRequest.of(0, USER_ACTIVITY_PER_PAGE);
-        Page<UserActivity> userActivityPage = userActivityRepository.findByUserId(pageable, userId);
-        List<UserActivity> userActivityList = userActivityPage.getContent();
+        Pageable pageable = PageRequest.of(0, 2);
+        List<UserActivity> userActivities = userActivityRepository
+            .findByUserId(pageable, user.getId())
+            .getContent();
 
         //then
-        for (UserActivity userActivity : userActivityList) {
-            assertThat(userActivity.getUser().getId()).isEqualTo(userId);
+        assertThat(userActivities).hasSize(pageable.getPageSize());
+        for (UserActivity userActivity : userActivities) {
+            assertThat(userActivity.getUser().getId()).isEqualTo(user.getId());
         }
     }
-
-    @Test
-    public void deleteById() {
-        //given
-        createSetUp();
-        Integer userActivityId = userActivity.getId();
-
-        //when
-        userActivityRepository.deleteById(userActivityId);
-
-        //then
-        assertThat(userActivityRepository.findById(userActivityId)).isNull();
-    }
-
-    private void createSetUp() {
-        userActivity = UserActivity.builder()
-            .status(ActivityStatus.ONGOING)
-            .user(userRepository.findById(1).get())
-            .activity(activityRepository.findById(1).get()).build();
-    }
-
-    private UserActivity updateSetUp() {
-        return UserActivity.builder()
-            .status(ActivityStatus.FINISHED)
-            .user(userActivity.getUser())
-            .activity(userActivity.getActivity()).build();
-    }
-
-    private void checkEqual(UserActivity changedUserActivity) {
-        assertThat(changedUserActivity.getId()).isNotNull();
-        assertThat(changedUserActivity.getStatus()).isEqualTo(userActivity.getStatus());
-        assertThat(changedUserActivity.getUser().getId()).isEqualTo(userActivity.getUser().getId());
-        assertThat(changedUserActivity.getActivity().getId())
-            .isEqualTo(userActivity.getActivity().getId());
-    }
-
 }

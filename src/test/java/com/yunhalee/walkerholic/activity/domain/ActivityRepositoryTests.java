@@ -1,113 +1,64 @@
 package com.yunhalee.walkerholic.activity.domain;
 
-
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.Rollback;
 
-import java.util.List;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 
+@RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Rollback(false)
-public class ActivityRepositoryTests {
+class ActivityRepositoryTests {
 
     @Autowired
-    ActivityRepository repo;
+    private ActivityRepository repo;
 
     private Activity activity;
 
-    @Test
-    public void createActivity() {
+    @ParameterizedTest
+    @CsvSource({"test1, 50, test-activity", "test3, 100, test-activity-create"})
+    @DisplayName("주어진 정보대로 액티비티를 생성한다.")
+    public void createActivity(String name, int score, String description) {
         //given
-        createSetUp();
+        activity = Activity.builder()
+            .name(name)
+            .score(score)
+            .description(description).build();
 
         //when
         Activity createdActivity = repo.save(activity);
 
         //then
-        checkEqual(createdActivity);
+        Assertions.assertAll(
+            () -> assertThat(createdActivity.getId()).isNotNull(),
+            () -> assertThat(createdActivity.getName()).isEqualTo(activity.getName()),
+            () -> assertThat(createdActivity.getDescription()).isEqualTo(activity.getDescription()),
+            () -> assertThat(createdActivity.getScore()).isEqualTo(activity.getScore()),
+            () -> assertThat(createdActivity.getImageUrl()).isEqualTo(activity.getImageUrl())
+        );
     }
 
-    @Test
-    public void updateActivity() {
+    @ParameterizedTest
+    @ValueSource(ints = {1, 2, 3, 4, 5})
+    @DisplayName("아이디를 이용해서 액티비티를 조회한다.")
+    public void find_activity_with_id(Integer id) {
         //given
-        createSetUp();
-        Activity requestActivity = updateSetUp();
-        activity.update(requestActivity);
-
-        //when
-        Activity updatedActivity = repo.save(activity);
-
-        //then
-        assertThat(activity.getId()).isEqualTo(updatedActivity.getId());
-        checkEqual(updatedActivity);
-    }
-
-    @Test
-    public void getActivityById() {
-        //given
-        createSetUp();
-        Integer id = activity.getId();
 
         //when
         Activity activity = repo.findByActivityId(id);
 
         //then
         assertThat(activity.getId()).isEqualTo(id);
-    }
-
-    @Test
-    public void getAllActivities() {
-        //given
-
-        //when
-        List<Activity> list = repo.findAll();
-
-        //then
-        assertThat(list.size()).isGreaterThan(0);
-    }
-
-    @Test
-    public void deleteActivity() {
-        //given
-        createSetUp();
-        Integer id = activity.getId();
-
-        //when
-        repo.deleteById(id);
-
-        //then
-        assertThat(repo.findById(id)).isNull();
-    }
-
-
-    private void createSetUp() {
-        activity = Activity.builder()
-            .name("Plogging90")
-            .score(100)
-            .description("Picking up trash while jogging for more than 90minutes.").build();
-    }
-
-    private Activity updateSetUp() {
-        return Activity.builder()
-            .name("test")
-            .description("testUpdate")
-            .score(2)
-            .imageUrl("testImageUrl").build();
-    }
-
-    private void checkEqual(Activity changedActivity) {
-        assertThat(changedActivity.getId()).isNotNull();
-        assertThat(changedActivity.getName()).isEqualTo(activity.getName());
-        assertThat(changedActivity.getDescription()).isEqualTo(activity.getDescription());
-        assertThat(changedActivity.getScore()).isEqualTo(activity.getScore());
-        assertThat(changedActivity.getImageUrl()).isEqualTo(activity.getImageUrl());
     }
 
 

@@ -1,117 +1,167 @@
 package com.yunhalee.walkerholic.useractivity.service;
 
+import com.yunhalee.walkerholic.activity.domain.Activity;
+import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import com.yunhalee.walkerholic.user.domain.Level;
 import com.yunhalee.walkerholic.user.domain.Role;
 import com.yunhalee.walkerholic.user.domain.User;
+import com.yunhalee.walkerholic.useractivity.domain.ActivityStatus;
+import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivityRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
-import com.yunhalee.walkerholic.useractivity.dto.UserActivityListResponse;
+import com.yunhalee.walkerholic.useractivity.dto.UserActivityResponses;
 import com.yunhalee.walkerholic.useractivity.dto.UserActivityRequest;
 import com.yunhalee.walkerholic.useractivity.dto.UserActivityResponse;
-import java.util.NoSuchElementException;
-import org.junit.Test;
+import java.util.Arrays;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 @Transactional
-public class UserActivityServiceTests {
+class UserActivityServiceTests {
 
-    @Autowired
-    UserActivityService userActivityService;
+    @InjectMocks
+    private UserActivityService userActivityService;
 
-    @Autowired
-    UserActivityRepository userActivityRepository;
+    @MockBean
+    private UserActivityRepository userActivityRepository;
 
-    @Autowired
-    UserRepository userRepository;
+    @MockBean
+    private ActivityRepository activityRepository;
 
-    private Integer userId;
-    private static final Integer ACTIVITY_ID = 1;
-    private static final boolean FINISHED = false;
+    @MockBean
+    private UserRepository userRepository;
 
-    private UserActivityResponse userActivityResponse;
+    private User user;
+    private Activity activity;
+    private UserActivity userActivity;
 
-    @Test
-    public void create_user_activity() {
+    @BeforeEach
+    void setUp() {
+        user = new User("testFirstName",
+            "TestLastName",
+            "test@example.com",
+            "12345678",
+            Role.USER);
+
+        activity = Activity.builder()
+            .name("testActivity")
+            .score(500)
+            .description("test-activity").build();
+
+        userActivity = UserActivity.builder()
+            .user(user)
+            .activity(activity)
+            .status(ActivityStatus.ONGOING).build();
+    }
+
+    @ParameterizedTest
+    @CsvSource({"false", "false", "true"})
+    @DisplayName("주어진 상태에 따른 새로운 사용자 액티비티를 생성하고 사용자 레벨을 조정한다.")
+    void create_user_activity(boolean finished) {
         //given
-        createUserActivity();
+        UserActivityRequest userActivityRequest = UserActivityRequest.builder()
+            .userId(1)
+            .activityId(1)
+            .finished(finished).build();
 
         //when
+        when(userRepository.findById(anyInt())).thenReturn(java.util.Optional.of(user));
+        when(activityRepository.findById(anyInt())).thenReturn(java.util.Optional.of(activity));
+        UserActivityResponse response = userActivityService.create(userActivityRequest);
 
         //then
-        assertEquals(userActivityResponse.getActivityId(), ACTIVITY_ID);
-        assertEquals(userActivityResponse.isFinished(), FINISHED);
-        assertEquals(userActivityResponse.getLevel(), Level.Starter.getName());
+        assertEquals(response.getActivityId(), activity.getId());
+        assertEquals(response.isFinished(), finished);
+        assertEquals(user.getLevel(), finished ? Level.Silver : Level.Starter);
     }
 
     @Test
-    public void update_user_activity() {
+    @DisplayName("사용자 액티비티 상태가 완료되면 상태를 업데이트 하고 점수에 따라 레벨도 업데이트 한다.")
+    void update_user_activity() {
         //given
-        createUserActivity();
         UserActivityRequest userActivityRequest = UserActivityRequest.builder()
-            .userId(userId)
-            .activityId(ACTIVITY_ID)
+            .userId(1)
+            .activityId(1)
             .finished(true).build();
 
         //when
-        UserActivityResponse updatedResponse = userActivityService
-            .update(userActivityRequest, userActivityResponse.getId());
+        when(userActivityRepository.findById(anyInt()))
+            .thenReturn(java.util.Optional.of(userActivity));
+        when(userRepository.findById(anyInt())).thenReturn(java.util.Optional.of(user));
+        when(activityRepository.findById(anyInt())).thenReturn(java.util.Optional.of(activity));
+        UserActivityResponse response = userActivityService.update(userActivityRequest, 1);
+
         //then
-        assertEquals(updatedResponse.getActivityId(), ACTIVITY_ID);
-        assertEquals(updatedResponse.isFinished(), true);
-        assertEquals(updatedResponse.getLevel(), Level.Bronze.getName());
+        assertEquals(response.isFinished(), true);
+        assertEquals(user.getLevel(), Level.Silver);
     }
 
     @Test
+    @DisplayName("사용자의 사용자액티비티 목록을 조회한다.")
     public void getUserActivitiesByUserId() {
         //given
-        createUserActivity();
+        UserActivity firstUserActivity = UserActivity.builder()
+            .status(ActivityStatus.ONGOING)
+            .user(user)
+            .activity(activity).build();
+        UserActivity secondUserActivity = UserActivity.builder()
+            .status(ActivityStatus.FINISHED)
+            .user(user)
+            .activity(activity).build();
 
         //when
-        UserActivityListResponse userActivities = userActivityService.userActivities(1, userId);
+        Page<UserActivity> userActivityPage = new PageImpl<>(
+            Arrays.asList(firstUserActivity, secondUserActivity));
+        when(userActivityRepository.findByUserId(any(), anyInt())).thenReturn(userActivityPage);
+        UserActivityResponses responses = userActivityService.userActivities(1, 1);
 
         //then
-        assertThat(userActivities.getActivities().size()).isGreaterThan(0);
+        assertThat(responses.getActivities().size()).isEqualTo(2);
 
     }
 
     @Test
+    @DisplayName("사용자 액티비트를 삭제하고 삭제된 액티비티 점수에 따라 사용자 레벨을 수정한다.")
     public void deleteUserActivity() {
         //given
-        createUserActivity();
-        Integer id = userActivityResponse.getId();
+        userActivity = UserActivity.builder()
+            .user(user)
+            .activity(activity)
+            .status(ActivityStatus.FINISHED).build();
+        user.addUserActivity(userActivity);
 
         //when
-        userActivityService.deleteUserActivity(id, userId);
+        when(userRepository.findById(anyInt())).thenReturn(java.util.Optional.of(user));
+        when(userActivityRepository.findById(anyInt()))
+            .thenReturn(java.util.Optional.of(userActivity));
+        userActivityService.deleteUserActivity(1, 1);
 
         //then
-        assertThatThrownBy(() -> userActivityRepository.findById(id).get())
-            .isInstanceOf(NoSuchElementException.class);
-        assertEquals(userRepository.findById(userId).get().getLevel(), Level.Starter);
-    }
-
-
-    void createUserActivity() {
-        User user = new User("testName", "testName", "test@example.com", "12345678", Role.USER);
-        user.setLevel(Level.Starter);
-        userRepository.save(user);
-        userId = user.getId();
-        UserActivityRequest userActivityRequest = UserActivityRequest.builder()
-            .userId(user.getId())
-            .activityId(ACTIVITY_ID)
-            .finished(FINISHED).build();
-
-        userActivityResponse = userActivityService.create(userActivityRequest);
+        verify(userActivityRepository).delete(any());
+        assertEquals(user.getLevel(), Level.Starter);
     }
 }
+

@@ -9,7 +9,7 @@ import lombok.Getter;
 import org.springframework.data.domain.Page;
 
 @Getter
-public class UserActivityListResponse {
+public class UserActivityResponses {
 
     private List<UserActivityResponse> activities;
 
@@ -20,7 +20,7 @@ public class UserActivityListResponse {
     private int score;
 
 
-    public UserActivityListResponse(List<UserActivity> userActivities,
+    public UserActivityResponses(List<UserActivity> userActivities,
         Page<UserActivity> userActivityPage, int score) {
         this.activities = UserActivityResponse.activities(userActivities);
         this.totalPage = userActivityPage.getTotalPages();
