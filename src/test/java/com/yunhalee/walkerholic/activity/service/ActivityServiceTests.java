@@ -146,7 +146,7 @@ class ActivityServiceTests {
         //given
 
         //when
-        when(activityRepository.findById(anyInt())).thenReturn(java.util.Optional.of(activity));
+        when(activityRepository.findByActivityId(anyInt())).thenReturn(activity);
         ActivityDetailResponse response = activityService.activity(id);
 
         //then
