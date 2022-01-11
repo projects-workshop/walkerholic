@@ -82,10 +82,7 @@ class UserActivityServiceTests {
     @DisplayName("주어진 상태에 따른 새로운 사용자 액티비티를 생성하고 사용자 레벨을 조정한다.")
     void create_user_activity(boolean finished) {
         //given
-        UserActivityRequest userActivityRequest = UserActivityRequest.builder()
-            .userId(1)
-            .activityId(1)
-            .finished(finished).build();
+        UserActivityRequest userActivityRequest = userActivityRequest(1, 1, finished);
 
         //when
         when(userRepository.findById(anyInt())).thenReturn(java.util.Optional.of(user));
@@ -102,10 +99,7 @@ class UserActivityServiceTests {
     @DisplayName("사용자 액티비티 상태가 완료되면 상태를 업데이트 하고 점수에 따라 레벨도 업데이트 한다.")
     void update_user_activity() {
         //given
-        UserActivityRequest userActivityRequest = UserActivityRequest.builder()
-            .userId(1)
-            .activityId(1)
-            .finished(true).build();
+        UserActivityRequest userActivityRequest = userActivityRequest(1, 1, true);
 
         //when
         when(userActivityRepository.findById(anyInt()))
@@ -123,14 +117,8 @@ class UserActivityServiceTests {
     @DisplayName("사용자의 사용자액티비티 목록을 조회한다.")
     public void getUserActivitiesByUserId() {
         //given
-        UserActivity firstUserActivity = UserActivity.builder()
-            .status(ActivityStatus.ONGOING)
-            .user(user)
-            .activity(activity).build();
-        UserActivity secondUserActivity = UserActivity.builder()
-            .status(ActivityStatus.FINISHED)
-            .user(user)
-            .activity(activity).build();
+        UserActivity firstUserActivity = userActivity(user, activity, ActivityStatus.ONGOING);
+        UserActivity secondUserActivity = userActivity(user, activity, ActivityStatus.FINISHED);
 
         //when
         Page<UserActivity> userActivityPage = new PageImpl<>(
@@ -147,11 +135,8 @@ class UserActivityServiceTests {
     @DisplayName("사용자 액티비트를 삭제하고 삭제된 액티비티 점수에 따라 사용자 레벨을 수정한다.")
     public void deleteUserActivity() {
         //given
-        userActivity = UserActivity.builder()
-            .user(user)
-            .activity(activity)
-            .status(ActivityStatus.FINISHED).build();
-        user.addUserActivity(userActivity);
+        userActivity = userActivity(user, activity, ActivityStatus.FINISHED);
+        user.updateLevel(userActivity);
 
         //when
         when(userRepository.findById(anyInt())).thenReturn(java.util.Optional.of(user));
@@ -162,6 +147,21 @@ class UserActivityServiceTests {
         //then
         verify(userActivityRepository).delete(any());
         assertEquals(user.getLevel(), Level.Starter);
+    }
+
+    private UserActivity userActivity(User user, Activity activity, ActivityStatus status) {
+        return UserActivity.builder()
+            .user(user)
+            .activity(activity)
+            .status(status).build();
+    }
+
+    private UserActivityRequest userActivityRequest(Integer userId, Integer activityId,
+        boolean finished) {
+        return UserActivityRequest.builder()
+            .userId(userId)
+            .activityId(activityId)
+            .finished(finished).build();
     }
 }
 

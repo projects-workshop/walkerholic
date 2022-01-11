@@ -7,6 +7,7 @@ import com.yunhalee.walkerholic.activity.dto.ActivityDetailResponse;
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import java.io.IOException;
+import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +19,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runner.RunWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
@@ -73,11 +73,7 @@ class ActivityServiceTests {
     @DisplayName("주어진 정보대로 액티비티를 생성한다.")
     public void create_activity() {
         //given
-        ActivityRequest activityRequest = ActivityRequest.builder()
-            .name(NAME)
-            .score(SCORE)
-            .description(DESCRIPTION)
-            .imageUrl(IMAGE_URL).build();
+        ActivityRequest activityRequest = activityRequest(NAME, SCORE, DESCRIPTION, IMAGE_URL);
 
         //when
         when(activityRepository.save(any())).thenReturn(activity);
@@ -99,11 +95,7 @@ class ActivityServiceTests {
     @DisplayName("액티비티를 수정한다.")
     public void update_activity(String name, int score, String description, String imageUrl) {
         //given
-        ActivityRequest activityRequest = ActivityRequest.builder()
-            .name(name)
-            .score(score)
-            .description(description)
-            .imageUrl(imageUrl).build();
+        ActivityRequest activityRequest = activityRequest(name, score, description, imageUrl);
 
         //when
         when(activityRepository.findById(anyInt())).thenReturn(java.util.Optional.of(activity));
@@ -126,7 +118,7 @@ class ActivityServiceTests {
         MultipartFile multipartFile = new MockMultipartFile("uploaded-file",
             fileName,
             "text/plain",
-            "This is the file content" .getBytes());
+            "This is the file content".getBytes());
 
         //when
         when(s3ImageUploader.uploadFile(any(), any()))
@@ -164,6 +156,7 @@ class ActivityServiceTests {
         //given
 
         //when
+        when(activityRepository.findAll()).thenReturn(Arrays.asList(activity));
         List<ActivityResponse> activityResponses = activityService.activities();
 
         //then
@@ -183,5 +176,15 @@ class ActivityServiceTests {
         //then
         verify(activityRepository).delete(any());
         verify(s3ImageUploader).deleteFile(any());
+    }
+
+
+    private ActivityRequest activityRequest(String name, int score, String description,
+        String imageUrl) {
+        return ActivityRequest.builder()
+            .name(name)
+            .score(score)
+            .description(description)
+            .imageUrl(imageUrl).build();
     }
 }

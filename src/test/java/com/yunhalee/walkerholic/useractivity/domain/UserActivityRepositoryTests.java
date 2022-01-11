@@ -86,16 +86,7 @@ public class UserActivityRepositoryTests {
     public void getByUserId() {
         //given
         setUp();
-        UserActivity firstUserActivity = UserActivity.builder()
-            .user(user)
-            .activity(activity)
-            .status(ActivityStatus.ONGOING).build();
-        UserActivity secondUserActivity = UserActivity.builder()
-            .user(user)
-            .activity(activity)
-            .status(ActivityStatus.FINISHED).build();
-        userActivityRepository
-            .saveAll(Arrays.asList(userActivity, firstUserActivity, secondUserActivity));
+        saveAll();
 
         //when
         Pageable pageable = PageRequest.of(0, 2);
@@ -109,4 +100,20 @@ public class UserActivityRepositoryTests {
             assertThat(userActivity.getUser().getId()).isEqualTo(user.getId());
         }
     }
+
+    private void saveAll() {
+        UserActivity firstUserActivity = userActivity(user, activity, ActivityStatus.ONGOING);
+        UserActivity secondUserActivity = userActivity(user, activity, ActivityStatus.FINISHED);
+        userActivityRepository
+            .saveAll(Arrays.asList(userActivity, firstUserActivity, secondUserActivity));
+    }
+
+    private UserActivity userActivity(User user, Activity activity, ActivityStatus status) {
+        return UserActivity.builder()
+            .user(user)
+            .activity(activity)
+            .status(status).build();
+    }
+
+
 }

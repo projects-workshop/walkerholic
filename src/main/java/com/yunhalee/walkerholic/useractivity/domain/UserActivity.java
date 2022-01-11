@@ -5,7 +5,6 @@ import com.yunhalee.walkerholic.common.domain.BaseTimeEntity;
 import com.yunhalee.walkerholic.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import javax.persistence.*;
@@ -13,7 +12,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "user_activity")
 @Getter
-@NoArgsConstructor
 public class UserActivity extends BaseTimeEntity {
 
     @Id
@@ -54,11 +52,17 @@ public class UserActivity extends BaseTimeEntity {
     }
 
     private void updateLevel(UserActivity requestedUserActivity) {
-        if ((this.status != requestedUserActivity.getStatus())
-            && (requestedUserActivity.getStatus() == ActivityStatus.FINISHED)) {
-            this.user.levelUp(requestedUserActivity.getActivity().getScore());
+        if (this.status != requestedUserActivity.getStatus()) {
+            this.user.updateLevel(requestedUserActivity);
         }
     }
 
+    public boolean finished() {
+        return this.status == ActivityStatus.FINISHED;
+    }
 
+    @Transient
+    public Integer getScore() {
+        return this.activity.getScore();
+    }
 }

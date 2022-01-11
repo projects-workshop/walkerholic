@@ -2,7 +2,6 @@ package com.yunhalee.walkerholic.useractivity.service;
 
 import com.yunhalee.walkerholic.activity.exception.ActivityNotFoundException;
 import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
-import com.yunhalee.walkerholic.useractivity.domain.ActivityStatus;
 import com.yunhalee.walkerholic.useractivity.dto.UserActivityResponses;
 import com.yunhalee.walkerholic.useractivity.dto.UserActivityRequest;
 import com.yunhalee.walkerholic.activity.domain.Activity;
@@ -81,8 +80,8 @@ public class UserActivityService {
     }
 
     private void updateLevel(User user, UserActivity userActivity) {
-        if (userActivity.getStatus() == ActivityStatus.FINISHED) {
-            user.addUserActivity(userActivity);
+        if (userActivity.finished()) {
+            user.updateLevel(userActivity);
         }
     }
 

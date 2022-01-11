@@ -105,21 +105,24 @@ public class User {
     public Integer getScore() {
         Integer score = 0;
         for (UserActivity activity : this.activities) {
-            if (activity.getStatus() == ActivityStatus.FINISHED) {
-                score += activity.getActivity().getScore();
+            if (activity.finished()) {
+                score += addScore(activity, score);
             }
         }
         return score;
     }
 
-    //    비지니스 로직
-    public void addUserActivity(UserActivity userActivity) {
-        levelUp(userActivity.getActivity().getScore());
+    private Integer addScore(UserActivity userActivity, Integer score) {
+        if (userActivity.finished()) {
+            score += userActivity.getScore();
+        }
+        return score;
     }
 
-    public void levelUp(int userActivityScore) {
+    //    비지니스 로직
+    public void updateLevel(UserActivity userActivity) {
         Integer score = this.getScore();
-        score += userActivityScore;
+        score += addScore(userActivity, score);
         changeLevel(score);
     }
 
@@ -134,4 +137,5 @@ public class User {
             .findFirst()
             .orElse(this.level);
     }
+
 }
