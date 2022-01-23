@@ -42,10 +42,7 @@ public class ReviewService {
         Review review = reviewRepository.findById(id)
             .orElseThrow(() -> new ReviewNotFoundException(
                 "Review not found with id : " + id));
-        User user = user(reviewRequest.getUserId());
-        Product product = product(reviewRequest.getProductId());
-        Review requestedReview = reviewRequest.toReview(user, product);
-        review.update(requestedReview);
+        review.update(reviewRequest.getRating(), reviewRequest.getComment());
         return new ReviewResponse(review);
     }
 

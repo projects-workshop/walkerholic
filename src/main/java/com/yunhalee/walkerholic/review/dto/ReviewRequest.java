@@ -19,13 +19,17 @@ public class ReviewRequest {
     public ReviewRequest() {
     }
 
+    public ReviewRequest(Integer rating, String comment) {
+        this.rating = rating;
+        this.comment = comment;
+    }
+
     public ReviewRequest(Integer rating, String comment, Integer productId, Integer userId) {
         this.rating = rating;
         this.comment = comment;
         this.productId = productId;
         this.userId = userId;
     }
-
 
     public Review toReview(User user, Product product) {
         return Review.builder()
