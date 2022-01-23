@@ -1,10 +1,15 @@
 package com.yunhalee.walkerholic.review.domain;
 
+import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.common.domain.BaseTimeEntity;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.product.domain.Product;
+import com.yunhalee.walkerholic.useractivity.domain.ActivityStatus;
+import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -13,7 +18,6 @@ import javax.persistence.*;
 @Table(name = "review")
 @Getter
 @Setter
-@NoArgsConstructor
 public class Review extends BaseTimeEntity {
 
     @Id
@@ -21,6 +25,7 @@ public class Review extends BaseTimeEntity {
     @Column(name = "review_id")
     private Integer id;
 
+    @Column(nullable = false)
     private Integer rating;
 
     private String comment;
@@ -33,13 +38,23 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    //    비지니스 로직
-    public static Review createReview(Integer rating, String comment, User user, Product product) {
-        Review review = new Review();
-        review.setRating(rating);
-        review.setComment(comment);
-        review.setUser(user);
-        review.setProduct(product);
-        return review;
+    @Builder
+    public Review(@NonNull Integer rating, String comment, @NonNull User user, @NonNull Product product){
+        this.rating = rating;
+        this.comment = comment;
+        this.user = user;
+        this.product = product;
+    }
+
+    public void update(Review requestedReview){
+        updateRating(requestedReview.getRating());
+        this.comment = requestedReview.getComment();
+    }
+
+    private void updateRating(Integer updatedRating){
+        if (this.rating != updatedRating) {
+            product.editReview(this.rating, updatedRating);
+            this.rating = updatedRating;
+        }
     }
 }

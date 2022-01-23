@@ -1,29 +1,35 @@
 package com.yunhalee.walkerholic.review.controller;
 
 
-import com.yunhalee.walkerholic.review.dto.ReviewCreateDTO;
-import com.yunhalee.walkerholic.review.dto.ReviewDTO;
+import com.yunhalee.walkerholic.review.dto.ReviewRequest;
+import com.yunhalee.walkerholic.review.dto.ReviewResponse;
 import com.yunhalee.walkerholic.review.service.ReviewService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
+@RequestMapping("/reviews")
 public class ReviewController {
 
-    private final ReviewService reviewService;
+    private ReviewService reviewService;
 
-    @PostMapping("/review/save")
-    public ResponseEntity<?> saveReview(@RequestBody ReviewCreateDTO reviewCreateDTO) {
-        return new ResponseEntity<ReviewDTO>(reviewService.saveReview(reviewCreateDTO),
-            HttpStatus.OK);
+    public ReviewController(ReviewService reviewService) {
+        this.reviewService = reviewService;
     }
 
-    @DeleteMapping("/review/delete/{id}")
-    public ResponseEntity<?> deleteReview(@PathVariable("id") String id) {
-        Integer reviewId = Integer.parseInt(id);
-        return new ResponseEntity<Integer>(reviewService.deleteReview(reviewId), HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<ReviewResponse> create(@Valid @RequestBody ReviewRequest reviewRequest) {
+        return ResponseEntity.ok(reviewService.create(reviewRequest));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ReviewResponse> update(@PathVariable("id") Integer id, @Valid @RequestBody ReviewRequest reviewRequest) {
+        return ResponseEntity.ok(reviewService.update(reviewRequest, id));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteReview(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(reviewService.deleteReview(id));
     }
 }

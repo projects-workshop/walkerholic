@@ -1,48 +1,63 @@
 package com.yunhalee.walkerholic.review.service;
 
-import com.yunhalee.walkerholic.review.dto.ReviewCreateDTO;
-import com.yunhalee.walkerholic.review.dto.ReviewDTO;
+import com.yunhalee.walkerholic.product.exception.ProductNotFoundException;
+import com.yunhalee.walkerholic.review.dto.ReviewRequest;
+import com.yunhalee.walkerholic.review.dto.ReviewResponse;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.review.domain.Review;
+import com.yunhalee.walkerholic.review.exception.ReviewNotFoundException;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.product.domain.ProductRepository;
 import com.yunhalee.walkerholic.review.domain.ReviewRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
-import lombok.RequiredArgsConstructor;
+import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class ReviewService {
 
-    private final ReviewRepository reviewRepository;
-    private final ProductRepository productRepository;
-    private final UserRepository userRepository;
+    private ReviewRepository reviewRepository;
+    private ProductRepository productRepository;
+    private UserRepository userRepository;
 
-    public ReviewDTO saveReview(ReviewCreateDTO reviewCreateDTO) {
-        if (reviewCreateDTO.getId() != null) {
-            Review existingReview = reviewRepository.findByReviewId(reviewCreateDTO.getId());
-            if (existingReview.getRating() != reviewCreateDTO.getRating()) {
-                Product product = productRepository.findById(existingReview.getProduct().getId())
-                    .get();
-                product.editReview(existingReview.getRating(), reviewCreateDTO.getRating());
-                productRepository.save(product);
-                existingReview.setRating(reviewCreateDTO.getRating());
-            }
-            existingReview.setComment(reviewCreateDTO.getComment());
-            reviewRepository.save(existingReview);
-            return new ReviewDTO(existingReview);
-        } else {
-            User user = userRepository.findById(reviewCreateDTO.getUserId()).get();
-            Product product = productRepository.findById(reviewCreateDTO.getProductId()).get();
-            Review review = Review
-                .createReview(reviewCreateDTO.getRating(), reviewCreateDTO.getComment(), user,
-                    product);
-            product.addReview(review);
-            productRepository.save(product);
-            reviewRepository.save(review);
-            return new ReviewDTO(review);
-        }
+    public ReviewService(ReviewRepository reviewRepository,
+        ProductRepository productRepository,
+        UserRepository userRepository) {
+        this.reviewRepository = reviewRepository;
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
+    }
+
+
+    public ReviewResponse create(ReviewRequest reviewRequest) {
+        User user = user(reviewRequest.getUserId());
+        Product product = product(reviewRequest.getProductId());
+        Review review = reviewRequest.toReview(user, product);
+        product.addReview(review);
+        reviewRepository.save(review);
+        return new ReviewResponse(review);
+    }
+
+    public ReviewResponse update(ReviewRequest reviewRequest, Integer id) {
+        Review review = reviewRepository.findById(id)
+            .orElseThrow(() -> new ReviewNotFoundException(
+                "Review not found with id : " + id));
+        User user = user(reviewRequest.getUserId());
+        Product product = product(reviewRequest.getProductId());
+        Review requestedReview = reviewRequest.toReview(user, product);
+        review.update(requestedReview);
+        return new ReviewResponse(review);
+    }
+
+    private User user(Integer id) {
+        return userRepository.findById(id)
+            .orElseThrow(() -> new UserNotFoundException(
+                "User not found with id : " + id));
+    }
+
+    private Product product(Integer id) {
+        return productRepository.findById(id)
+            .orElseThrow(() -> new ProductNotFoundException("Product not found with id : " + id));
     }
 
     public Integer deleteReview(Integer id) {
@@ -52,4 +67,5 @@ public class ReviewService {
         reviewRepository.deleteById(id);
         return id;
     }
+
 }

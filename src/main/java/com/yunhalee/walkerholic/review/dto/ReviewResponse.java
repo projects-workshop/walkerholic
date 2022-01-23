@@ -2,13 +2,11 @@ package com.yunhalee.walkerholic.review.dto;
 
 import com.yunhalee.walkerholic.review.domain.Review;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-public class ReviewDTO {
+public class ReviewResponse {
 
     private Integer id;
 
@@ -28,7 +26,7 @@ public class ReviewDTO {
 
     private LocalDateTime updatedAt;
 
-    public ReviewDTO(Review review) {
+    public ReviewResponse(Review review) {
         this.id = review.getId();
         this.rating = review.getRating();
         this.comment = review.getComment();
