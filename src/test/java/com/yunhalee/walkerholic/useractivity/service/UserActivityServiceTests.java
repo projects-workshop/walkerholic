@@ -5,6 +5,7 @@ import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import com.yunhalee.walkerholic.user.domain.Level;
 import com.yunhalee.walkerholic.user.domain.Role;
 import com.yunhalee.walkerholic.user.domain.User;
+import com.yunhalee.walkerholic.useractivity.BaseUserActivityTests;
 import com.yunhalee.walkerholic.useractivity.domain.ActivityStatus;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivityRepository;
@@ -40,7 +41,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
 @Transactional
-class UserActivityServiceTests {
+class UserActivityServiceTests extends BaseUserActivityTests {
 
     @InjectMocks
     private UserActivityService userActivityService;
@@ -147,13 +148,6 @@ class UserActivityServiceTests {
         //then
         verify(userActivityRepository).delete(any());
         assertEquals(user.getLevel(), Level.Starter);
-    }
-
-    private UserActivity userActivity(User user, Activity activity, ActivityStatus status) {
-        return UserActivity.builder()
-            .user(user)
-            .activity(activity)
-            .status(status).build();
     }
 
     private UserActivityRequest userActivityRequest(Integer userId, Integer activityId,

@@ -5,10 +5,11 @@ import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import com.yunhalee.walkerholic.user.domain.Role;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
+import com.yunhalee.walkerholic.useractivity.BaseUserActivityTests;
 import java.util.Arrays;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class UserActivityRepositoryTests {
+public class UserActivityRepositoryTests extends BaseUserActivityTests {
 
     @Autowired
     private UserActivityRepository userActivityRepository;
@@ -42,8 +43,8 @@ public class UserActivityRepositoryTests {
 
     private User user;
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         user = new User("testFirstName",
             "TestLastName",
             "test@example.com",
@@ -67,7 +68,6 @@ public class UserActivityRepositoryTests {
     @DisplayName("주어진 정보대로 사용자 액티비티를 생성한다.")
     public void create_user_activity() {
         //given
-        setUp();
 
         //when
         UserActivity createdUserActivity = userActivityRepository.save(userActivity);
@@ -85,7 +85,6 @@ public class UserActivityRepositoryTests {
     @DisplayName("사용자 아이디를 이용하여 사용자 액티비티 목록을 특정 크기만큼 조회한다.")
     public void getByUserId() {
         //given
-        setUp();
         saveAll();
 
         //when
@@ -107,13 +106,5 @@ public class UserActivityRepositoryTests {
         userActivityRepository
             .saveAll(Arrays.asList(userActivity, firstUserActivity, secondUserActivity));
     }
-
-    private UserActivity userActivity(User user, Activity activity, ActivityStatus status) {
-        return UserActivity.builder()
-            .user(user)
-            .activity(activity)
-            .status(status).build();
-    }
-
 
 }
