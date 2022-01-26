@@ -3,9 +3,12 @@ package com.yunhalee.walkerholic.review.dto;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.review.domain.Review;
 import com.yunhalee.walkerholic.user.domain.User;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReviewRequest {
 
     private Integer rating;
@@ -15,9 +18,6 @@ public class ReviewRequest {
     private Integer productId;
 
     private Integer userId;
-
-    public ReviewRequest() {
-    }
 
     public ReviewRequest(Integer rating, String comment) {
         this.rating = rating;

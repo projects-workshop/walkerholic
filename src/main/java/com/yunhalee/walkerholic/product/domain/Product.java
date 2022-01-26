@@ -56,24 +56,40 @@ public class Product extends BaseTimeEntity {
     @OrderBy("createdAt DESC")
     private Set<Review> reviews = new HashSet<>();
 
+    public Product(String name, String brand, Category category, Integer stock, Float price) {
+        this.name = name;
+        this.brand = brand;
+        this.category = category;
+        this.stock = stock;
+        this.price = price;
+    }
+
     public void addReview(Review review) {
         reviews.add(review);
         review.setProduct(this);
 
         Integer sum = reviews.stream().mapToInt(reviews -> reviews.getRating()).sum();
-        this.average = (float) (Math.round(sum / (long) reviews.size() * 100) / 100.0);
+        changeAverage(sum, reviews.size());
     }
 
     public void editReview(Integer preRating, Integer postRating) {
         Integer sum = reviews.stream().mapToInt(reviews -> reviews.getRating()).sum();
         sum = (sum - preRating + postRating);
-        this.average = (float) (Math.round(sum / (long) reviews.size() * 100) / 100.0);
+        changeAverage(sum, reviews.size());
     }
 
     public void deleteReview(Integer rating) {
         Integer sum = reviews.stream().mapToInt(reviews -> reviews.getRating()).sum();
         sum -= rating;
-        this.average = (float) (Math.round(sum / (long) (reviews.size() - 1) * 100) / 100.0);
+        changeAverage(sum, reviews.size() - 1);
+    }
+
+    private void changeAverage(Integer sum, int size) {
+        if (size == 0) {
+            this.average = 0f;
+            return;
+        }
+        this.average = (float) (Math.round(sum / (long) (size) * 100) / 100.0);
     }
 
     //비지니스 로직
