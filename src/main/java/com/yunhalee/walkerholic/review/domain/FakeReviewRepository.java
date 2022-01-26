@@ -99,6 +99,9 @@ public class FakeReviewRepository implements ReviewRepository {
 
     @Override
     public Optional<Review> findById(Integer integer) {
+        if (integer > 10) {
+            return Optional.empty();
+        }
         return Optional.of(review);
     }
 

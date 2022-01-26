@@ -1,14 +1,11 @@
 package com.yunhalee.walkerholic.review.domain;
 
-import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.common.domain.BaseTimeEntity;
+import com.yunhalee.walkerholic.review.exception.InvalidRatingException;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.product.domain.Product;
-import com.yunhalee.walkerholic.useractivity.domain.ActivityStatus;
-import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 
@@ -41,6 +38,7 @@ public class Review extends BaseTimeEntity {
     @Builder
     public Review(@NonNull Integer rating, String comment, @NonNull User user,
         @NonNull Product product) {
+        checkRating(rating);
         this.rating = rating;
         this.comment = comment;
         this.user = user;
@@ -54,8 +52,18 @@ public class Review extends BaseTimeEntity {
 
     private void updateRating(Integer requestedRating) {
         if (this.rating != requestedRating) {
+            checkRating(requestedRating);
             product.editReview(this.rating, requestedRating);
             this.rating = requestedRating;
+        }
+    }
+
+    private void checkRating(Integer rating) {
+        if (rating < 0) {
+            throw new InvalidRatingException("Rating should be greater than or equal to 0.");
+        }
+        if (5 < rating) {
+            throw new InvalidRatingException("Rating should be lesser than or equal to 5.");
         }
     }
 }
