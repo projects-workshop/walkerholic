@@ -1,5 +1,6 @@
 package com.yunhalee.walkerholic.activity.service;
 
+import com.yunhalee.walkerholic.MockBeans;
 import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.activity.dto.ActivityRequest;
 import com.yunhalee.walkerholic.activity.dto.ActivityResponse;
@@ -17,6 +18,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,7 +43,7 @@ import static org.junit.Assert.*;
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
 @Transactional
-class ActivityServiceTests {
+class ActivityServiceTests extends MockBeans {
 
     private static final String UPLOAD_DIR = "activity-uploads/";
     private static final String NAME = "testActivity";
@@ -49,14 +51,8 @@ class ActivityServiceTests {
     private static final String DESCRIPTION = "This is test Activity.";
     private static final String IMAGE_URL = "http://testActivity/imageURL";
 
-    @Autowired
+    @InjectMocks
     private ActivityService activityService;
-
-    @MockBean
-    private ActivityRepository activityRepository;
-
-    @MockBean
-    private S3ImageUploader s3ImageUploader;
 
     private Activity activity;
 

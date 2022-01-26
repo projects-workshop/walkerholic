@@ -2,10 +2,10 @@ package com.yunhalee.walkerholic.useractivity.domain;
 
 import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
-import com.yunhalee.walkerholic.user.domain.Role;
+import com.yunhalee.walkerholic.activity.domain.ActivityTest;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
-import com.yunhalee.walkerholic.useractivity.BaseUserActivityTests;
+import com.yunhalee.walkerholic.user.domain.UserTest;
 import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class UserActivityRepositoryTests extends BaseUserActivityTests {
+public class UserActivityRepositoryTests {
 
     @Autowired
     private UserActivityRepository userActivityRepository;
@@ -40,23 +40,12 @@ public class UserActivityRepositoryTests extends BaseUserActivityTests {
     private UserActivity userActivity;
 
     private Activity activity;
-
     private User user;
 
     @Before
     public void setUp() {
-        user = new User("testFirstName",
-            "TestLastName",
-            "test@example.com",
-            "12345678",
-            Role.USER);
-        userRepository.save(user);
-
-        activity = Activity.builder()
-            .name("testActivity")
-            .score(500)
-            .description("test-activity").build();
-        activityRepository.save(activity);
+        user = userRepository.save(UserTest.USER);
+        activity = activityRepository.save(ActivityTest.ACTIVITY);
 
         userActivity = UserActivity.builder()
             .user(user)
@@ -101,8 +90,10 @@ public class UserActivityRepositoryTests extends BaseUserActivityTests {
     }
 
     private void saveAll() {
-        UserActivity firstUserActivity = userActivity(user, activity, ActivityStatus.ONGOING);
-        UserActivity secondUserActivity = userActivity(user, activity, ActivityStatus.FINISHED);
+        UserActivity firstUserActivity = UserActivityTest
+            .userActivity(user, activity, ActivityStatus.ONGOING);
+        UserActivity secondUserActivity = UserActivityTest
+            .userActivity(user, activity, ActivityStatus.FINISHED);
         userActivityRepository
             .saveAll(Arrays.asList(userActivity, firstUserActivity, secondUserActivity));
     }

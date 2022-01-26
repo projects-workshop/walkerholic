@@ -1,15 +1,16 @@
 package com.yunhalee.walkerholic.useractivity.service;
 
+import com.yunhalee.walkerholic.MockBeans;
 import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import com.yunhalee.walkerholic.user.domain.Level;
 import com.yunhalee.walkerholic.user.domain.Role;
 import com.yunhalee.walkerholic.user.domain.User;
-import com.yunhalee.walkerholic.useractivity.BaseUserActivityTests;
 import com.yunhalee.walkerholic.useractivity.domain.ActivityStatus;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivityRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
+import com.yunhalee.walkerholic.useractivity.domain.UserActivityTest;
 import com.yunhalee.walkerholic.useractivity.dto.UserActivityResponses;
 import com.yunhalee.walkerholic.useractivity.dto.UserActivityRequest;
 import com.yunhalee.walkerholic.useractivity.dto.UserActivityResponse;
@@ -41,19 +42,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
 @Transactional
-class UserActivityServiceTests extends BaseUserActivityTests {
+class UserActivityServiceTests extends MockBeans {
 
     @InjectMocks
     private UserActivityService userActivityService;
-
-    @MockBean
-    private UserActivityRepository userActivityRepository;
-
-    @MockBean
-    private ActivityRepository activityRepository;
-
-    @MockBean
-    private UserRepository userRepository;
 
     private User user;
     private Activity activity;
@@ -118,8 +110,10 @@ class UserActivityServiceTests extends BaseUserActivityTests {
     @DisplayName("사용자의 사용자액티비티 목록을 조회한다.")
     public void getUserActivitiesByUserId() {
         //given
-        UserActivity firstUserActivity = userActivity(user, activity, ActivityStatus.ONGOING);
-        UserActivity secondUserActivity = userActivity(user, activity, ActivityStatus.FINISHED);
+        UserActivity firstUserActivity = UserActivityTest
+            .userActivity(user, activity, ActivityStatus.ONGOING);
+        UserActivity secondUserActivity = UserActivityTest
+            .userActivity(user, activity, ActivityStatus.FINISHED);
 
         //when
         Page<UserActivity> userActivityPage = new PageImpl<>(
@@ -136,7 +130,7 @@ class UserActivityServiceTests extends BaseUserActivityTests {
     @DisplayName("사용자 액티비트를 삭제하고 삭제된 액티비티 점수에 따라 사용자 레벨을 수정한다.")
     public void deleteUserActivity() {
         //given
-        userActivity = userActivity(user, activity, ActivityStatus.FINISHED);
+        userActivity = UserActivityTest.userActivity(user, activity, ActivityStatus.FINISHED);
         user.updateLevel(userActivity);
 
         //when
@@ -157,5 +151,6 @@ class UserActivityServiceTests extends BaseUserActivityTests {
             .activityId(activityId)
             .finished(finished).build();
     }
+
 }
 
