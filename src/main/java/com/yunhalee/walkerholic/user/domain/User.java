@@ -1,13 +1,11 @@
 package com.yunhalee.walkerholic.user.domain;
 
-import com.yunhalee.walkerholic.useractivity.domain.ActivityStatus;
 import com.yunhalee.walkerholic.follow.domain.Follow;
 import com.yunhalee.walkerholic.likepost.domain.LikePost;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.post.domain.Post;
 import com.yunhalee.walkerholic.product.domain.Product;
-import com.yunhalee.walkerholic.review.domain.Review;
 import com.yunhalee.walkerholic.security.oauth.domain.ProviderType;
 import java.util.Arrays;
 import lombok.Getter;
@@ -55,6 +53,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Level level = Level.Starter;
 
+    private Integer score = 0;
+
     private String description;
 
     private boolean isSeller;
@@ -62,9 +62,6 @@ public class User {
     @Column(name = "provider_type")
     @Enumerated(EnumType.STRING)
     private ProviderType providerType;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserActivity> activities = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Post> posts = new HashSet<>();
@@ -84,7 +81,6 @@ public class User {
     @OneToMany(mappedBy = "toUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Follow> followers = new HashSet<>();
 
-
     public User(String firstname, String lastname, String email, String password, Role role) {
         this.firstname = firstname;
         this.lastname = lastname;
@@ -98,41 +94,37 @@ public class User {
         return this.firstname + this.lastname;
     }
 
-    @Transient
-    public Integer getScore() {
-        Integer score = 0;
-        for (UserActivity activity : this.activities) {
-            if (activity.finished()) {
-                score += addScore(activity, score);
-            }
-        }
-        return score;
-    }
-
-    private Integer addScore(UserActivity userActivity, Integer score) {
-        if (userActivity.finished()) {
-            score += userActivity.getScore();
-        }
+    public Integer getScore(){
         return score;
     }
 
     //    비지니스 로직
     public void updateLevel(UserActivity userActivity) {
-        Integer score = this.getScore();
-        score += addScore(userActivity, score);
-        changeLevel(score);
+        addScore(userActivity);
+        changeLevel();
     }
 
-    public void deleteUserActivity() {
-        Integer score = this.getScore();
-        changeLevel(score);
+    private void addScore(UserActivity userActivity) {
+        if (userActivity.finished()) {
+            score += userActivity.getScore();
+        }
     }
 
-    private void changeLevel(int score) {
+    private void changeLevel() {
         this.level = Arrays.stream(Level.values())
             .filter(level -> level.getMin() <= score && level.getMax() >= score)
             .findFirst()
             .orElse(this.level);
     }
+
+    public void deleteUserActivity(UserActivity userActivity) {
+        minusScore(userActivity);
+        changeLevel();
+    }
+
+    private void minusScore(UserActivity userActivity){
+        score -= userActivity.getScore();
+    }
+
 
 }

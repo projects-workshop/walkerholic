@@ -67,9 +67,9 @@ public class UserActivityService {
 
     public String deleteUserActivity(Integer id, Integer userId) {
         UserActivity userActivity = userActivity(id);
-        userActivityRepository.delete(userActivity);
         User user = user(userId);
-        user.deleteUserActivity();
+        user.deleteUserActivity(userActivity);
+        userActivityRepository.delete(userActivity);
         return user.getLevel().getName();
     }
 

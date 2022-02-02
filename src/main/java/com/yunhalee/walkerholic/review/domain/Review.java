@@ -7,14 +7,12 @@ import com.yunhalee.walkerholic.product.domain.Product;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "review")
 @Getter
-@Setter
 public class Review extends BaseTimeEntity {
 
     @Id
