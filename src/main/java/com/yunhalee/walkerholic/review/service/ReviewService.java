@@ -12,8 +12,10 @@ import com.yunhalee.walkerholic.review.domain.ReviewRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class ReviewService {
 
     private ReviewRepository reviewRepository;
@@ -27,7 +29,6 @@ public class ReviewService {
         this.productRepository = productRepository;
         this.userRepository = userRepository;
     }
-
 
     public ReviewResponse create(ReviewRequest reviewRequest) {
         User user = user(reviewRequest.getUserId());

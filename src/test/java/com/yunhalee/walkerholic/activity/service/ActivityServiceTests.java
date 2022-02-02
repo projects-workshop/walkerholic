@@ -1,14 +1,14 @@
 package com.yunhalee.walkerholic.activity.service;
 
-import com.yunhalee.walkerholic.MockBeans;
 import com.yunhalee.walkerholic.activity.domain.Activity;
+import com.yunhalee.walkerholic.activity.domain.FakeActivityRepository;
 import com.yunhalee.walkerholic.activity.dto.ActivityRequest;
 import com.yunhalee.walkerholic.activity.dto.ActivityResponse;
 import com.yunhalee.walkerholic.activity.dto.ActivityDetailResponse;
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
+import com.yunhalee.walkerholic.common.service.FakeS3ImageUploader;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import java.io.IOException;
-import java.util.Arrays;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,21 +18,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 
 import java.util.List;
 
@@ -40,10 +31,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
-@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 @Transactional
-class ActivityServiceTests extends MockBeans {
+class ActivityServiceTests {
 
     private static final String UPLOAD_DIR = "activity-uploads/";
     private static final String NAME = "testActivity";
@@ -51,8 +41,12 @@ class ActivityServiceTests extends MockBeans {
     private static final String DESCRIPTION = "This is test Activity.";
     private static final String IMAGE_URL = "http://testActivity/imageURL";
 
-    @InjectMocks
-    private ActivityService activityService;
+    private ActivityRepository activityRepository = new FakeActivityRepository();
+
+    private S3ImageUploader s3ImageUploader = new FakeS3ImageUploader();
+
+    private ActivityService activityService = new ActivityService(activityRepository,
+        s3ImageUploader);
 
     private Activity activity;
 
@@ -72,11 +66,9 @@ class ActivityServiceTests extends MockBeans {
         ActivityRequest activityRequest = activityRequest(NAME, SCORE, DESCRIPTION, IMAGE_URL);
 
         //when
-        when(activityRepository.save(any())).thenReturn(activity);
         ActivityResponse response = activityService.create(activityRequest);
 
         //then
-        verify(activityRepository).save(any());
         Assertions.assertAll(
             () -> assertThat(response.getName()).isEqualTo(NAME),
             () -> assertThat(response.getDescription()).isEqualTo(DESCRIPTION),
@@ -94,7 +86,6 @@ class ActivityServiceTests extends MockBeans {
         ActivityRequest activityRequest = activityRequest(name, score, description, imageUrl);
 
         //when
-        when(activityRepository.findById(anyInt())).thenReturn(java.util.Optional.of(activity));
         ActivityResponse response = activityService.update(1, activityRequest);
 
         //then
@@ -117,8 +108,6 @@ class ActivityServiceTests extends MockBeans {
             "This is the file content".getBytes());
 
         //when
-        when(s3ImageUploader.uploadFile(any(), any()))
-            .thenReturn(UPLOAD_DIR + "/" + fileName);
         String imageUrl = activityService.uploadImage(multipartFile);
 
         //then
@@ -133,7 +122,6 @@ class ActivityServiceTests extends MockBeans {
         //given
 
         //when
-        when(activityRepository.findByActivityId(anyInt())).thenReturn(activity);
         ActivityDetailResponse response = activityService.activity(id);
 
         //then
@@ -152,7 +140,6 @@ class ActivityServiceTests extends MockBeans {
         //given
 
         //when
-        when(activityRepository.findAll()).thenReturn(Arrays.asList(activity));
         List<ActivityResponse> activityResponses = activityService.activities();
 
         //then
@@ -166,12 +153,10 @@ class ActivityServiceTests extends MockBeans {
         //given
 
         //when
-        when(activityRepository.findById(anyInt())).thenReturn(java.util.Optional.of(activity));
         activityService.delete(id);
 
         //then
-        verify(activityRepository).delete(any());
-        verify(s3ImageUploader).deleteFile(any());
+        s3ImageUploader.listFolder("").forEach(file -> assertThat(file).isNotEqualTo(IMAGE_URL));
     }
 
 

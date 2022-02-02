@@ -47,7 +47,7 @@ class ReviewServiceTest {
         //given
         ReviewRequest request = new ReviewRequest(rating, comment, productId, userId);
 
-//       //when
+       //when
         ReviewResponse response = reviewService.create(request);
         Product product = fakeProductRepository.findById(productId).get();
 
