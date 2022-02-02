@@ -9,7 +9,7 @@ import org.springframework.data.domain.Sort;
 
 public class FakeUserRepository implements UserRepository {
 
-    private User user = new User("testFirstName",
+    public static User USER = new User("testFirstName",
         "TestLastName",
         "test@example.com",
         "12345678",
@@ -100,7 +100,7 @@ public class FakeUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findById(Integer integer) {
-        return Optional.of(user);
+        return Optional.of(USER);
     }
 
     @Override

@@ -10,7 +10,7 @@ import org.springframework.data.domain.Sort;
 
 public class FakeActivityRepository implements ActivityRepository {
 
-    private Activity activity = Activity.builder()
+    public static Activity ACTIVITY = Activity.builder()
         .name("testActivity")
         .score(1)
         .description("This is test Activity.")
@@ -21,12 +21,12 @@ public class FakeActivityRepository implements ActivityRepository {
 
     @Override
     public Activity findByActivityId(Integer id) {
-        return activity;
+        return ACTIVITY;
     }
 
     @Override
     public List<Activity> findAll() {
-        return Arrays.asList(activity);
+        return Arrays.asList(ACTIVITY);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class FakeActivityRepository implements ActivityRepository {
 
     @Override
     public <S extends Activity> S save(S s) {
-        return (S) activity;
+        return (S) ACTIVITY;
     }
 
     @Override
@@ -86,7 +86,7 @@ public class FakeActivityRepository implements ActivityRepository {
 
     @Override
     public Optional<Activity> findById(Integer integer) {
-        return Optional.of(activity);
+        return Optional.of(ACTIVITY);
     }
 
     @Override
