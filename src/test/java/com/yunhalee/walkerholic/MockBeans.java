@@ -2,6 +2,8 @@ package com.yunhalee.walkerholic;
 
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
+import com.yunhalee.walkerholic.product.domain.ProductRepository;
+import com.yunhalee.walkerholic.review.domain.ReviewRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivityRepository;
 import org.junit.runner.RunWith;
@@ -21,6 +23,12 @@ public class MockBeans {
 
     @MockBean
     protected UserRepository userRepository;
+
+    @MockBean
+    protected ProductRepository productRepository;
+
+    @MockBean
+    protected ReviewRepository reviewRepository;
 
     @MockBean
     protected S3ImageUploader s3ImageUploader;

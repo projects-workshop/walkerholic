@@ -48,10 +48,14 @@ public class Review extends BaseTimeEntity {
         this.comment = requestedComment;
     }
 
+    public void changeProduct(Product product) {
+        this.product = product;
+    }
+
     private void updateRating(Integer requestedRating) {
         if (this.rating != requestedRating) {
             checkRating(requestedRating);
-            product.editReview(this.rating, requestedRating);
+            this.product.editReview(this.rating, requestedRating);
             this.rating = requestedRating;
         }
     }

@@ -66,7 +66,7 @@ public class Product extends BaseTimeEntity {
 
     public void addReview(Review review) {
         reviews.add(review);
-        review.setProduct(this);
+        review.changeProduct(this);
 
         Integer sum = reviews.stream().mapToInt(reviews -> reviews.getRating()).sum();
         changeAverage(sum, reviews.size());

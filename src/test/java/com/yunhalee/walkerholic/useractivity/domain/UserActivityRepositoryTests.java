@@ -1,5 +1,6 @@
 package com.yunhalee.walkerholic.useractivity.domain;
 
+import com.yunhalee.walkerholic.util.CommonMethod;
 import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import com.yunhalee.walkerholic.activity.domain.ActivityTest;
@@ -90,9 +91,9 @@ public class UserActivityRepositoryTests {
     }
 
     private void saveAll() {
-        UserActivity firstUserActivity = UserActivityTest
+        UserActivity firstUserActivity = CommonMethod
             .userActivity(user, activity, ActivityStatus.ONGOING);
-        UserActivity secondUserActivity = UserActivityTest
+        UserActivity secondUserActivity = CommonMethod
             .userActivity(user, activity, ActivityStatus.FINISHED);
         userActivityRepository
             .saveAll(Arrays.asList(userActivity, firstUserActivity, secondUserActivity));
