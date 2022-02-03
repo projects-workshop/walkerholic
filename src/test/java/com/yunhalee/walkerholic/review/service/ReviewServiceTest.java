@@ -17,6 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -77,9 +78,9 @@ class ReviewServiceTest extends MockBeans {
         ReviewResponse response = reviewService.create(request);
 
         //then
-        assertEquals(response.getRating(), rating);
-        assertEquals(response.getComment(), comment);
-        assertEquals(product.getReviews().size(), expectedCount);
+        assertThat(response.getRating()).isEqualTo(rating);
+        assertThat(response.getComment()).isEqualTo(comment);
+        assertThat(product.getReviews().size()).isEqualTo(expectedCount);
     }
 
     @ParameterizedTest
@@ -101,8 +102,9 @@ class ReviewServiceTest extends MockBeans {
     @ParameterizedTest
     @CsvSource({"4, test, 1, 4", "1, testReview, 4, 1", "5, testComment, 2, 5"})
     @DisplayName("주어진 정보로 리뷰를 업데이트 한다.")
-    void update_review(Integer rating, String comment, Integer reviewId, Integer expected) {
+    void update_review(Integer rating, String comment, Integer reviewId, Float expected) {
         //given
+        product.addReview(review);
         ReviewRequest request = new ReviewRequest(rating, comment);
 
         //when
@@ -110,9 +112,9 @@ class ReviewServiceTest extends MockBeans {
         ReviewResponse response = reviewService.update(request, reviewId);
 
         //then
-        assertEquals(response.getRating(), rating);
-        assertEquals(response.getComment(), comment);
-        assertEquals(review.getRating(), expected);
+        assertThat(response.getRating()).isEqualTo(rating);
+        assertThat(response.getComment()).isEqualTo(comment);
+        assertThat(product.getAverage()).isEqualTo(expected);
     }
 
     @ParameterizedTest
@@ -136,19 +138,22 @@ class ReviewServiceTest extends MockBeans {
     }
 
     @ParameterizedTest
-    @CsvSource({"4", "1", "5"})
+    @CsvSource({"4, 0", "1, 0", "5, 0"})
     @DisplayName("리뷰를 삭제한다.")
-    void delete_review(Integer reviewId) {
+    void delete_review(Integer reviewId, Float expected) {
         //when
+        product.addReview(review);
+
         when(reviewRepository.findById(anyInt())).thenReturn(java.util.Optional.of(review));
         reviewService.deleteReview(reviewId);
 
         //then
         verify(reviewRepository).deleteById(anyInt());
+        assertThat(product.getAverage()).isEqualTo(expected);
     }
 
     @ParameterizedTest
-    @CsvSource({"23", "22", "44"})
+    @ValueSource(ints = {23, 22, 44})
     @DisplayName("존재하지 않는 아이디로는 리뷰를 삭제하지 않는다.")
     void delete_review_with_invalid_id(Integer reviewId) {
         assertThatThrownBy(() -> reviewService.deleteReview(reviewId))
