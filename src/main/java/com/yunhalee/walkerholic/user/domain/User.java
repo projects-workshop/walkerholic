@@ -8,6 +8,7 @@ import com.yunhalee.walkerholic.post.domain.Post;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.security.oauth.domain.ProviderType;
 import java.util.Arrays;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -126,5 +127,29 @@ public class User {
         score -= userActivity.getScore();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User user = (User) o;
+        return isSeller == user.isSeller && Objects.equals(id, user.id) && Objects
+            .equals(firstname, user.firstname) && Objects.equals(lastname, user.lastname)
+            && Objects.equals(email, user.email) && Objects
+            .equals(password, user.password) && role == user.role && Objects
+            .equals(imageUrl, user.imageUrl) && Objects.equals(phoneNumber, user.phoneNumber)
+            && level == user.level && Objects.equals(score, user.score) && Objects
+            .equals(description, user.description) && providerType == user.providerType;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects
+            .hash(id, firstname, lastname, email, password, role, imageUrl, phoneNumber, level,
+                score,
+                description, isSeller, providerType);
+    }
 }

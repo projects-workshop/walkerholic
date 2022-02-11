@@ -2,6 +2,7 @@ package com.yunhalee.walkerholic.follow.domain;
 
 
 import com.yunhalee.walkerholic.user.domain.User;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,5 +37,21 @@ public class Follow {
         return follow;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Follow follow = (Follow) o;
+        return Objects.equals(id, follow.id) && Objects
+            .equals(fromUser, follow.fromUser) && Objects.equals(toUser, follow.toUser);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, fromUser, toUser);
+    }
 }
