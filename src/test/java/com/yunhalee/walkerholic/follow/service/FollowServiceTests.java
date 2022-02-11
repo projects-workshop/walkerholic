@@ -6,6 +6,7 @@ import com.yunhalee.walkerholic.follow.dto.FollowResponse;
 import com.yunhalee.walkerholic.follow.domain.Follow;
 import com.yunhalee.walkerholic.follow.dto.FollowsResponse;
 import com.yunhalee.walkerholic.follow.exception.CannotFollowOneselfException;
+import com.yunhalee.walkerholic.follow.exception.FollowAlreadyExistException;
 import com.yunhalee.walkerholic.user.domain.UserTest;
 import java.util.ArrayList;
 import org.junit.jupiter.api.DisplayName;
@@ -33,6 +34,7 @@ import static org.mockito.Mockito.when;
 class FollowServiceTests extends MockBeans {
 
     private static final String CANNOT_FOLLOW_ONESELF = "User cannot follow oneself.";
+    private static final String FOLLOW_ALREADY_EXIST = "already followed user";
 
     @InjectMocks
     private FollowService followService;
@@ -65,6 +67,18 @@ class FollowServiceTests extends MockBeans {
             .hasMessage(CANNOT_FOLLOW_ONESELF);
     }
 
+    @DisplayName("이미 팔로우 한 사람은 팔로우 할 수 없다.")
+    @Test
+    void follow_user_already_followed_is_invalid() {
+        //given
+        when(followRepository.existsByFromUserIdAndToUserId(anyInt(), anyInt())).thenReturn(true);
+
+        assertThatThrownBy(() -> followService.follow(1, 3))
+            .isInstanceOf(FollowAlreadyExistException.class)
+            .hasMessageContaining(FOLLOW_ALREADY_EXIST);
+    }
+
+
     @Test
     public void unfollow() {
         //when
@@ -86,8 +100,7 @@ class FollowServiceTests extends MockBeans {
         List<FollowResponse> followings = response.getFollowings();
 
         //then
-        assertThat(followings.get(0).getUser().getFullname())
-            .isEqualTo(UserTest.SELLER.getFullname());
+        assertThat(followings.get(0).getUser().getFullname()).isEqualTo(UserTest.SELLER.getFullname());
     }
 
     @Test
@@ -101,8 +114,7 @@ class FollowServiceTests extends MockBeans {
         List<FollowResponse> followings = followService.getFollowings(1);
 
         //then
-        assertThat(followings.get(0).getUser().getFullname())
-            .isEqualTo(UserTest.SELLER.getFullname());
+        assertThat(followings.get(0).getUser().getFullname()).isEqualTo(UserTest.SELLER.getFullname());
     }
 
     @Test

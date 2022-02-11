@@ -5,6 +5,7 @@ import com.yunhalee.walkerholic.follow.domain.Follow;
 import com.yunhalee.walkerholic.follow.dto.FollowUserResponse;
 import com.yunhalee.walkerholic.follow.dto.FollowsResponse;
 import com.yunhalee.walkerholic.follow.exception.CannotFollowOneselfException;
+import com.yunhalee.walkerholic.follow.exception.FollowAlreadyExistException;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.follow.domain.FollowRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
@@ -38,6 +39,9 @@ public class FollowService {
     private void checkFollowValidate(Integer fromId, Integer toId) {
         if (fromId.equals(toId)) {
             throw new CannotFollowOneselfException("User cannot follow oneself.");
+        }
+        if (followRepository.existsByFromUserIdAndToUserId(fromId, toId)) {
+            throw new FollowAlreadyExistException("user : " + fromId + "already followed user : " + toId);
         }
     }
 
