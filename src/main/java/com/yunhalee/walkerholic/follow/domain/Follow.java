@@ -4,16 +4,12 @@ package com.yunhalee.walkerholic.follow.domain;
 import com.yunhalee.walkerholic.user.domain.User;
 import java.util.Objects;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "follow")
 @Getter
-@Setter
-@NoArgsConstructor
 public class Follow {
 
     @Id
@@ -29,12 +25,17 @@ public class Follow {
     @JoinColumn(name = "to_user_id")
     private User toUser;
 
+    public Follow() {
+    }
+
+    public Follow(User fromUser, User toUser) {
+        this.fromUser = fromUser;
+        this.toUser = toUser;
+    }
+
     //비지니스 로직
     public static Follow follow(User fromUser, User toUser) {
-        Follow follow = new Follow();
-        follow.setFromUser(fromUser);
-        follow.setToUser(toUser);
-        return follow;
+        return new Follow(fromUser, toUser);
     }
 
     @Override

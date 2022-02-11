@@ -1,109 +1,101 @@
 package com.yunhalee.walkerholic.follow.service;
 
+import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.follow.domain.FollowTest;
 import com.yunhalee.walkerholic.follow.dto.FollowResponse;
 import com.yunhalee.walkerholic.follow.domain.Follow;
-import com.yunhalee.walkerholic.follow.domain.FollowRepository;
 import com.yunhalee.walkerholic.follow.dto.FollowsResponse;
-import org.junit.Test;
+import com.yunhalee.walkerholic.user.domain.UserTest;
+import java.util.ArrayList;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 @Transactional
-public class FollowServiceTests {
+class FollowServiceTests extends MockBeans {
 
-    @Autowired
-    FollowService followService;
-
-    @Autowired
-    FollowRepository followRepository;
+    @InjectMocks
+    private FollowService followService;
 
     @Test
-    public void follow() {
+    void follow() {
         //given
         Integer fromUserId = 1;
         Integer toUserId = 2;
+        when(userRepository.findById(fromUserId)).thenReturn(java.util.Optional.of(UserTest.USER));
+        when(userRepository.findById(toUserId)).thenReturn(java.util.Optional.of(UserTest.SELLER));
 
         //when
-        FollowResponse followResponse = followService.follow(fromUserId, toUserId);
+        FollowResponse response = followService.follow(fromUserId, toUserId);
 
         //then
-        assertNotNull(followResponse.getId());
-        assertEquals(fromUserId,
-            followRepository.findById(followResponse.getId()).get().getFromUser().getId());
-        assertEquals(toUserId,
-            followRepository.findById(followResponse.getId()).get().getToUser().getId());
+        assertThat(response.getUser().getFullname()).isEqualTo(UserTest.SELLER.getFullname());
     }
 
     @Test
     public void unfollow() {
-        //given
-        Integer followId = 1;
-
         //when
-        followService.unfollow(followId);
+        followService.unfollow(1);
 
         //then
-        assertNull(followRepository.findById(followId));
+        verify(followRepository).deleteById(anyInt());
     }
 
     @Test
-    public void getFollowByUserId() {
+    public void find_follows_by_user_id() {
         //given
-        Integer id = 1;
+        List<Follow> follows = new ArrayList<>();
+        follows.add(FollowTest.FOLLOW);
+        when(followRepository.findAllByFromUserId(anyInt())).thenReturn(follows);
 
         //when
-        FollowsResponse response = followService.getFollows(id);
-        List<FollowResponse> followers = response.getFollowers();
+        FollowsResponse response = followService.getFollows(1);
         List<FollowResponse> followings = response.getFollowings();
 
         //then
-        for (FollowResponse follower : followers) {
-            Follow follow = followRepository.findById(follower.getId()).get();
-            assertEquals(follow.getToUser().getId(), id);
-        }
-        for (FollowResponse following : followings) {
-            Follow follow = followRepository.findById(following.getId()).get();
-            assertEquals(follow.getFromUser().getId(), id);
-        }
+        assertThat(followings.get(0).getUser().getFullname()).isEqualTo(UserTest.SELLER.getFullname());
     }
 
     @Test
-    public void getFollowings() {
+    public void find_followings_by_user_id() {
         //given
-        Integer id = 1;
+        List<Follow> follows = new ArrayList<>();
+        follows.add(FollowTest.FOLLOW);
+        when(followRepository.findAllByFromUserId(anyInt())).thenReturn(follows);
 
         //when
-        List<FollowResponse> followings = followService.getFollowings(id);
+        List<FollowResponse> followings = followService.getFollowings(1);
 
         //then
-        for (FollowResponse following : followings) {
-            Follow follow = followRepository.findById(following.getId()).get();
-            assertEquals(follow.getFromUser().getId(), id);
-        }
+        assertThat(followings.get(0).getUser().getFullname()).isEqualTo(UserTest.SELLER.getFullname());
     }
 
     @Test
-    public void getFollowers() {
+    public void find_followers_by_user_id() {
         //given
-        Integer id = 1;
+        List<Follow> follows = new ArrayList<>();
+        follows.add(FollowTest.FOLLOW);
+        when(followRepository.findAllByToUserId(anyInt())).thenReturn(follows);
 
         //when
-        List<FollowResponse> followers = followService.getFollowers(id);
+        List<FollowResponse> followers = followService.getFollowers(1);
 
         //then
-        for (FollowResponse follower : followers) {
-            Follow follow = followRepository.findById(follower.getId()).get();
-            assertEquals(follow.getToUser().getId(), id);
-        }
+        assertThat(followers.get(0).getUser().getFullname()).isEqualTo(UserTest.USER.getFullname());
     }
 }

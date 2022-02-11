@@ -2,6 +2,7 @@ package com.yunhalee.walkerholic.follow.service;
 
 import com.yunhalee.walkerholic.follow.dto.FollowResponse;
 import com.yunhalee.walkerholic.follow.domain.Follow;
+import com.yunhalee.walkerholic.follow.dto.FollowUserResponse;
 import com.yunhalee.walkerholic.follow.dto.FollowsResponse;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.follow.domain.FollowRepository;
@@ -16,18 +17,23 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class FollowService {
 
-    private final FollowRepository followRepository;
-    private final UserRepository userRepository;
+    private FollowRepository followRepository;
+    private UserRepository userRepository;
+
+    public FollowService(FollowRepository followRepository,
+        UserRepository userRepository) {
+        this.followRepository = followRepository;
+        this.userRepository = userRepository;
+    }
 
     public FollowResponse follow(Integer fromId, Integer toId) {
         User fromUser = user(fromId);
         User toUser = user(toId);
         Follow follow = Follow.follow(fromUser, toUser);
         followRepository.save(follow);
-        return FollowResponse.of(follow.getId(), follow.getToUser());
+        return FollowResponse.of(follow.getId(), FollowUserResponse.of(follow.getToUser()));
     }
 
     private User user(Integer id) {
@@ -42,22 +48,26 @@ public class FollowService {
 
     public List<FollowResponse> getFollowers(Integer id) {
         return followRepository.findAllByToUserId(id).stream()
-            .map(follow -> FollowResponse.of(follow.getId(), follow.getFromUser()))
+            .map(follow -> FollowResponse
+                .of(follow.getId(), FollowUserResponse.of(follow.getFromUser())))
             .collect(Collectors.toList());
     }
 
     public List<FollowResponse> getFollowings(Integer id) {
         return followRepository.findAllByFromUserId(id).stream()
-            .map(follow -> FollowResponse.of(follow.getId(), follow.getToUser()))
+            .map(follow -> FollowResponse
+                .of(follow.getId(), FollowUserResponse.of(follow.getToUser())))
             .collect(Collectors.toList());
     }
 
     public FollowsResponse getFollows(Integer id) {
         List<FollowResponse> followers = followRepository.findAllByToUserId(id).stream()
-            .map(follow -> FollowResponse.of(follow.getId(), follow.getFromUser()))
+            .map(follow -> FollowResponse
+                .of(follow.getId(), FollowUserResponse.of(follow.getFromUser())))
             .collect(Collectors.toList());
         List<FollowResponse> followings = followRepository.findAllByFromUserId(id).stream()
-            .map(follow -> FollowResponse.of(follow.getId(), follow.getToUser()))
+            .map(follow -> FollowResponse
+                .of(follow.getId(), FollowUserResponse.of(follow.getToUser())))
             .collect(Collectors.toList());
         return FollowsResponse.of(followers, followings);
     }
