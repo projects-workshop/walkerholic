@@ -47,28 +47,30 @@ public class FollowService {
     }
 
     public List<FollowResponse> getFollowers(Integer id) {
+        return followersResponses(id);
+    }
+
+    public List<FollowResponse> getFollowings(Integer id) {
+        return followingsResponses(id);
+    }
+
+    public FollowsResponse getFollows(Integer id) {
+        List<FollowResponse> followers = followersResponses(id);
+        List<FollowResponse> followings = followingsResponses(id);
+        return FollowsResponse.of(followers, followings);
+    }
+
+    private List<FollowResponse> followersResponses(Integer id) {
         return followRepository.findAllByToUserId(id).stream()
             .map(follow -> FollowResponse
                 .of(follow.getId(), FollowUserResponse.of(follow.getFromUser())))
             .collect(Collectors.toList());
     }
 
-    public List<FollowResponse> getFollowings(Integer id) {
+    private List<FollowResponse> followingsResponses(Integer id) {
         return followRepository.findAllByFromUserId(id).stream()
             .map(follow -> FollowResponse
                 .of(follow.getId(), FollowUserResponse.of(follow.getToUser())))
             .collect(Collectors.toList());
-    }
-
-    public FollowsResponse getFollows(Integer id) {
-        List<FollowResponse> followers = followRepository.findAllByToUserId(id).stream()
-            .map(follow -> FollowResponse
-                .of(follow.getId(), FollowUserResponse.of(follow.getFromUser())))
-            .collect(Collectors.toList());
-        List<FollowResponse> followings = followRepository.findAllByFromUserId(id).stream()
-            .map(follow -> FollowResponse
-                .of(follow.getId(), FollowUserResponse.of(follow.getToUser())))
-            .collect(Collectors.toList());
-        return FollowsResponse.of(followers, followings);
     }
 }
