@@ -21,14 +21,14 @@ public class FollowController {
     }
 
     @PostMapping("/follows")
-    public FollowResponse follow(@RequestParam("fromId") Integer fromId, @RequestParam("toId") Integer toId) {
-        return followService.follow(fromId, toId);
+    public ResponseEntity<FollowResponse> follow(@RequestParam("fromId") Integer fromId, @RequestParam("toId") Integer toId) {
+        return ResponseEntity.ok(followService.follow(fromId, toId));
     }
 
     @DeleteMapping("/follows/{id}")
-    public String unfollow(@PathVariable("id") String id) {
-        Integer followId = Integer.parseInt(id);
-        return followService.unfollow(followId);
+    public ResponseEntity unfollow(@PathVariable("id") Integer id) {
+        followService.unfollow(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/users/{id}/followers")
