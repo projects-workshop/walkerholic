@@ -17,6 +17,10 @@ public class FollowResponse {
         this.user = new followUser(user);
     }
 
+    public static FollowResponse of(Integer id, User user) {
+        return new FollowResponse(id, user);
+    }
+
     @Getter
     static class followUser {
 

@@ -6,6 +6,7 @@ import com.yunhalee.walkerholic.follow.dto.FollowsResponse;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.follow.domain.FollowRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -55,19 +56,12 @@ public class FollowService {
     }
 
     public FollowsResponse getFollows(Integer id) {
-        List<Follow> followers = followRepository.findAllByToUserId(id);
-        List<Follow> followings = followRepository.findAllByFromUserId(id);
-        List<FollowResponse> followerDTOs = new ArrayList<>();
-        followers.forEach(
-            follow -> followerDTOs.add(new FollowResponse(follow.getId(), follow.getFromUser())));
-        List<FollowResponse> followingDTOS = new ArrayList<>();
-        followings.forEach(
-            follow -> followingDTOS.add(new FollowResponse(follow.getId(), follow.getToUser())));
-
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("followers", followerDTOs);
-        map.put("followings", followingDTOS);
-
-        return map;
+        List<FollowResponse> followers = followRepository.findAllByToUserId(id).stream()
+            .map(follow -> FollowResponse.of(follow.getId(), follow.getFromUser()))
+            .collect(Collectors.toList());
+        List<FollowResponse> followings = followRepository.findAllByFromUserId(id).stream()
+            .map(follow -> FollowResponse.of(follow.getId(), follow.getToUser()))
+            .collect(Collectors.toList());
+        return FollowsResponse.of(followers, followings);
     }
 }
