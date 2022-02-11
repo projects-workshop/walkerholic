@@ -5,8 +5,10 @@ import com.yunhalee.walkerholic.follow.domain.FollowTest;
 import com.yunhalee.walkerholic.follow.dto.FollowResponse;
 import com.yunhalee.walkerholic.follow.domain.Follow;
 import com.yunhalee.walkerholic.follow.dto.FollowsResponse;
+import com.yunhalee.walkerholic.follow.exception.CannotFollowOneselfException;
 import com.yunhalee.walkerholic.user.domain.UserTest;
 import java.util.ArrayList;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,9 +32,12 @@ import static org.mockito.Mockito.when;
 @Transactional
 class FollowServiceTests extends MockBeans {
 
+    private static final String CANNOT_FOLLOW_ONESELF = "User cannot follow oneself.";
+
     @InjectMocks
     private FollowService followService;
 
+    @DisplayName("사용자가 다른 사용자를 팔로우한다.")
     @Test
     void follow() {
         //given
@@ -45,6 +51,18 @@ class FollowServiceTests extends MockBeans {
 
         //then
         assertThat(response.getUser().getFullname()).isEqualTo(UserTest.SELLER.getFullname());
+    }
+
+    @DisplayName("사용자는 자기자신을 팔로우 할 수 없다.")
+    @Test
+    void follow_oneself_is_invalid() {
+        //given
+        Integer fromUserId = 1;
+        Integer toUserId = 1;
+
+        assertThatThrownBy(() -> followService.follow(fromUserId, toUserId))
+            .isInstanceOf(CannotFollowOneselfException.class)
+            .hasMessage(CANNOT_FOLLOW_ONESELF);
     }
 
     @Test
@@ -68,7 +86,8 @@ class FollowServiceTests extends MockBeans {
         List<FollowResponse> followings = response.getFollowings();
 
         //then
-        assertThat(followings.get(0).getUser().getFullname()).isEqualTo(UserTest.SELLER.getFullname());
+        assertThat(followings.get(0).getUser().getFullname())
+            .isEqualTo(UserTest.SELLER.getFullname());
     }
 
     @Test
@@ -82,7 +101,8 @@ class FollowServiceTests extends MockBeans {
         List<FollowResponse> followings = followService.getFollowings(1);
 
         //then
-        assertThat(followings.get(0).getUser().getFullname()).isEqualTo(UserTest.SELLER.getFullname());
+        assertThat(followings.get(0).getUser().getFullname())
+            .isEqualTo(UserTest.SELLER.getFullname());
     }
 
     @Test

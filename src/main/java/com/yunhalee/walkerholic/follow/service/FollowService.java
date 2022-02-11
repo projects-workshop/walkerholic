@@ -4,16 +4,14 @@ import com.yunhalee.walkerholic.follow.dto.FollowResponse;
 import com.yunhalee.walkerholic.follow.domain.Follow;
 import com.yunhalee.walkerholic.follow.dto.FollowUserResponse;
 import com.yunhalee.walkerholic.follow.dto.FollowsResponse;
+import com.yunhalee.walkerholic.follow.exception.CannotFollowOneselfException;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.follow.domain.FollowRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -29,11 +27,18 @@ public class FollowService {
     }
 
     public FollowResponse follow(Integer fromId, Integer toId) {
+        checkFollowValidate(fromId, toId);
         User fromUser = user(fromId);
         User toUser = user(toId);
         Follow follow = Follow.follow(fromUser, toUser);
         followRepository.save(follow);
         return FollowResponse.of(follow.getId(), FollowUserResponse.of(follow.getToUser()));
+    }
+
+    private void checkFollowValidate(Integer fromId, Integer toId) {
+        if (fromId.equals(toId)) {
+            throw new CannotFollowOneselfException("User cannot follow oneself.");
+        }
     }
 
     private User user(Integer id) {
