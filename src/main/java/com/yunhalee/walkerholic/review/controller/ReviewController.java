@@ -30,7 +30,7 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteReview(@PathVariable("id") Integer id) {
+    public ResponseEntity<Integer> deleteReview(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(reviewService.deleteReview(id));
     }
 }

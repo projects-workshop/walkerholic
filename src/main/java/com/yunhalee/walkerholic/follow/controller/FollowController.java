@@ -1,8 +1,8 @@
 package com.yunhalee.walkerholic.follow.controller;
 
-import com.yunhalee.walkerholic.follow.dto.FollowDTO;
+import com.yunhalee.walkerholic.follow.dto.FollowResponse;
+import com.yunhalee.walkerholic.follow.dto.FollowsResponse;
 import com.yunhalee.walkerholic.follow.service.FollowService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,44 +11,42 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
+@RequestMapping("/follows")
 public class FollowController {
 
-    private final FollowService followService;
+    private FollowService followService;
 
-    @PostMapping("/follow/{fromId}/{toId}")
-    public FollowDTO follow(@PathVariable("fromId") String fromId,
-        @PathVariable("toId") String toId) {
-        Integer fromUser = Integer.parseInt(fromId);
-        Integer toUser = Integer.parseInt(toId);
-        return followService.follow(fromUser, toUser);
+    public FollowController(FollowService followService) {
+        this.followService = followService;
     }
 
-    @DeleteMapping("/unfollow/{id}")
+    @PostMapping("/follows")
+    public FollowResponse follow(@RequestParam("fromId") Integer fromId, @RequestParam("toId") Integer toId) {
+        return followService.follow(fromId, toId);
+    }
+
+    @DeleteMapping("/follows/{id}")
     public String unfollow(@PathVariable("id") String id) {
         Integer followId = Integer.parseInt(id);
         return followService.unfollow(followId);
     }
 
-    @GetMapping("/followers/{id}")
-    public ResponseEntity<?> getFollowers(@PathVariable("id") String id) {
+    @GetMapping("/users/{id}/followers")
+    public ResponseEntity<List<FollowResponse>> getFollowers(@PathVariable("id") String id) {
         Integer followId = Integer.parseInt(id);
-        return new ResponseEntity<List<FollowDTO>>(followService.getFollowers(followId),
-            HttpStatus.OK);
+        return ResponseEntity.ok(followService.getFollowers(followId));
     }
 
-    @GetMapping("/followings/{id}")
-    public ResponseEntity<?> getFollowings(@PathVariable("id") String id) {
+    @GetMapping("/users/{id}/followings")
+    public ResponseEntity<List<FollowResponse>> getFollowings(@PathVariable("id") String id) {
         Integer followId = Integer.parseInt(id);
-        return new ResponseEntity<List<FollowDTO>>(followService.getFollowings(followId),
-            HttpStatus.OK);
+        return ResponseEntity.ok(followService.getFollowings(followId));
     }
 
     @GetMapping("/follows/{id}")
-    public ResponseEntity<?> getFollows(@PathVariable("id") String id) {
+    public ResponseEntity<FollowsResponse> getFollows(@PathVariable("id") String id) {
         System.out.println(id);
         Integer userId = Integer.parseInt(id);
-        return new ResponseEntity<HashMap<String, Object>>(followService.getFollows(userId),
-            HttpStatus.OK);
+        return ResponseEntity.ok(followService.getFollows(userId));
     }
 }

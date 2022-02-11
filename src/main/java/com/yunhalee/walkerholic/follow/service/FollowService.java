@@ -1,7 +1,8 @@
 package com.yunhalee.walkerholic.follow.service;
 
-import com.yunhalee.walkerholic.follow.dto.FollowDTO;
+import com.yunhalee.walkerholic.follow.dto.FollowResponse;
 import com.yunhalee.walkerholic.follow.domain.Follow;
+import com.yunhalee.walkerholic.follow.dto.FollowsResponse;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.follow.domain.FollowRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
@@ -19,7 +20,7 @@ public class FollowService {
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
 
-    public FollowDTO follow(Integer fromId, Integer toId) {
+    public FollowResponse follow(Integer fromId, Integer toId) {
         User fromUser = userRepository.findById(fromId).get();
         User toUser = userRepository.findById(toId).get();
 
@@ -27,9 +28,9 @@ public class FollowService {
 
         followRepository.save(follow);
 
-        FollowDTO followDTO = new FollowDTO(follow.getId(), follow.getToUser());
+        FollowResponse followResponse = new FollowResponse(follow.getId(), follow.getToUser());
 
-        return followDTO;
+        return followResponse;
     }
 
     public String unfollow(Integer id) {
@@ -37,31 +38,31 @@ public class FollowService {
         return "Unfollowed User Successfully.";
     }
 
-    public List<FollowDTO> getFollowers(Integer id) {
+    public List<FollowResponse> getFollowers(Integer id) {
         List<Follow> follows = followRepository.findAllByToUserId(id);
-        List<FollowDTO> followDTOS = new ArrayList<>();
+        List<FollowResponse> followDTOS = new ArrayList<>();
         follows
-            .forEach(follow -> followDTOS.add(new FollowDTO(follow.getId(), follow.getFromUser())));
+            .forEach(follow -> followDTOS.add(new FollowResponse(follow.getId(), follow.getFromUser())));
         return followDTOS;
     }
 
-    public List<FollowDTO> getFollowings(Integer id) {
+    public List<FollowResponse> getFollowings(Integer id) {
         List<Follow> follows = followRepository.findAllByFromUserId(id);
-        List<FollowDTO> followDTOS = new ArrayList<>();
+        List<FollowResponse> followDTOS = new ArrayList<>();
         follows
-            .forEach(follow -> followDTOS.add(new FollowDTO(follow.getId(), follow.getToUser())));
+            .forEach(follow -> followDTOS.add(new FollowResponse(follow.getId(), follow.getToUser())));
         return followDTOS;
     }
 
-    public HashMap<String, Object> getFollows(Integer id) {
+    public FollowsResponse getFollows(Integer id) {
         List<Follow> followers = followRepository.findAllByToUserId(id);
         List<Follow> followings = followRepository.findAllByFromUserId(id);
-        List<FollowDTO> followerDTOs = new ArrayList<>();
+        List<FollowResponse> followerDTOs = new ArrayList<>();
         followers.forEach(
-            follow -> followerDTOs.add(new FollowDTO(follow.getId(), follow.getFromUser())));
-        List<FollowDTO> followingDTOS = new ArrayList<>();
+            follow -> followerDTOs.add(new FollowResponse(follow.getId(), follow.getFromUser())));
+        List<FollowResponse> followingDTOS = new ArrayList<>();
         followings.forEach(
-            follow -> followingDTOS.add(new FollowDTO(follow.getId(), follow.getToUser())));
+            follow -> followingDTOS.add(new FollowResponse(follow.getId(), follow.getToUser())));
 
         HashMap<String, Object> map = new HashMap<>();
         map.put("followers", followerDTOs);

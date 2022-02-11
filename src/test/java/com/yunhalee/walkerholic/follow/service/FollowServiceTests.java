@@ -1,9 +1,9 @@
 package com.yunhalee.walkerholic.follow.service;
 
-import com.yunhalee.walkerholic.follow.dto.FollowDTO;
+import com.yunhalee.walkerholic.follow.dto.FollowResponse;
 import com.yunhalee.walkerholic.follow.domain.Follow;
 import com.yunhalee.walkerholic.follow.domain.FollowRepository;
-import com.yunhalee.walkerholic.follow.service.FollowService;
+import com.yunhalee.walkerholic.follow.dto.FollowsResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,14 +34,14 @@ public class FollowServiceTests {
         Integer toUserId = 2;
 
         //when
-        FollowDTO followDTO = followService.follow(fromUserId, toUserId);
+        FollowResponse followResponse = followService.follow(fromUserId, toUserId);
 
         //then
-        assertNotNull(followDTO.getId());
+        assertNotNull(followResponse.getId());
         assertEquals(fromUserId,
-            followRepository.findById(followDTO.getId()).get().getFromUser().getId());
+            followRepository.findById(followResponse.getId()).get().getFromUser().getId());
         assertEquals(toUserId,
-            followRepository.findById(followDTO.getId()).get().getToUser().getId());
+            followRepository.findById(followResponse.getId()).get().getToUser().getId());
     }
 
     @Test
@@ -62,16 +62,16 @@ public class FollowServiceTests {
         Integer id = 1;
 
         //when
-        HashMap<String, Object> response = followService.getFollows(id);
-        List<FollowDTO> followers = (List<FollowDTO>) response.get("followers");
-        List<FollowDTO> followings = (List<FollowDTO>) response.get("followins");
+        FollowsResponse response = followService.getFollows(id);
+        List<FollowResponse> followers = response.getFollowers();
+        List<FollowResponse> followings = response.getFollowings();
 
         //then
-        for (FollowDTO follower : followers) {
+        for (FollowResponse follower : followers) {
             Follow follow = followRepository.findById(follower.getId()).get();
             assertEquals(follow.getToUser().getId(), id);
         }
-        for (FollowDTO following : followings) {
+        for (FollowResponse following : followings) {
             Follow follow = followRepository.findById(following.getId()).get();
             assertEquals(follow.getFromUser().getId(), id);
         }
@@ -83,10 +83,10 @@ public class FollowServiceTests {
         Integer id = 1;
 
         //when
-        List<FollowDTO> followings = followService.getFollowings(id);
+        List<FollowResponse> followings = followService.getFollowings(id);
 
         //then
-        for (FollowDTO following : followings) {
+        for (FollowResponse following : followings) {
             Follow follow = followRepository.findById(following.getId()).get();
             assertEquals(follow.getFromUser().getId(), id);
         }
@@ -98,10 +98,10 @@ public class FollowServiceTests {
         Integer id = 1;
 
         //when
-        List<FollowDTO> followers = followService.getFollowers(id);
+        List<FollowResponse> followers = followService.getFollowers(id);
 
         //then
-        for (FollowDTO follower : followers) {
+        for (FollowResponse follower : followers) {
             Follow follow = followRepository.findById(follower.getId()).get();
             assertEquals(follow.getToUser().getId(), id);
         }

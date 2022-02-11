@@ -6,13 +6,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FollowDTO {
+public class FollowResponse {
 
     private Integer id;
 
     private followUser user;
 
-    public FollowDTO(Integer id, User user) {
+    public FollowResponse(Integer id, User user) {
         this.id = id;
         this.user = new followUser(user);
     }
