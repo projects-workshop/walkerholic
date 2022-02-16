@@ -4,6 +4,8 @@ import com.yunhalee.walkerholic.common.domain.BaseTimeEntity;
 import com.yunhalee.walkerholic.product.exception.NotEnoughStockException;
 import com.yunhalee.walkerholic.review.domain.Review;
 import com.yunhalee.walkerholic.user.domain.User;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -43,7 +45,7 @@ public class Product extends BaseTimeEntity {
     @Column(nullable = false)
     private Float price;
 
-    private Float average;
+    private BigDecimal average;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductImage> productImages = new ArrayList<>();
@@ -86,10 +88,10 @@ public class Product extends BaseTimeEntity {
 
     private void changeAverage(Integer sum, int size) {
         if (size == 0) {
-            this.average = 0f;
+            this.average = BigDecimal.ZERO;
             return;
         }
-        this.average = (float) (Math.round(sum / (long) (size) * 100) / 100.0);
+        this.average = BigDecimal.valueOf(sum).divide(BigDecimal.valueOf(size), 2, RoundingMode.HALF_EVEN);
     }
 
     //비지니스 로직

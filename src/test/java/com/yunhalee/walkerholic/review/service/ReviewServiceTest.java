@@ -12,6 +12,7 @@ import com.yunhalee.walkerholic.review.exception.InvalidRatingException;
 import com.yunhalee.walkerholic.review.exception.ReviewNotFoundException;
 import com.yunhalee.walkerholic.user.domain.Role;
 import com.yunhalee.walkerholic.user.domain.User;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -65,10 +66,10 @@ class ReviewServiceTest extends MockBeans {
     }
 
     @ParameterizedTest
-    @CsvSource({"2, test, 1, 2, 1", "1, testReview, 3, 2, 1", "5, testComment, 4, 3, 1"})
+    @CsvSource({"2, test, 1, 2, 1, 2.00", "1, testReview, 3, 2, 1, 1.00",
+        "5, testComment, 4, 3, 1, 5.00"})
     @DisplayName("주어진 정보에 알맞은 리뷰를 생성한다.")
-    void create_review(Integer rating, String comment, Integer productId, Integer userId,
-        int expectedCount) {
+    void create_review(Integer rating, String comment, Integer productId, Integer userId, int expectedCount, BigDecimal expected) {
         //given
         ReviewRequest request = new ReviewRequest(rating, comment, productId, userId);
 
@@ -81,13 +82,13 @@ class ReviewServiceTest extends MockBeans {
         assertThat(response.getRating()).isEqualTo(rating);
         assertThat(response.getComment()).isEqualTo(comment);
         assertThat(product.getReviews().size()).isEqualTo(expectedCount);
+        assertThat(product.getAverage()).isEqualTo(expected);
     }
 
     @ParameterizedTest
     @CsvSource({"6, test, 1, 2", "8, testReview, 3, 2", "-2, testComment, 4, 3"})
     @DisplayName("범위 밖의 점수로는 리뷰를 생성하지 않는다.")
-    void create_review_with_rating_greater_than_5_or_lesser_than_0_is_invalid(Integer rating,
-        String comment, Integer productId, Integer userId) {
+    void create_review_with_rating_greater_than_5_or_lesser_than_0_is_invalid(Integer rating, String comment, Integer productId, Integer userId) {
         //given
         ReviewRequest request = new ReviewRequest(rating, comment, productId, userId);
 
@@ -100,9 +101,9 @@ class ReviewServiceTest extends MockBeans {
 
 
     @ParameterizedTest
-    @CsvSource({"4, test, 1, 4", "1, testReview, 4, 1", "5, testComment, 2, 5"})
+    @CsvSource({"4, test, 1, 4.00", "1, testReview, 4, 1.00", "5, testComment, 2, 5.00"})
     @DisplayName("주어진 정보로 리뷰를 업데이트 한다.")
-    void update_review(Integer rating, String comment, Integer reviewId, Float expected) {
+    void update_review(Integer rating, String comment, Integer reviewId, BigDecimal expected) {
         //given
         product.addReview(review);
         ReviewRequest request = new ReviewRequest(rating, comment);
@@ -120,8 +121,7 @@ class ReviewServiceTest extends MockBeans {
     @ParameterizedTest
     @CsvSource({"6, test, 1", "8, testReview, 3", "-2, testComment, 4"})
     @DisplayName("범위 밖의 점수로는 리뷰를 수정하지 않는다.")
-    void update_review_with_rating_greater_than_5_or_lesser_than_0_is_invalid(Integer rating,
-        String comment, Integer reviewId) {
+    void update_review_with_rating_greater_than_5_or_lesser_than_0_is_invalid(Integer rating, String comment, Integer reviewId) {
         ReviewRequest request = new ReviewRequest(rating, comment);
         when(reviewRepository.findById(anyInt())).thenReturn(java.util.Optional.of(review));
         assertThatThrownBy(() -> reviewService.update(request, reviewId))
@@ -140,7 +140,7 @@ class ReviewServiceTest extends MockBeans {
     @ParameterizedTest
     @CsvSource({"4, 0", "1, 0", "5, 0"})
     @DisplayName("리뷰를 삭제한다.")
-    void delete_review(Integer reviewId, Float expected) {
+    void delete_review(Integer reviewId, BigDecimal expected) {
         //when
         product.addReview(review);
 

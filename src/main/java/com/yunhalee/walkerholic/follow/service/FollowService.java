@@ -70,16 +70,16 @@ public class FollowService {
     }
 
     private List<FollowResponse> followersResponses(Integer id) {
-        return followRepository.findAllByToUserId(id).stream()
-            .map(follow -> FollowResponse
-                .of(follow.getId(), FollowUserResponse.of(follow.getFromUser())))
+        List<Follow> follows = followRepository.findAllByToUserId(id);
+        return follows.stream()
+            .map(follow -> FollowResponse.of(follow.getId(), FollowUserResponse.of(follow.getFromUser())))
             .collect(Collectors.toList());
     }
 
     private List<FollowResponse> followingsResponses(Integer id) {
-        return followRepository.findAllByFromUserId(id).stream()
-            .map(follow -> FollowResponse
-                .of(follow.getId(), FollowUserResponse.of(follow.getToUser())))
+        List<Follow> follows = followRepository.findAllByFromUserId(id);
+        return follows.stream()
+            .map(follow -> FollowResponse.of(follow.getId(), FollowUserResponse.of(follow.getToUser())))
             .collect(Collectors.toList());
     }
 }

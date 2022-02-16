@@ -3,6 +3,7 @@ package com.yunhalee.walkerholic.product.dto;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.review.domain.Review;
 import com.yunhalee.walkerholic.user.domain.User;
+import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,7 +29,7 @@ public class ProductDTO {
 
     private Float price;
 
-    private Float average;
+    private BigDecimal average;
 
     private List<ProductImage> productImages;
 
