@@ -6,8 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
-public class LikePostDTO {
+public class LikePostResponse {
 
     private Integer id;
 
@@ -15,10 +14,14 @@ public class LikePostDTO {
 
     private UserLikePost user;
 
-    public LikePostDTO(LikePost likePost) {
-        this.id = likePost.getId();
-        this.postId = likePost.getPost().getId();
-        this.user = new UserLikePost(likePost.getUser());
+    private LikePostResponse(Integer id, Integer postId, UserLikePost user) {
+        this.id = id;
+        this.postId = postId;
+        this.user = user;
+    }
+
+    public static LikePostResponse of(LikePost likePost) {
+        return new LikePostResponse(likePost.getId(), likePost.getPost().getId(), new UserLikePost(likePost.getUser()));
     }
 
     @Getter

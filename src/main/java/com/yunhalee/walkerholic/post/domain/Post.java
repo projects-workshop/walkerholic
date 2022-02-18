@@ -41,5 +41,9 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post")
     private Set<LikePost> likePosts = new HashSet<>();
 
-
+    public Post(Integer id, String title, String content) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+    }
 }

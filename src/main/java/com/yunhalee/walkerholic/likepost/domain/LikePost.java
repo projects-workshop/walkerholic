@@ -6,14 +6,12 @@ import com.yunhalee.walkerholic.post.domain.Post;
 import com.yunhalee.walkerholic.user.domain.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "like_post")
 @Getter
-@Setter
 @NoArgsConstructor
 public class LikePost extends BaseTimeEntity {
 
@@ -31,11 +29,19 @@ public class LikePost extends BaseTimeEntity {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    //    비지니스 로직
-    public static LikePost likePost(Post post, User user) {
-        LikePost likePost = new LikePost();
-        likePost.setPost(post);
-        likePost.setUser(user);
+    public LikePost(Integer id, User user, Post post) {
+        this.id = id;
+        this.user = user;
+        this.post = post;
+    }
+
+    private LikePost(User user, Post post) {
+        this.user = user;
+        this.post = post;
+    }
+
+    public static LikePost of(User user, Post post) {
+        LikePost likePost = new LikePost(user, post);
         return likePost;
     }
 }

@@ -3,6 +3,8 @@ package com.yunhalee.walkerholic;
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import com.yunhalee.walkerholic.follow.domain.FollowRepository;
+import com.yunhalee.walkerholic.likepost.domain.LikePostRepository;
+import com.yunhalee.walkerholic.post.domain.PostRepository;
 import com.yunhalee.walkerholic.product.domain.ProductRepository;
 import com.yunhalee.walkerholic.review.domain.ReviewRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
@@ -36,4 +38,10 @@ public class MockBeans {
 
     @MockBean
     protected FollowRepository followRepository;
+
+    @MockBean
+    protected PostRepository postRepository;
+
+    @MockBean
+    protected LikePostRepository likePostRepository;
 }
