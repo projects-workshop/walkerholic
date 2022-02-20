@@ -2,6 +2,7 @@ package com.yunhalee.walkerholic.post.controller;
 
 import com.yunhalee.walkerholic.post.dto.PostRequest;
 import com.yunhalee.walkerholic.post.dto.PostResponse;
+import com.yunhalee.walkerholic.post.dto.PostResponses;
 import com.yunhalee.walkerholic.post.dto.UserPostResponse;
 import com.yunhalee.walkerholic.post.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -44,15 +45,11 @@ public class PostController {
     public ResponseEntity<UserPostResponse> getUserPosts(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(postService.getUserPosts(id));
     }
-//
-//    @GetMapping("/posts/discover/{page}/{id}")
-//    public ResponseEntity<?> getPostsByRandom(@PathVariable("page") String page,
-//        @PathVariable("id") String id) {
-//        Integer pageNumber = Integer.parseInt(page);
-//        Integer userId = Integer.parseInt(id);
-//        return new ResponseEntity<HashMap<String, Object>>(
-//            postService.getPostsByRandom(pageNumber, userId), HttpStatus.OK);
-//    }
+
+    @GetMapping("/users/{id}/posts/discover")
+    public ResponseEntity<PostResponses> getPostsByRandom(@RequestParam("page") Integer page, @PathVariable("id") Integer id) {
+        return ResponseEntity.ok(postService.getPostsByRandom(page, id));
+    }
 //
 //    @GetMapping("/posts/follow/{page}/{id}")
 //    public ResponseEntity<?> getPostsByFollowings(@PathVariable("page") String page,

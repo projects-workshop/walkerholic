@@ -5,6 +5,7 @@ import com.yunhalee.walkerholic.likepost.domain.LikePost;
 import com.yunhalee.walkerholic.post.domain.PostImageTest;
 import com.yunhalee.walkerholic.post.dto.PostRequest;
 import com.yunhalee.walkerholic.post.dto.PostResponse;
+import com.yunhalee.walkerholic.post.dto.PostResponses;
 import com.yunhalee.walkerholic.post.dto.UserPostResponse;
 import com.yunhalee.walkerholic.user.domain.UserTest;
 import com.yunhalee.walkerholic.post.domain.Post;
@@ -17,6 +18,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +33,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -141,23 +146,25 @@ class PostServiceTests extends MockBeans {
         assertThat(response.getLikePosts().get(0).getId()).isEqualTo(likePost.getId());
         assertThat(response.getLikePosts().get(0).getUserId()).isEqualTo(UserTest.SELLER.getId());
     }
-//
-//    @Test
-//    public void getPostsByRandom() {
-//        //given
-//        Integer userId = 1;
-//        Integer page = 1;
-//
-//        //when
-//        HashMap<String, Object> response = postService.getPostsByRandom(page, userId);
-//        List<PostResponse> postDTOS = (List<PostResponse>) response.get("posts");
-//
-//        //then
-//        for (PostResponse postDTO : postDTOS) {
-//            assertNotEquals(postRepository.findById(postDTO.getId()).get().getUser().getId(),
-//                userId);
-//        }
-//    }
+
+    @Test
+    public void getPostsByRandom() {
+        //given
+        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
+        post.addPostImage(PostImageTest.POST_IMAGE);
+        Post likePost = new Post(2, TITLE, CONTENT, UserTest.SELLER);
+        likePost.addPostImage(PostImageTest.POST_IMAGE);
+
+        //when
+        doReturn(new PageImpl<>(Arrays.asList(likePost ))).when(postRepository).findByRandom(any(), any());
+        PostResponses response = postService.getPostsByRandom(1, 1);
+
+        //then
+        assertThat(response.getPosts().size()).isEqualTo(1);
+        assertThat(response.getPosts().get(0).getId()).isEqualTo(likePost.getId());
+        assertThat(response.getTotalElement()).isEqualTo(1L);
+        assertThat(response.getTotalPage()).isEqualTo(1);
+    }
 //
 //    @Test
 //    public void getHomePosts() {

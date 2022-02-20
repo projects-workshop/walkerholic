@@ -5,6 +5,7 @@ import com.yunhalee.walkerholic.likepost.domain.LikePost;
 import com.yunhalee.walkerholic.likepost.dto.LikePostResponse;
 import com.yunhalee.walkerholic.post.PostNotFoundException;
 import com.yunhalee.walkerholic.post.dto.PostImageResponse;
+import com.yunhalee.walkerholic.post.dto.PostResponses;
 import com.yunhalee.walkerholic.post.dto.SimplePostResponse;
 import com.yunhalee.walkerholic.post.dto.SimpleUserResponse;
 import com.yunhalee.walkerholic.post.dto.UserPostResponse;
@@ -155,10 +156,10 @@ public class PostService {
             .map(SimplePostResponse::of)
             .collect(Collectors.toList());
     }
-//
-//    public HashMap<String, Object> getPostsByRandom(Integer page, Integer userId) {
-//        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
-//        Page<Post> pagePost = postRepository.findByRandom(pageable, userId);
+
+    public PostResponses getPostsByRandom(Integer page, Integer userId) {
+        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
+        Page<Post> pagePost = postRepository.findByRandom(pageable, userId);
 //        List<Post> posts = pagePost.getContent();
 //        List<UserPostDTO> userPostDTOList = new ArrayList<>();
 //        posts.forEach(post -> userPostDTOList.add(new UserPostDTO(post)));
@@ -166,8 +167,9 @@ public class PostService {
 //        randomPosts.put("posts", userPostDTOList);
 //        randomPosts.put("totalElement", pagePost.getTotalElements());
 //        randomPosts.put("totalPage", pagePost.getTotalPages());
+        return PostResponses.of(simplePostResponses(pagePost.getContent()), pagePost.getTotalElements(), pagePost.getTotalPages());
 //        return randomPosts;
-//    }
+    }
 //
 //    public HashMap<String, Object> getHomePosts(Integer page, String sort) {
 //        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);

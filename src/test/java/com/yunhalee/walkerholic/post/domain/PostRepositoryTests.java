@@ -58,23 +58,23 @@ public class PostRepositoryTests {
         }
     }
 
-//
-//    @Test
-//    public void getPostByRandom() {
-//        //given
-//        Integer userId = 1;
-//        Integer page = 1;
-//
-//        //when
-//        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
-//        Page<Post> pagePost = postRepository.findByRandom(pageable, userId);
-//        List<Post> posts = pagePost.getContent();
-//
-//        //then
-//        for (Post post : posts) {
-//            assertThat(post.getUser().getId()).isNotEqualTo(userId);
-//        }
-//    }
+
+    @Test
+    public void getPostByRandom() {
+        //given
+        Integer userId = 4;
+        Integer page = 1;
+
+        //when
+        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
+        Page<Post> pagePost = postRepository.findByRandom(pageable, userId);
+        List<Post> posts = pagePost.getContent();
+
+        //then
+        for (Post post : posts) {
+            assertThat(post.getUser().getId()).isNotEqualTo(userId);
+        }
+    }
 //
 //    @Test
 //    public void getPostByFollowings() {
