@@ -3,15 +3,14 @@ package com.yunhalee.walkerholic.post.controller;
 import com.yunhalee.walkerholic.post.dto.PostRequest;
 import com.yunhalee.walkerholic.post.dto.PostResponse;
 import com.yunhalee.walkerholic.post.dto.PostResponses;
+import com.yunhalee.walkerholic.post.dto.SimplePostResponses;
 import com.yunhalee.walkerholic.post.dto.UserPostResponse;
 import com.yunhalee.walkerholic.post.service.PostService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -47,18 +46,14 @@ public class PostController {
     }
 
     @GetMapping("/users/{id}/posts/discover")
-    public ResponseEntity<PostResponses> getPostsByRandom(@RequestParam("page") Integer page, @PathVariable("id") Integer id) {
+    public ResponseEntity<SimplePostResponses> getPostsByRandom(@RequestParam("page") Integer page, @PathVariable("id") Integer id) {
         return ResponseEntity.ok(postService.getPostsByRandom(page, id));
     }
-//
-//    @GetMapping("/posts/follow/{page}/{id}")
-//    public ResponseEntity<?> getPostsByFollowings(@PathVariable("page") String page,
-//        @PathVariable("id") String id) {
-//        Integer pageNumber = Integer.parseInt(page);
-//        Integer userId = Integer.parseInt(id);
-//        return new ResponseEntity<HashMap<String, Object>>(
-//            postService.getPostsByFollowings(pageNumber, userId), HttpStatus.OK);
-//    }
+
+    @GetMapping("/users/{id}/posts/follow")
+    public ResponseEntity<PostResponses> getPostsByFollowings(@RequestParam("page") Integer page, @PathVariable("id") Integer id) {
+        return ResponseEntity.ok(postService.getPostsByFollowings(page, id));
+    }
 //
 //    @GetMapping("/posts/home/{page}/{sort}")
 //    public HashMap<String, Object> getHomePosts(@PathVariable("page") String page,

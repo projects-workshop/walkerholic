@@ -2,6 +2,7 @@ package com.yunhalee.walkerholic.post.domain;
 
 import com.yunhalee.walkerholic.post.PostNotFoundException;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
+import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,25 +76,24 @@ public class PostRepositoryTests {
             assertThat(post.getUser().getId()).isNotEqualTo(userId);
         }
     }
-//
-//    @Test
-//    public void getPostByFollowings() {
-//        //given
-//        List<Integer> followings = new ArrayList<>();
-//        followings.add(1);
-//        Integer page = 1;
-//
-//        //when
-//        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
-//        Page<Post> pagePost = postRepository.findByFollowings(pageable, followings);
-//        List<Post> posts = pagePost.getContent();
-//
-//        //then
-//        for (Post post : posts) {
-//            assertThat(followings).contains(post.getUser().getId());
-//        }
-//    }
-//
+
+    @Test
+    public void getPostByFollowings() {
+        //given
+        List<Integer> followings = Arrays.asList(4, 14);
+        Integer page = 1;
+
+        //when
+        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
+        Page<Post> pagePost = postRepository.findByFollowings(pageable, followings);
+        List<Post> posts = pagePost.getContent();
+
+        //then
+        for (Post post : posts) {
+            assertThat(followings).contains(post.getUser().getId());
+        }
+    }
+
 //    @Test
 //    public void getPostByLikePosts() {
 //        //given

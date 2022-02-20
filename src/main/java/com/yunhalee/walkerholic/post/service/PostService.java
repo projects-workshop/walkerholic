@@ -6,14 +6,13 @@ import com.yunhalee.walkerholic.likepost.dto.LikePostResponse;
 import com.yunhalee.walkerholic.post.PostNotFoundException;
 import com.yunhalee.walkerholic.post.dto.PostImageResponse;
 import com.yunhalee.walkerholic.post.dto.PostResponses;
+import com.yunhalee.walkerholic.post.dto.SimplePostResponses;
 import com.yunhalee.walkerholic.post.dto.SimplePostResponse;
 import com.yunhalee.walkerholic.post.dto.SimpleUserResponse;
 import com.yunhalee.walkerholic.post.dto.UserPostResponse;
 import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
-import com.yunhalee.walkerholic.util.FileUploadUtils;
 import com.yunhalee.walkerholic.post.dto.PostRequest;
 import com.yunhalee.walkerholic.post.dto.PostResponse;
-import com.yunhalee.walkerholic.user.dto.UserPostDTO;
 import com.yunhalee.walkerholic.follow.domain.Follow;
 import com.yunhalee.walkerholic.post.domain.Post;
 import com.yunhalee.walkerholic.post.domain.PostImage;
@@ -35,8 +34,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -157,18 +154,18 @@ public class PostService {
             .collect(Collectors.toList());
     }
 
-    public PostResponses getPostsByRandom(Integer page, Integer userId) {
+    private PostResponse postResponse(Post post){
+        return PostResponse.of(post, LikePostResponses(post.getLikePosts()), PostImageResponses(post.getPostImages()), SimpleUserResponse.of(post.getUser()));
+    }
+
+    private List<PostResponse> postResponses(List<Post> posts){
+        return posts.stream().map(this::postResponse).collect(Collectors.toList());
+    }
+
+    public SimplePostResponses getPostsByRandom(Integer page, Integer userId) {
         Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
         Page<Post> pagePost = postRepository.findByRandom(pageable, userId);
-//        List<Post> posts = pagePost.getContent();
-//        List<UserPostDTO> userPostDTOList = new ArrayList<>();
-//        posts.forEach(post -> userPostDTOList.add(new UserPostDTO(post)));
-//        HashMap<String, Object> randomPosts = new HashMap<>();
-//        randomPosts.put("posts", userPostDTOList);
-//        randomPosts.put("totalElement", pagePost.getTotalElements());
-//        randomPosts.put("totalPage", pagePost.getTotalPages());
-        return PostResponses.of(simplePostResponses(pagePost.getContent()), pagePost.getTotalElements(), pagePost.getTotalPages());
-//        return randomPosts;
+        return SimplePostResponses.of(simplePostResponses(pagePost.getContent()), pagePost.getTotalElements(), pagePost.getTotalPages());
     }
 //
 //    public HashMap<String, Object> getHomePosts(Integer page, String sort) {
@@ -190,26 +187,16 @@ public class PostService {
 //        return homePosts;
 //    }
 //
-//    public HashMap<String, Object> getPostsByFollowings(Integer page, Integer userId) {
-//        List<Follow> follows = followRepository.findAllByFromUserId(userId);
-//        List<Integer> followings = new ArrayList<>();
-//        follows.forEach(follow -> followings.add(follow.getId()));
-//        followings.add(userId);
-//
-//        Pageable pageable = PageRequest
-//            .of(page - 1, POST_PER_PAGE, Sort.by("createdAt").descending());
-//
-//        Page<Post> pagePost = postRepository.findByFollowings(pageable, followings);
-//        List<Post> posts = pagePost.getContent();
-//        List<PostResponse> postDTOS = new ArrayList<>();
-//        posts.forEach(post -> postDTOS.add(new PostResponse()));
-//
-//        HashMap<String, Object> followingPosts = new HashMap<>();
-//        followingPosts.put("posts", postDTOS);
-//        followingPosts.put("totalElement", pagePost.getTotalElements());
-//        followingPosts.put("totalPage", pagePost.getTotalPages());
-//        return followingPosts;
-//    }
+    public PostResponses getPostsByFollowings(Integer page, Integer userId) {
+        List<Follow> follows = followRepository.findAllByFromUserId(userId);
+        List<Integer> followings = follows.stream()
+            .map(follow -> follow.getToUser().getId())
+            .collect(Collectors.toList());
+        followings.add(userId);
+        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE, Sort.by("createdAt").descending());
+        Page<Post> pagePost = postRepository.findByFollowings(pageable, followings);
+        return PostResponses.of(postResponses(pagePost.getContent()), pagePost.getTotalElements(), pagePost.getTotalPages());
+    }
 //
 //    public String deletePost(Integer id) {
 //        String dir = "/productUploads/" + id;

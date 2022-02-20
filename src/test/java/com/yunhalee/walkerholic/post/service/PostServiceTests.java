@@ -6,6 +6,7 @@ import com.yunhalee.walkerholic.post.domain.PostImageTest;
 import com.yunhalee.walkerholic.post.dto.PostRequest;
 import com.yunhalee.walkerholic.post.dto.PostResponse;
 import com.yunhalee.walkerholic.post.dto.PostResponses;
+import com.yunhalee.walkerholic.post.dto.SimplePostResponses;
 import com.yunhalee.walkerholic.post.dto.UserPostResponse;
 import com.yunhalee.walkerholic.user.domain.UserTest;
 import com.yunhalee.walkerholic.post.domain.Post;
@@ -19,8 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,16 +27,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
 
 
 @RunWith(SpringRunner.class)
@@ -157,7 +152,7 @@ class PostServiceTests extends MockBeans {
 
         //when
         doReturn(new PageImpl<>(Arrays.asList(likePost ))).when(postRepository).findByRandom(any(), any());
-        PostResponses response = postService.getPostsByRandom(1, 1);
+        SimplePostResponses response = postService.getPostsByRandom(1, 1);
 
         //then
         assertThat(response.getPosts().size()).isEqualTo(1);
@@ -188,24 +183,23 @@ class PostServiceTests extends MockBeans {
 //        }
 //    }
 //
-//    @Test
-//    public void getPostsByFollowings() {
-//        //given
-//        Integer userId = 1;
-//        Integer page = 1;
-//
-//        //when
-//        HashMap<String, Object> response = postService.getPostsByFollowings(page, userId);
-//        List<PostResponse> postDTOS = (List<PostResponse>) response.get("posts");
-//        List<Integer> followings = followRepository.findAllByFromUserId(userId).stream()
-//            .map(follow -> follow.getToUser().getId()).collect(Collectors.toList());
-//
-//        //then
-//        for (PostResponse postDTO : postDTOS) {
-//            assertThat(followings)
-//                .contains(postRepository.findById(postDTO.getId()).get().getUser().getId());
-//        }
-//    }
+    @Test
+    public void getPostsByFollowings() {
+        //given
+        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
+        post.addPostImage(PostImageTest.POST_IMAGE);
+        Post likePost = new Post(2, TITLE, CONTENT, UserTest.SELLER);
+        likePost.addPostImage(PostImageTest.POST_IMAGE);
+
+        //when
+        doReturn(new PageImpl<>(Arrays.asList(likePost, post))).when(postRepository).findByFollowings(any(), any());
+        PostResponses response = postService.getPostsByFollowings(1, 1);
+
+        //then
+        assertThat(response.getPosts().size()).isEqualTo(2);
+        assertThat(response.getTotalElement()).isEqualTo(2L);
+        response.getPosts().forEach(postResponse -> assertThat(Arrays.asList(UserTest.USER.getId(), UserTest.SELLER.getId()).contains(postResponse.getUser().getId())));
+    }
 //
 //    @Test
 //    public void getPostsByKeyword() {
