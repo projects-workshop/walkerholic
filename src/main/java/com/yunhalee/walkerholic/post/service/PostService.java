@@ -8,7 +8,7 @@ import com.yunhalee.walkerholic.post.dto.PostImageResponse;
 import com.yunhalee.walkerholic.post.dto.PostResponses;
 import com.yunhalee.walkerholic.post.dto.SimplePostResponses;
 import com.yunhalee.walkerholic.post.dto.SimplePostResponse;
-import com.yunhalee.walkerholic.post.dto.SimpleUserResponse;
+import com.yunhalee.walkerholic.user.dto.SimpleUserResponse;
 import com.yunhalee.walkerholic.post.dto.UserPostResponse;
 import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
 import com.yunhalee.walkerholic.post.dto.PostRequest;

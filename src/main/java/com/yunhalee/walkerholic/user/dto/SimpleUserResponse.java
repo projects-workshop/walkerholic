@@ -1,4 +1,4 @@
-package com.yunhalee.walkerholic.post.dto;
+package com.yunhalee.walkerholic.user.dto;
 
 import com.yunhalee.walkerholic.user.domain.User;
 import lombok.Getter;

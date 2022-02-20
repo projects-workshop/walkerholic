@@ -2,6 +2,7 @@ package com.yunhalee.walkerholic.post.dto;
 
 import com.yunhalee.walkerholic.likepost.dto.LikePostResponse;
 import com.yunhalee.walkerholic.post.domain.Post;
+import com.yunhalee.walkerholic.user.dto.SimpleUserResponse;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

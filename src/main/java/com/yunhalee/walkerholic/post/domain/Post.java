@@ -16,7 +16,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "post")
-@Setter
 @NoArgsConstructor
 public class Post extends BaseTimeEntity {
 
