@@ -160,29 +160,47 @@ class PostServiceTests extends MockBeans {
         assertThat(response.getTotalElement()).isEqualTo(1L);
         assertThat(response.getTotalPage()).isEqualTo(1);
     }
-//
-//    @Test
-//    public void getHomePosts() {
-//        //given
-//        Integer page = 1;
-//        String sort = "popular";
-//
-//        //when
-//        HashMap<String, Object> response = postService.getHomePosts(page, sort);
-//        List<UserPostDTO> userPostDTOS = (List<UserPostDTO>) response.get("posts");
-//
-//        //then
-//        Integer priorLikeSize = postRepository.findById(userPostDTOS.get(0).getId()).get()
-//            .getLikePosts().size();
-//        for (int i = 1; i < userPostDTOS.size(); i++) {
-//            assertThat(
-//                postRepository.findById(userPostDTOS.get(i).getId()).get().getLikePosts().size())
-//                .isLessThanOrEqualTo(priorLikeSize);
-//            priorLikeSize = postRepository.findById(userPostDTOS.get(i).getId()).get()
-//                .getLikePosts().size();
-//        }
-//    }
-//
+
+    @Test
+    public void getHomePostsByLikePostSize() {
+        //given
+        Integer page = 1;
+        String sort = "popular";
+        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
+        post.addPostImage(PostImageTest.POST_IMAGE);
+        Post likePost = new Post(2, TITLE, CONTENT, UserTest.SELLER);
+        likePost.addLikePost(new LikePost(1, UserTest.USER, likePost));
+        likePost.addPostImage(PostImageTest.POST_IMAGE);
+
+        //when
+        doReturn(new PageImpl<>(Arrays.asList(post, likePost))).when(postRepository).findByCreateAt(any());
+        doReturn(new PageImpl<>(Arrays.asList(likePost, post))).when(postRepository).findByLikePostSize(any());
+        SimplePostResponses response = postService.getHomePosts(page, sort);
+
+        //then
+        assertThat(response.getPosts().get(0).getId()).isEqualTo(likePost.getId());
+    }
+
+    @Test
+    public void getHomePostsByCreatedAt() {
+        //given
+        Integer page = 1;
+        String sort = "newest";
+        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
+        post.addPostImage(PostImageTest.POST_IMAGE);
+        Post likePost = new Post(2, TITLE, CONTENT, UserTest.SELLER);
+        likePost.addLikePost(new LikePost(1, UserTest.USER, likePost));
+        likePost.addPostImage(PostImageTest.POST_IMAGE);
+
+        //when
+        doReturn(new PageImpl<>(Arrays.asList(post, likePost))).when(postRepository).findByCreateAt(any());
+        doReturn(new PageImpl<>(Arrays.asList(likePost, post))).when(postRepository).findByLikePostSize(any());
+        SimplePostResponses response = postService.getHomePosts(page, sort);
+
+        //then
+        assertThat(response.getPosts().get(0).getId()).isEqualTo(post.getId());
+    }
+
     @Test
     public void getPostsByFollowings() {
         //given

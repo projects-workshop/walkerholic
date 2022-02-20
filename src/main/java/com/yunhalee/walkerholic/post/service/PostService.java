@@ -167,26 +167,17 @@ public class PostService {
         Page<Post> pagePost = postRepository.findByRandom(pageable, userId);
         return SimplePostResponses.of(simplePostResponses(pagePost.getContent()), pagePost.getTotalElements(), pagePost.getTotalPages());
     }
-//
-//    public HashMap<String, Object> getHomePosts(Integer page, String sort) {
-//        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
-//        Page<Post> pagePost = postRepository.findByLikePostSize(pageable);
-//
-//        if (sort.equals("newest")) {
-//            pagePost = postRepository.findByCreateAt(pageable);
-//        }
-//        List<Post> posts = pagePost.getContent();
-//        List<UserPostDTO> userPostDTOList = new ArrayList<>();
-//        posts.forEach(post -> userPostDTOList.add(new UserPostDTO(post)));
-//
-//        HashMap<String, Object> homePosts = new HashMap<>();
-//        homePosts.put("posts", userPostDTOList);
-//        homePosts.put("totalElement", pagePost.getTotalElements());
-//        homePosts.put("totalPage", pagePost.getTotalPages());
-//
-//        return homePosts;
-//    }
-//
+
+    public SimplePostResponses getHomePosts(Integer page, String sort) {
+        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
+        if (sort.equals("newest")) {
+            Page<Post> pagePost = postRepository.findByCreateAt(pageable);
+            return SimplePostResponses.of(simplePostResponses(pagePost.getContent()), pagePost.getTotalElements(), pagePost.getTotalPages());
+        }
+        Page<Post> pagePost = postRepository.findByLikePostSize(pageable);
+        return SimplePostResponses.of(simplePostResponses(pagePost.getContent()), pagePost.getTotalElements(), pagePost.getTotalPages());
+    }
+
     public PostResponses getPostsByFollowings(Integer page, Integer userId) {
         List<Follow> follows = followRepository.findAllByFromUserId(userId);
         List<Integer> followings = follows.stream()

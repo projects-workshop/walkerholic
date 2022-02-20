@@ -54,13 +54,11 @@ public class PostController {
     public ResponseEntity<PostResponses> getPostsByFollowings(@RequestParam("page") Integer page, @PathVariable("id") Integer id) {
         return ResponseEntity.ok(postService.getPostsByFollowings(page, id));
     }
-//
-//    @GetMapping("/posts/home/{page}/{sort}")
-//    public HashMap<String, Object> getHomePosts(@PathVariable("page") String page,
-//        @PathVariable("sort") String sort) {
-//        Integer pageNumber = Integer.parseInt(page);
-//        return postService.getHomePosts(pageNumber, sort);
-//    }
+
+    @GetMapping("/posts")
+    public ResponseEntity<SimplePostResponses> getHomePosts(@RequestParam("page") Integer page, @RequestParam("sort") String sort) {
+        return ResponseEntity.ok(postService.getHomePosts(page, sort));
+    }
 //
 //    @DeleteMapping("/post/{id}")
 //    public String deletePost(@PathVariable("id") String id) {

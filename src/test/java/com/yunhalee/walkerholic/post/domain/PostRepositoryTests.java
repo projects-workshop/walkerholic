@@ -94,23 +94,23 @@ public class PostRepositoryTests {
         }
     }
 
-//    @Test
-//    public void getPostByLikePosts() {
-//        //given
-//        Integer page = 1;
-//
-//        //when
-//        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
-//        Page<Post> postPage = postRepository.findByLikePostSize(pageable);
-//        List<Post> posts = postPage.getContent();
-//
-//        //then
-//        Integer priorLikeSize = posts.get(0).getLikePosts().size();
-//        for (int i = 1; i < posts.size(); i++) {
-//            assertThat(posts.get(i).getLikePosts().size()).isLessThanOrEqualTo(priorLikeSize);
-//            priorLikeSize = posts.get(i).getLikePosts().size();
-//        }
-//    }
+    @Test
+    public void getPostByLikePosts() {
+        //given
+        Integer page = 1;
+
+        //when
+        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
+        Page<Post> postPage = postRepository.findByLikePostSize(pageable);
+        List<Post> posts = postPage.getContent();
+
+        //then
+        Integer priorLikeSize = posts.get(0).getLikePosts().size();
+        for (int i = 1; i < posts.size(); i++) {
+            assertThat(posts.get(i).getLikePosts().size()).isLessThanOrEqualTo(priorLikeSize);
+            priorLikeSize = posts.get(i).getLikePosts().size();
+        }
+    }
 //
 //    @Test
 //    public void getPostsByKeywordOrderByCreatedAt() {
