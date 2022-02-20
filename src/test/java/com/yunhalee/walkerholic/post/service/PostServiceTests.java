@@ -1,15 +1,20 @@
 package com.yunhalee.walkerholic.post.service;
 
-import com.yunhalee.walkerholic.post.dto.PostCreateDTO;
-import com.yunhalee.walkerholic.post.dto.PostDTO;
+import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.post.domain.PostImageTest;
+import com.yunhalee.walkerholic.post.dto.PostRequest;
+import com.yunhalee.walkerholic.post.dto.PostResponse;
+import com.yunhalee.walkerholic.user.domain.UserTest;
 import com.yunhalee.walkerholic.user.dto.UserPostDTO;
 import com.yunhalee.walkerholic.post.domain.Post;
-import com.yunhalee.walkerholic.follow.domain.FollowRepository;
-import com.yunhalee.walkerholic.post.domain.PostRepository;
-import com.yunhalee.walkerholic.post.service.PostService;
-import org.junit.Test;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -18,72 +23,79 @@ import org.springframework.web.multipart.MultipartFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
-
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 
+
 @RunWith(SpringRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 @Transactional
-public class PostServiceTests {
+class PostServiceTests extends MockBeans {
 
-    @Autowired
-    PostService postService;
+    private static final String TITLE = "testTitle";
+    private static final String CONTENT = "testContent";
+    private static final MultipartFile MULTIPART_FILE = new MockMultipartFile(
+        "uploaded-file",
+        "sampleFile.txt",
+        "text/plain",
+        "This is the file content".getBytes());
 
-    @Autowired
-    PostRepository postRepository;
-
-    @Autowired
-    FollowRepository followRepository;
+    @InjectMocks
+    private PostService postService = new PostService(
+        postRepository,
+        userRepository,
+        postImageRepository,
+        followRepository,
+        s3ImageUploader,
+        "https://walkerholic-test-you.s3.ap-northeast10.amazonaws.com");
 
     @Test
-    public void createPost() {
+    public void createPost() throws IOException {
         //given
-        String title = "testTitle";
-        String content = "testContent";
-        Integer userId = 1;
-        PostCreateDTO postCreateDTO = new PostCreateDTO(title, content, userId);
-        MultipartFile multipartFile = new MockMultipartFile("uploaded-file",
-            "sampleFile.txt",
-            "text/plain",
-            "This is the file content".getBytes());
-        List<MultipartFile> multipartFiles = new ArrayList<>();
-        multipartFiles.add(multipartFile);
+        PostRequest request = new PostRequest(TITLE, CONTENT, 1);
+        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
 
         //when
-        PostDTO postDTO = postService.savePost(postCreateDTO, multipartFiles, null);
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(UserTest.USER));
+        when(s3ImageUploader.uploadFile(any(), any())).thenReturn(PostImageTest.POST_IMAGE.getFilePath());
+        when(postImageRepository.save(any())).thenReturn(PostImageTest.POST_IMAGE);
+        when(postRepository.save(any())).thenReturn(post);
+        PostResponse response = postService.createPost(request, Arrays.asList(MULTIPART_FILE));
 
         //then
-        assertNotNull(postDTO.getId());
-        assertEquals(postDTO.getTitle(), title);
-        assertEquals(postDTO.getContent(), content);
-        assertNotNull(postDTO.getPostImages());
-        assertEquals(
-            postRepository.findById(postDTO.getId()).get().getPostImages().get(0).getName(),
-            "sampleFile.txt");
+        assertThat(response.getId()).isEqualTo(post.getId());
+        assertThat(response.getTitle()).isEqualTo(TITLE);
+        assertThat(response.getContent()).isEqualTo(CONTENT);
+        assertThat(response.getPostImages().get(0).getId()).isEqualTo(PostImageTest.POST_IMAGE.getId());
+        assertThat(response.getPostImages().get(0).getImageUrl()).isEqualTo(PostImageTest.POST_IMAGE.getFilePath());
     }
 
     @Test
-    public void updatePost() {
+    public void updatePost() throws IOException {
         //given
-        Integer postId = 1;
-        Post post = postRepository.findById(postId).get();
-        String originalContent = post.getContent();
         String newContent = "updateTestPost";
-        post.setContent(newContent);
-        PostCreateDTO postCreateDTO = new PostCreateDTO(post.getId(), post.getTitle(),
-            post.getContent(), post.getUser().getId());
+        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
+        PostRequest request = new PostRequest(post.getId(), post.getTitle(), newContent, post.getUser().getId());
 
         //when
-        PostDTO postDTO = postService.savePost(postCreateDTO, null, null);
+        when(postRepository.findById(any())).thenReturn(Optional.of(post));
+        when(s3ImageUploader.uploadFile(any(), any())).thenReturn(PostImageTest.POST_IMAGE.getFilePath());
+        when(postImageRepository.save(any())).thenReturn(PostImageTest.POST_IMAGE);
+        PostResponse response = postService.updatePost(request, Arrays.asList(MULTIPART_FILE), null);
 
         //then
-        assertEquals(postDTO.getId(), postId);
-        assertNotEquals(postDTO.getContent(), originalContent);
-        assertEquals(postDTO.getContent(), newContent);
+        assertThat(response.getId()).isEqualTo(post.getId());
+        assertThat(response.getContent()).isEqualTo(newContent);
+        assertThat(response.getPostImages().get(0).getId()).isEqualTo(PostImageTest.POST_IMAGE.getId());
+        assertThat(response.getPostImages().get(0).getImageUrl()).isEqualTo(PostImageTest.POST_IMAGE.getFilePath());
     }
 
     @Test
@@ -92,7 +104,7 @@ public class PostServiceTests {
         Integer postId = 1;
 
         //when
-        PostDTO postDTO = postService.getPost(postId);
+        PostResponse postDTO = postService.getPost(postId);
 
         //then
         assertEquals(postDTO.getId(), postId);
@@ -128,10 +140,10 @@ public class PostServiceTests {
 
         //when
         HashMap<String, Object> response = postService.getPostsByRandom(page, userId);
-        List<PostDTO> postDTOS = (List<PostDTO>) response.get("posts");
+        List<PostResponse> postDTOS = (List<PostResponse>) response.get("posts");
 
         //then
-        for (PostDTO postDTO : postDTOS) {
+        for (PostResponse postDTO : postDTOS) {
             assertNotEquals(postRepository.findById(postDTO.getId()).get().getUser().getId(),
                 userId);
         }
@@ -167,12 +179,12 @@ public class PostServiceTests {
 
         //when
         HashMap<String, Object> response = postService.getPostsByFollowings(page, userId);
-        List<PostDTO> postDTOS = (List<PostDTO>) response.get("posts");
+        List<PostResponse> postDTOS = (List<PostResponse>) response.get("posts");
         List<Integer> followings = followRepository.findAllByFromUserId(userId).stream()
             .map(follow -> follow.getToUser().getId()).collect(Collectors.toList());
 
         //then
-        for (PostDTO postDTO : postDTOS) {
+        for (PostResponse postDTO : postDTOS) {
             assertThat(followings)
                 .contains(postRepository.findById(postDTO.getId()).get().getUser().getId());
         }
@@ -214,4 +226,5 @@ public class PostServiceTests {
         //then
         assertNull(postRepository.findById(id));
     }
+
 }

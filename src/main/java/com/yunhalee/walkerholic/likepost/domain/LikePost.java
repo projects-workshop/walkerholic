@@ -42,6 +42,7 @@ public class LikePost extends BaseTimeEntity {
 
     public static LikePost of(User user, Post post) {
         LikePost likePost = new LikePost(user, post);
+        post.addLikePost(likePost);
         return likePost;
     }
 }

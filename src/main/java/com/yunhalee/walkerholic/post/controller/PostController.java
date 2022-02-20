@@ -1,7 +1,7 @@
 package com.yunhalee.walkerholic.post.controller;
 
-import com.yunhalee.walkerholic.post.dto.PostCreateDTO;
-import com.yunhalee.walkerholic.post.dto.PostDTO;
+import com.yunhalee.walkerholic.post.dto.PostRequest;
+import com.yunhalee.walkerholic.post.dto.PostResponse;
 import com.yunhalee.walkerholic.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,22 +18,35 @@ public class PostController {
 
     private final PostService postService;
 
-    @PostMapping("/post/save")
-    public ResponseEntity<?> savePost(@RequestParam(value = "id", required = false) Integer id,
-        @RequestParam("title") String title,
-        @RequestParam("content") String content,
-        @RequestParam("userId") Integer userId,
-        @RequestParam(value = "multipartFile", required = false) List<MultipartFile> multipartFiles,
+//    @PostMapping("/post/save")
+//    public ResponseEntity<?> savePost(@RequestParam(value = "id", required = false) Integer id,
+//        @RequestParam("title") String title,
+//        @RequestParam("content") String content,
+//        @RequestParam("userId") Integer userId,
+//        @RequestParam(value = "multipartFile", required = false) List<MultipartFile> multipartFiles,
+//        @RequestParam(value = "deletedImages", required = false) List<String> deletedImages) {
+//        PostRequest postCreateDTO = new PostRequest(id, title, content, userId);
+//        return new ResponseEntity<PostDTO>(
+//            postService.savePost(postCreateDTO, multipartFiles, deletedImages), HttpStatus.OK);
+//    }
+
+    @PostMapping("/posts")
+    public ResponseEntity<PostResponse> createPost(@RequestPart("postRequest") PostRequest request,
+        @RequestPart(value = "multipartFile") List<MultipartFile> multipartFiles) {
+        return new ResponseEntity<PostResponse>(postService.createPost(request, multipartFiles), HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/posts")
+    public ResponseEntity<PostResponse> updatePost(@RequestPart("postRequest") PostRequest request,
+        @RequestPart(value = "multipartFile", required = false) List<MultipartFile> multipartFiles,
         @RequestParam(value = "deletedImages", required = false) List<String> deletedImages) {
-        PostCreateDTO postCreateDTO = new PostCreateDTO(id, title, content, userId);
-        return new ResponseEntity<PostDTO>(
-            postService.savePost(postCreateDTO, multipartFiles, deletedImages), HttpStatus.OK);
+        return ResponseEntity.ok(postService.updatePost(request, multipartFiles, deletedImages));
     }
 
     @GetMapping("/post/{id}")
     public ResponseEntity<?> getPost(@PathVariable("id") String id) {
         Integer postId = Integer.parseInt(id);
-        return new ResponseEntity<PostDTO>(postService.getPost(postId), HttpStatus.OK);
+        return new ResponseEntity<PostResponse>(postService.getPost(postId), HttpStatus.OK);
     }
 
     @GetMapping("/posts/{id}")

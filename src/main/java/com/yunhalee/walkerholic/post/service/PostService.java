@@ -1,9 +1,15 @@
 package com.yunhalee.walkerholic.post.service;
 
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
+import com.yunhalee.walkerholic.likepost.domain.LikePost;
+import com.yunhalee.walkerholic.likepost.dto.LikePostResponse;
+import com.yunhalee.walkerholic.post.PostNotFoundException;
+import com.yunhalee.walkerholic.post.dto.PostImageResponse;
+import com.yunhalee.walkerholic.post.dto.SimpleUserResponse;
+import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
 import com.yunhalee.walkerholic.util.FileUploadUtils;
-import com.yunhalee.walkerholic.post.dto.PostCreateDTO;
-import com.yunhalee.walkerholic.post.dto.PostDTO;
+import com.yunhalee.walkerholic.post.dto.PostRequest;
+import com.yunhalee.walkerholic.post.dto.PostResponse;
 import com.yunhalee.walkerholic.user.dto.UserPostDTO;
 import com.yunhalee.walkerholic.follow.domain.Follow;
 import com.yunhalee.walkerholic.post.domain.Post;
@@ -13,7 +19,10 @@ import com.yunhalee.walkerholic.follow.domain.FollowRepository;
 import com.yunhalee.walkerholic.post.domain.PostImageRepository;
 import com.yunhalee.walkerholic.post.domain.PostRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
-import lombok.RequiredArgsConstructor;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,95 +37,96 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class PostService {
 
-    private final PostRepository postRepository;
+    private PostRepository postRepository;
 
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
 
-    private final PostImageRepository postImageRepository;
+    private PostImageRepository postImageRepository;
 
-    private final FollowRepository followRepository;
+    private FollowRepository followRepository;
 
     public static final int POST_PER_PAGE = 9;
 
-    private final S3ImageUploader s3ImageUploader;
+    private S3ImageUploader s3ImageUploader;
 
-    @Value("${AWS_S3_BUCKET_URL}")
-    private String AWS_S3_BUCKET_URL;
+    private String bucketUrl;
+
+    public PostService(PostRepository postRepository,
+        UserRepository userRepository,
+        PostImageRepository postImageRepository,
+        FollowRepository followRepository,
+        S3ImageUploader s3ImageUploader, @Value("${AWS_S3_BUCKET_URL}") String bucketUrl) {
+        this.postRepository = postRepository;
+        this.userRepository = userRepository;
+        this.postImageRepository = postImageRepository;
+        this.followRepository = followRepository;
+        this.s3ImageUploader = s3ImageUploader;
+        this.bucketUrl = bucketUrl;
+    }
+
+    public PostResponse createPost(PostRequest request, List<MultipartFile> multipartFiles) {
+        User user = findUserById(request.getUserId());
+        Post post = postRepository.save(request.toPost(user));
+        savePostImage(post, multipartFiles);
+        return PostResponse.of(post, LikePostResponses(post.getLikePosts()), PostImageResponses(post.getPostImages()), SimpleUserResponse.of(post.getUser()));
+    }
+
+    public PostResponse updatePost(PostRequest request, List<MultipartFile> multipartFiles, List<String> deletedImages) {
+        Post post = findPostById(request.getId());
+        post.update(request.getTitle(), request.getContent());
+        deletePostImage(deletedImages);
+        savePostImage(post, multipartFiles);
+        return PostResponse.of(post, LikePostResponses(post.getLikePosts()), PostImageResponses(post.getPostImages()), SimpleUserResponse.of(post.getUser()));
+    }
+
+    private User findUserById(Integer id){
+        return userRepository.findById(id).orElseThrow(()-> new UserNotFoundException("User not found with id : " + id));
+    }
+
+    private Post findPostById(Integer id){
+        return postRepository.findById(id).orElseThrow(()->new PostNotFoundException("Post not found with id : " + id));
+    }
 
     private void deletePostImage(List<String> deletedImages) {
-        for (String deletedImage : deletedImages) {
-            postImageRepository.deleteByFilePath(deletedImage);
-            String fileName = deletedImage.substring(AWS_S3_BUCKET_URL.length() + 1);
-            s3ImageUploader.deleteFile(fileName);
-        }
+        Optional.ofNullable(deletedImages).orElseGet(Collections::emptyList).forEach(deletedImage ->{
+                postImageRepository.deleteByFilePath(deletedImage);
+                String fileName = deletedImage.substring(bucketUrl.length() + 1);
+                s3ImageUploader.deleteFile(fileName);
+            });
     }
 
-    private List<PostImage> savePostImage(Post post, List<MultipartFile> multipartFiles) {
-        List<PostImage> postImageList = new ArrayList<>();
-        multipartFiles.forEach(multipartFile -> {
-            PostImage postImage = new PostImage();
-
-            try {
-                String uploadDir = "postUploads/" + post.getId();
-                String imageUrl = s3ImageUploader.uploadFile(uploadDir, multipartFile);
-                String fileName = imageUrl
-                    .substring(AWS_S3_BUCKET_URL.length() + uploadDir.length() + 2);
-                postImage.setName(fileName);
-                postImage.setFilePath(imageUrl);
-                postImage.setPost(post);
-                PostImage postImage1 = postImageRepository.save(postImage);
-                postImageList.add(postImage1);
-
-            } catch (IOException ex) {
-                new IOException("Could not save file : " + multipartFile.getOriginalFilename());
-            }
-        });
-        return postImageList;
+    private void savePostImage(Post post, List<MultipartFile> multipartFiles) {
+        Optional.ofNullable(multipartFiles).orElseGet(Collections::emptyList).forEach(multipartFile -> {
+                try {
+                    String uploadDir = "postUploads/" + post.getId();
+                    String imageUrl = s3ImageUploader.uploadFile(uploadDir, multipartFile);
+                    String fileName = imageUrl.substring(bucketUrl.length() + uploadDir.length() + 2);
+                    PostImage postImage = postImageRepository.save(PostImage.of(fileName, imageUrl, post));
+                    post.addPostImage(postImage);
+                } catch (IOException ex) {
+                    new IOException("Could not save file : " + multipartFile.getOriginalFilename());
+                }
+            });
     }
 
-    public PostDTO savePost(PostCreateDTO postCreateDTO, List<MultipartFile> multipartFiles,
-        List<String> deletedImages) {
-        if (postCreateDTO.getId() != null) {
-            Post existingPost = postRepository.findById(postCreateDTO.getId()).get();
-            existingPost.setTitle(postCreateDTO.getTitle());
-            existingPost.setContent(postCreateDTO.getContent());
-            if (deletedImages != null && deletedImages.size() != 0) {
-                deletePostImage(deletedImages);
-            }
-            if (multipartFiles != null) {
-                List<PostImage> postImageList = savePostImage(existingPost, multipartFiles);
-                postRepository.save(existingPost);
-                return new PostDTO(existingPost, postImageList);
-
-            }
-            postRepository.save(existingPost);
-            return new PostDTO(existingPost);
-        } else {
-            Post post = new Post();
-            User user = userRepository.findById(postCreateDTO.getUserId()).get();
-            post.setTitle(postCreateDTO.getTitle());
-            System.out.println(postCreateDTO.getTitle());
-            post.setContent(postCreateDTO.getContent());
-            post.setUser(user);
-            postRepository.save(post);
-            if (multipartFiles != null) {
-                List<PostImage> postImageList = savePostImage(post, multipartFiles);
-                postRepository.save(post);
-                return new PostDTO(post, postImageList);
-            }
-            postRepository.save(post);
-            return new PostDTO(post);
-
-        }
-
+    private List<LikePostResponse> LikePostResponses(Set<LikePost> likePosts){
+        return likePosts.stream()
+            .map(LikePostResponse::of)
+            .collect(Collectors.toList());
     }
 
-    public PostDTO getPost(Integer id) {
+    private List<PostImageResponse> PostImageResponses(List<PostImage> postImages){
+        return postImages.stream()
+            .map(PostImageResponse::of)
+            .collect(Collectors.toList());
+    }
+
+
+    public PostResponse getPost(Integer id) {
         Post post = postRepository.findByPostId(id);
-        return new PostDTO(post);
+        return new PostResponse();
     }
 
     public HashMap<String, Object> getUserPosts(Integer id) {
@@ -177,8 +187,8 @@ public class PostService {
 
         Page<Post> pagePost = postRepository.findByFollowings(pageable, followings);
         List<Post> posts = pagePost.getContent();
-        List<PostDTO> postDTOS = new ArrayList<>();
-        posts.forEach(post -> postDTOS.add(new PostDTO(post)));
+        List<PostResponse> postDTOS = new ArrayList<>();
+        posts.forEach(post -> postDTOS.add(new PostResponse()));
 
         HashMap<String, Object> followingPosts = new HashMap<>();
         followingPosts.put("posts", postDTOS);

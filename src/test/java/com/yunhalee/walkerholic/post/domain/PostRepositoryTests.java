@@ -1,10 +1,4 @@
 package com.yunhalee.walkerholic.post.domain;
-
-import com.yunhalee.walkerholic.post.domain.Post;
-import com.yunhalee.walkerholic.post.domain.PostImage;
-import com.yunhalee.walkerholic.user.domain.User;
-import com.yunhalee.walkerholic.post.domain.PostImageRepository;
-import com.yunhalee.walkerholic.post.domain.PostRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,53 +28,7 @@ public class PostRepositoryTests {
     @Autowired
     private PostImageRepository postImageRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
     public static final int POST_PER_PAGE = 9;
-
-    @Test
-    public void createPost() {
-        //given
-        String content = "testPost";
-        Integer postImageId = 1;
-        Integer userId = 1;
-        List<PostImage> postImages = new ArrayList<>();
-        postImages.add(postImageRepository.findById(postImageId).get());
-        User user = userRepository.findById(userId).get();
-
-        Post post = new Post();
-        post.setContent(content);
-        post.setPostImages(postImages);
-        post.setUser(user);
-
-        //when
-        Post post1 = postRepository.save(post);
-
-        //then
-        assertThat(post1.getId()).isNotNull();
-        assertThat(post1.getContent()).isEqualTo(content);
-        assertThat(post1.getUser().getId()).isEqualTo(userId);
-        List<Integer> postImageIds = post1.getPostImages().stream()
-            .map(postImage -> postImage.getId()).collect(Collectors.toList());
-        assertThat(postImageIds).contains(postImageId);
-    }
-
-    @Test
-    public void updatePost() {
-        //given
-        Integer postId = 1;
-        Post post = postRepository.findById(postId).get();
-        String originalContent = post.getContent();
-
-        post.setContent("updateTestContent");
-
-        //when
-        Post post1 = postRepository.save(post);
-
-        //then
-        assertThat(post1.getContent()).isNotEqualTo(originalContent);
-    }
 
     @Test
     public void getPostById() {
@@ -200,22 +147,4 @@ public class PostRepositoryTests {
         posts.forEach(post -> assertThat(post.getTitle().contains(keyword)));
         posts.forEach(post -> System.out.println(post.getTitle()));
     }
-
-
-    @Test
-    public void deletePostById() {
-        //given
-        Integer id = 1;
-        Post post = postRepository.findById(id).get();
-        for (PostImage postImage : post.getPostImages()) {
-            postImageRepository.deleteById(postImage.getId());
-        }
-
-        //when
-        postRepository.deleteById(id);
-
-        //then
-        assertThat(postRepository.findById(id)).isNull();
-    }
-
 }

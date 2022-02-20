@@ -1,16 +1,14 @@
 package com.yunhalee.walkerholic.post.domain;
 
-import com.yunhalee.walkerholic.post.domain.Post;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "post_image")
 @Getter
-@Setter
 @NoArgsConstructor
 public class PostImage {
 
@@ -29,5 +27,39 @@ public class PostImage {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    public PostImage(Integer id, String name, String filePath) {
+        this.id = id;
+        this.name = name;
+        this.filePath = filePath;
+    }
 
+    private PostImage(String name, String filePath, Post post) {
+        this.name = name;
+        this.filePath = filePath;
+        this.post = post;
+    }
+
+    public static PostImage of(String name, String filePath, Post post) {
+        PostImage postImage = new PostImage(name, filePath, post);
+        return postImage;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        PostImage postImage = (PostImage) o;
+        return Objects.equals(id, postImage.id) && Objects
+            .equals(name, postImage.name) && Objects.equals(filePath, postImage.filePath)
+            && Objects.equals(post, postImage.post);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, filePath, post);
+    }
 }

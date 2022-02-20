@@ -49,7 +49,7 @@ class LikePostServiceTest extends MockBeans {
 
         //then
         assertThat(response.getId()).isNotNull();
-        assertThat(response.getPostId()).isEqualTo(PostTest.POST.getId());
+        assertThat(response.getUserId()).isEqualTo(UserTest.USER.getId());
     }
 
     @DisplayName("게시물의 좋아요를 취소한다.")

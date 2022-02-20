@@ -3,6 +3,7 @@ package com.yunhalee.walkerholic.post.domain;
 import com.yunhalee.walkerholic.common.domain.BaseTimeEntity;
 import com.yunhalee.walkerholic.likepost.domain.LikePost;
 import com.yunhalee.walkerholic.user.domain.User;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +16,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "post")
-@Getter
 @Setter
 @NoArgsConstructor
 public class Post extends BaseTimeEntity {
@@ -31,19 +31,87 @@ public class Post extends BaseTimeEntity {
     @Column(length = 3000)
     private String content;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<PostImage> postImages = new ArrayList<>();
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "post")
-    private Set<LikePost> likePosts = new HashSet<>();
+    @Embedded
+    private PostImages postImages;
+
+    @Embedded
+    private LikePosts likePosts;
 
     public Post(Integer id, String title, String content) {
         this.id = id;
+        this.postImages = new PostImages();
+        this.likePosts = new LikePosts();
         this.title = title;
         this.content = content;
     }
+
+    public Post(String title, String content, User user) {
+        this.title = title;
+        this.content = content;
+        this.user = user;
+    }
+
+    public Post(String title, String content,
+        PostImages postImages, User user, LikePosts likePosts) {
+        this.title = title;
+        this.content = content;
+        this.postImages = postImages;
+        this.user = user;
+        this.likePosts = likePosts;
+    }
+
+    public Post(Integer id, String title, String content, User user) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.postImages = new PostImages();
+        this.likePosts = new LikePosts();
+        this.user = user;
+    }
+
+    public static Post of(String title, String content, User user) {
+        return new Post(title, content, new PostImages(), user, new LikePosts());
+    }
+
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
+    public void addLikePost(LikePost likePost) {
+        this.likePosts.addLikePost(likePost);
+    }
+
+    public void addPostImage(PostImage postImage) {
+        this.postImages.addPostImage(postImage);
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public List<PostImage> getPostImages() {
+        return postImages.getPostImages();
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Set<LikePost> getLikePosts() {
+        return likePosts.getLikePosts();
+    }
+
 }

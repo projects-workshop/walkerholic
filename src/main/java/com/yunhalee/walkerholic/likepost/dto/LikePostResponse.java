@@ -10,31 +10,21 @@ public class LikePostResponse {
 
     private Integer id;
 
-    private Integer postId;
+    private Integer userId;
 
-    private UserLikePost user;
+    private String fullname;
 
-    private LikePostResponse(Integer id, Integer postId, UserLikePost user) {
+    private String imageUrl;
+
+    public LikePostResponse(Integer id, Integer userId, String fullname, String imageUrl) {
         this.id = id;
-        this.postId = postId;
-        this.user = user;
+        this.userId = userId;
+        this.fullname = fullname;
+        this.imageUrl = imageUrl;
     }
 
     public static LikePostResponse of(LikePost likePost) {
-        return new LikePostResponse(likePost.getId(), likePost.getPost().getId(), new UserLikePost(likePost.getUser()));
-    }
-
-    @Getter
-    static class UserLikePost {
-
-        private Integer id;
-        private String fullname;
-        private String imageUrl;
-
-        public UserLikePost(User user) {
-            this.id = user.getId();
-            this.fullname = user.getFullname();
-            this.imageUrl = user.getImageUrl();
-        }
+        User user = likePost.getUser();
+        return new LikePostResponse(likePost.getId(), user.getId(), user.getFullname(), user.getImageUrl());
     }
 }
