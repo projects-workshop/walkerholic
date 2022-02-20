@@ -46,12 +46,12 @@ public class PostController {
     }
 
     @GetMapping("/users/{id}/posts/discover")
-    public ResponseEntity<SimplePostResponses> getPostsByRandom(@RequestParam("page") Integer page, @PathVariable("id") Integer id) {
+    public ResponseEntity<SimplePostResponses> getPostsByRandom(@PathVariable("id") Integer id, @RequestParam("page") Integer page) {
         return ResponseEntity.ok(postService.getPostsByRandom(page, id));
     }
 
     @GetMapping("/users/{id}/posts/follow")
-    public ResponseEntity<PostResponses> getPostsByFollowings(@RequestParam("page") Integer page, @PathVariable("id") Integer id) {
+    public ResponseEntity<PostResponses> getPostsByFollowings(@PathVariable("id") Integer id, @RequestParam("page") Integer page) {
         return ResponseEntity.ok(postService.getPostsByFollowings(page, id));
     }
 
@@ -59,16 +59,15 @@ public class PostController {
     public ResponseEntity<SimplePostResponses> getHomePosts(@RequestParam("page") Integer page, @RequestParam("sort") String sort) {
         return ResponseEntity.ok(postService.getHomePosts(page, sort));
     }
-//
-//    @DeleteMapping("/post/{id}")
-//    public String deletePost(@PathVariable("id") String id) {
-//        Integer postId = Integer.parseInt(id);
-//        return postService.deletePost(postId);
-//    }
-//
+
     @GetMapping("/posts/search")
-    public ResponseEntity<SimplePostResponses> getSearchPosts(@RequestParam("page") Integer page,
-        @RequestParam("sort") String sort, @RequestParam(value = "keyword") String keyword) {
+    public ResponseEntity<SimplePostResponses> getSearchPosts(@RequestParam("page") Integer page, @RequestParam("sort") String sort, @RequestParam(value = "keyword") String keyword) {
         return ResponseEntity.ok(postService.getSearchPosts(page, sort, keyword));
+    }
+
+    @DeleteMapping("/posts/{id}")
+    public ResponseEntity deletePost(@PathVariable("id") Integer id) {
+        postService.deletePost(id);
+        return ResponseEntity.noContent().build();
     }
 }

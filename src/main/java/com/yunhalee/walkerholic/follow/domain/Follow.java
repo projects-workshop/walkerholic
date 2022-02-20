@@ -28,14 +28,17 @@ public class Follow {
     public Follow() {
     }
 
-    public Follow(User fromUser, User toUser) {
+    private Follow(User fromUser, User toUser) {
         this.fromUser = fromUser;
         this.toUser = toUser;
     }
 
-    //비지니스 로직
-    public static Follow follow(User fromUser, User toUser) {
+    public static Follow of(User fromUser, User toUser) {
         return new Follow(fromUser, toUser);
+    }
+
+    public Integer getToUserId(){
+        return toUser.getId();
     }
 
     @Override

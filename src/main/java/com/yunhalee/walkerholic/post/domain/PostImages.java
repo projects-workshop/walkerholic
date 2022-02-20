@@ -11,7 +11,7 @@ import javax.persistence.OneToMany;
 @Embeddable
 public class PostImages {
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostImage> postImages = new ArrayList<>();
 
     public PostImages() {
@@ -21,11 +21,11 @@ public class PostImages {
         this.postImages = postImages;
     }
 
-    public static PostImages of(PostImage... postImages){
+    public static PostImages of(PostImage... postImages) {
         return new PostImages(new ArrayList<>(Arrays.asList(postImages)));
     }
 
-    public void addPostImage(PostImage postImage){
+    public void addPostImage(PostImage postImage) {
         postImages.add(postImage);
     }
 

@@ -5,6 +5,7 @@ import lombok.Getter;
 
 @Getter
 public class PostResponses {
+
     private List<PostResponse> posts;
     private Long totalElement;
     private Integer totalPage;
@@ -15,7 +16,7 @@ public class PostResponses {
         this.totalPage = totalPage;
     }
 
-    public static PostResponses of(List<PostResponse> posts, Long totalElement, Integer totalPage){
+    public static PostResponses of(List<PostResponse> posts, Long totalElement, Integer totalPage) {
         return new PostResponses(posts, totalElement, totalPage);
     }
 }

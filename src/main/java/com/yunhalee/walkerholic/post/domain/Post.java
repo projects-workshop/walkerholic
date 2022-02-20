@@ -49,14 +49,7 @@ public class Post extends BaseTimeEntity {
         this.content = content;
     }
 
-    public Post(String title, String content, User user) {
-        this.title = title;
-        this.content = content;
-        this.user = user;
-    }
-
-    public Post(String title, String content,
-        PostImages postImages, User user, LikePosts likePosts) {
+    public Post(String title, String content, PostImages postImages, User user, LikePosts likePosts) {
         this.title = title;
         this.content = content;
         this.postImages = postImages;

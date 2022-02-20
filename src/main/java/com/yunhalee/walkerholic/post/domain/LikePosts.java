@@ -4,13 +4,14 @@ import com.yunhalee.walkerholic.likepost.domain.LikePost;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
 @Embeddable
 public class LikePosts {
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<LikePost> likePosts = new HashSet<>();
 
     public LikePosts() {

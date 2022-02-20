@@ -31,7 +31,7 @@ public class FollowService {
         checkFollowValidate(fromId, toId);
         User fromUser = user(fromId);
         User toUser = user(toId);
-        Follow follow = Follow.follow(fromUser, toUser);
+        Follow follow = Follow.of(fromUser, toUser);
         followRepository.save(follow);
         return FollowResponse.of(follow.getId(), FollowUserResponse.of(follow.getToUser()));
     }

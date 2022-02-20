@@ -16,7 +16,7 @@ public class SimplePostResponses {
         this.totalPage = totalPage;
     }
 
-    public static SimplePostResponses of(List<SimplePostResponse> posts, Long totalElement, Integer totalPage){
+    public static SimplePostResponses of(List<SimplePostResponse> posts, Long totalElement, Integer totalPage) {
         return new SimplePostResponses(posts, totalElement, totalPage);
     }
 

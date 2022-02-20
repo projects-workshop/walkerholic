@@ -13,6 +13,8 @@ import com.yunhalee.walkerholic.post.domain.Post;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
+import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -32,8 +34,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.assertj.core.api.Assertions.assertThat;
-
 
 @RunWith(SpringRunner.class)
 @ExtendWith(MockitoExtension.class)
@@ -58,11 +58,18 @@ class PostServiceTests extends MockBeans {
         s3ImageUploader,
         "https://walkerholic-test-you.s3.ap-northeast10.amazonaws.com");
 
+    private Post post;
+
+    @BeforeEach
+    public void setUp(){
+        post = new Post(1, TITLE, CONTENT, UserTest.USER);
+        post.addPostImage(PostImageTest.POST_IMAGE);
+    }
+
     @Test
     public void createPost() throws IOException {
         //given
         PostRequest request = new PostRequest(TITLE, CONTENT, 1);
-        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
 
         //when
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(UserTest.USER));
@@ -83,7 +90,6 @@ class PostServiceTests extends MockBeans {
     public void updatePost() throws IOException {
         //given
         String newContent = "updateTestPost";
-        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
         PostRequest request = new PostRequest(post.getId(), post.getTitle(), newContent, post.getUser().getId());
 
         //when
@@ -102,18 +108,15 @@ class PostServiceTests extends MockBeans {
     @Test
     public void getPostById() {
         //given
-        Integer postId = 1;
-        Post post = new Post(postId, TITLE, CONTENT, UserTest.USER);
-        post.addPostImage(PostImageTest.POST_IMAGE);
         post.addLikePost(new LikePost(1, UserTest.SELLER, post));
 
         //when
         when(postRepository.existsById(anyInt())).thenReturn(true);
         when(postRepository.findByPostId(anyInt())).thenReturn(post);
-        PostResponse response = postService.getPost(postId);
+        PostResponse response = postService.getPost(post.getId());
 
         //then
-        assertThat(response.getId()).isEqualTo(postId);
+        assertThat(response.getId()).isEqualTo(post.getId());
         assertThat(response.getContent()).isEqualTo(CONTENT);
         assertThat(response.getPostImages().get(0).getId()).isEqualTo(PostImageTest.POST_IMAGE.getId());
         assertThat(response.getPostImages().get(0).getImageUrl()).isEqualTo(PostImageTest.POST_IMAGE.getFilePath());
@@ -123,8 +126,6 @@ class PostServiceTests extends MockBeans {
     @Test
     public void getPostsByUserId() {
         //given
-        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
-        post.addPostImage(PostImageTest.POST_IMAGE);
         Post likePost = new Post(2, TITLE, CONTENT, UserTest.SELLER);
         likePost.addLikePost(new LikePost(1, UserTest.USER, likePost));
         likePost.addPostImage(PostImageTest.POST_IMAGE);
@@ -145,8 +146,6 @@ class PostServiceTests extends MockBeans {
     @Test
     public void getPostsByRandom() {
         //given
-        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
-        post.addPostImage(PostImageTest.POST_IMAGE);
         Post likePost = new Post(2, TITLE, CONTENT, UserTest.SELLER);
         likePost.addPostImage(PostImageTest.POST_IMAGE);
 
@@ -166,8 +165,6 @@ class PostServiceTests extends MockBeans {
         //given
         Integer page = 1;
         String sort = "popular";
-        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
-        post.addPostImage(PostImageTest.POST_IMAGE);
         Post likePost = new Post(2, TITLE, CONTENT, UserTest.SELLER);
         likePost.addLikePost(new LikePost(1, UserTest.USER, likePost));
         likePost.addPostImage(PostImageTest.POST_IMAGE);
@@ -186,8 +183,6 @@ class PostServiceTests extends MockBeans {
         //given
         Integer page = 1;
         String sort = "newest";
-        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
-        post.addPostImage(PostImageTest.POST_IMAGE);
         Post likePost = new Post(2, TITLE, CONTENT, UserTest.SELLER);
         likePost.addLikePost(new LikePost(1, UserTest.USER, likePost));
         likePost.addPostImage(PostImageTest.POST_IMAGE);
@@ -204,8 +199,6 @@ class PostServiceTests extends MockBeans {
     @Test
     public void getPostsByFollowings() {
         //given
-        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
-        post.addPostImage(PostImageTest.POST_IMAGE);
         Post likePost = new Post(2, TITLE, CONTENT, UserTest.SELLER);
         likePost.addPostImage(PostImageTest.POST_IMAGE);
 
@@ -225,8 +218,6 @@ class PostServiceTests extends MockBeans {
         Integer page = 1;
         String sort = "newest";
         String keyword = "test";
-        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
-        post.addPostImage(PostImageTest.POST_IMAGE);
         Post likePost = new Post(2, TITLE, CONTENT, UserTest.SELLER);
         likePost.addLikePost(new LikePost(1, UserTest.USER, likePost));
         likePost.addPostImage(PostImageTest.POST_IMAGE);
@@ -245,8 +236,6 @@ class PostServiceTests extends MockBeans {
         Integer page = 1;
         String sort = "popular";
         String keyword = "test";
-        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
-        post.addPostImage(PostImageTest.POST_IMAGE);
         Post likePost = new Post(2, TITLE, CONTENT, UserTest.SELLER);
         likePost.addLikePost(new LikePost(1, UserTest.USER, likePost));
         likePost.addPostImage(PostImageTest.POST_IMAGE);
@@ -259,17 +248,19 @@ class PostServiceTests extends MockBeans {
         //then
         assertThat(response.getPosts().get(0).getId()).isEqualTo(likePost.getId());
     }
-//
-//    @Test
-//    public void deletePost() {
-//        //given
-//        Integer id = 1;
-//
-//        //when
-//        postRepository.deleteById(id);
-//
-//        //then
-////        assertNull(postRepository.findById(id));
-//    }
+
+    @Test
+    public void deletePost() {
+        //given
+        Integer id = 1;
+
+        //when
+        when(postRepository.findById(anyInt())).thenReturn(Optional.of(post));
+        postService.deletePost(id);
+
+        //then
+        verify(s3ImageUploader).removeFolder(any());
+        verify(postRepository).deleteById(anyInt());
+    }
 
 }

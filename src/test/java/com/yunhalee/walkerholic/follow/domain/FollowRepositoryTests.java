@@ -37,7 +37,7 @@ public class FollowRepositoryTests {
     public void setUp() {
         fromUser = userRepository.save(UserTest.USER);
         toUser = userRepository.save(UserTest.SELLER);
-        follow = Follow.follow(fromUser, toUser);
+        follow = Follow.of(fromUser, toUser);
         followRepository.save(follow);
     }
 
@@ -75,7 +75,7 @@ public class FollowRepositoryTests {
             "testUser@example.com",
             "12345678",
             Role.USER));
-        followRepository.save(Follow.follow(user, fromUser));
+        followRepository.save(Follow.of(user, fromUser));
 
         //when
         List<Follow> follows = followRepository.findAllByUserId(fromUser.getId());
