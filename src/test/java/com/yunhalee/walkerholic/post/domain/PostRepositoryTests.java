@@ -1,7 +1,6 @@
 package com.yunhalee.walkerholic.post.domain;
 
-import com.yunhalee.walkerholic.post.PostNotFoundException;
-import com.yunhalee.walkerholic.user.domain.UserRepository;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +13,6 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -111,43 +109,44 @@ public class PostRepositoryTests {
             priorLikeSize = posts.get(i).getLikePosts().size();
         }
     }
-//
-//    @Test
-//    public void getPostsByKeywordOrderByCreatedAt() {
-//        //given
-//        Integer page = 1;
-//        String sort = "newest";
-//        String keyword = "t";
-//
-//        //when
-//        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
-//        Page<Post> postPage = postRepository.findByKeyword(pageable, keyword);
-//        List<Post> posts = postPage.getContent();
-//
-//        //then
-//        posts.forEach(post -> assertThat(post.getTitle().contains(keyword)));
-//        posts.forEach(post -> System.out.println(post.getTitle()));
-//    }
-//
-//    @Test
-//    public void getPostsByKeywordOrderByLikePostsSize() {
-//        //given
-//        Integer page = 1;
-//        String sort = "likeposts";
-//        String keyword = "t";
-//
-//        //when
-//        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
-//        Page<Post> postPage = postRepository.findByLikePostSizeAndKeyword(pageable, keyword);
-//        List<Post> posts = postPage.getContent();
-//
-//        //then
-//        Integer priorLikeSize = posts.get(0).getLikePosts().size();
-//        for (int i = 1; i < posts.size(); i++) {
-//            assertThat(posts.get(i).getLikePosts().size()).isLessThanOrEqualTo(priorLikeSize);
-//            priorLikeSize = posts.get(i).getLikePosts().size();
-//        }
-//        posts.forEach(post -> assertThat(post.getTitle().contains(keyword)));
-//        posts.forEach(post -> System.out.println(post.getTitle()));
-//    }
+
+    @Test
+    public void getPostsByKeywordOrderByCreatedAtDesc() {
+        //given
+        Integer page = 1;
+        String keyword = "t";
+
+        //when
+        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
+        Page<Post> postPage = postRepository.findByKeyword(pageable, keyword);
+        List<Post> posts = postPage.getContent();
+
+        //then
+        posts.forEach(post -> assertThat(post.getTitle().contains(keyword)||post.getTitle().contains(keyword.toUpperCase())).isTrue());
+        LocalDateTime createdAt = posts.get(0).getCreatedAt();
+        for (int i = 1; i < posts.size(); i++) {
+            assertThat(posts.get(i).getCreatedAt()).isBefore(createdAt);
+            createdAt = posts.get(i).getCreatedAt();
+        }
+    }
+
+    @Test
+    public void getPostsByKeywordOrderByLikePostsSize() {
+        //given
+        Integer page = 1;
+        String keyword = "t";
+
+        //when
+        Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
+        Page<Post> postPage = postRepository.findByLikePostSizeAndKeyword(pageable, keyword);
+        List<Post> posts = postPage.getContent();
+
+        //then
+        Integer priorLikeSize = posts.get(0).getLikePosts().size();
+        for (int i = 1; i < posts.size(); i++) {
+            assertThat(posts.get(i).getLikePosts().size()).isLessThanOrEqualTo(priorLikeSize);
+            priorLikeSize = posts.get(i).getLikePosts().size();
+        }
+        posts.forEach(post -> assertThat(post.getTitle().contains(keyword)||post.getTitle().contains(keyword.toUpperCase())).isTrue());
+    }
 }

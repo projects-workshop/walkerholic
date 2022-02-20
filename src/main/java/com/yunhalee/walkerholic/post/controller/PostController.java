@@ -66,11 +66,9 @@ public class PostController {
 //        return postService.deletePost(postId);
 //    }
 //
-//    @GetMapping("/posts/search/{page}/{sort}/{keyword}")
-//    public ResponseEntity<?> getSearchPosts(@PathVariable("page") String page,
-//        @PathVariable(value = "keyword") String keyword, @PathVariable("sort") String sort) {
-//        Integer pageNumber = Integer.parseInt(page);
-//        return new ResponseEntity<HashMap<String, Object>>(
-//            postService.getSearchPosts(pageNumber, sort, keyword), HttpStatus.OK);
-//    }
+    @GetMapping("/posts/search")
+    public ResponseEntity<SimplePostResponses> getSearchPosts(@RequestParam("page") Integer page,
+        @RequestParam("sort") String sort, @RequestParam(value = "keyword") String keyword) {
+        return ResponseEntity.ok(postService.getSearchPosts(page, sort, keyword));
+    }
 }

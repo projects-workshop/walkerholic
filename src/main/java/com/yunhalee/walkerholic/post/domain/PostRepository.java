@@ -35,12 +35,12 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts k LEFT JOIN FETCH p.user u ORDER BY SIZE(k) DESC",
         countQuery = "SELECT count(DISTINCT p) FROM Post p")
     Page<Post> findByLikePostSize(Pageable pageable);
-//
-//    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH p.likePosts LEFT JOIN FETCH p.user u WHERE p.title LIKE %:keyword% ORDER BY p.createdAt DESC",
-//        countQuery = "SELECT count(DISTINCT p) FROM Post p")
-//    Page<Post> findByKeyword(Pageable pageable, String keyword);
-//
-//    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH p.user u WHERE p.title LIKE %:keyword%  ORDER BY SIZE(l.likePosts) DESC",
-//        countQuery = "SELECT count(DISTINCT p) FROM Post p")
-//    Page<Post> findByLikePostSizeAndKeyword(Pageable pageable, String keyword);
+
+    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts LEFT JOIN FETCH p.user u WHERE p.title LIKE %:keyword% ORDER BY p.createdAt DESC",
+        countQuery = "SELECT count(DISTINCT p) FROM Post p")
+    Page<Post> findByKeyword(Pageable pageable, String keyword);
+
+    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts k LEFT JOIN FETCH p.user u WHERE p.title LIKE %:keyword%  ORDER BY SIZE(k) DESC",
+        countQuery = "SELECT count(DISTINCT p) FROM Post p")
+    Page<Post> findByLikePostSizeAndKeyword(Pageable pageable, String keyword);
 }

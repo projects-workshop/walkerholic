@@ -218,31 +218,47 @@ class PostServiceTests extends MockBeans {
         assertThat(response.getTotalElement()).isEqualTo(2L);
         response.getPosts().forEach(postResponse -> assertThat(Arrays.asList(UserTest.USER.getId(), UserTest.SELLER.getId()).contains(postResponse.getUser().getId())));
     }
-//
-//    @Test
-//    public void getPostsByKeyword() {
-//        //given
-//        Integer page = 1;
-//        String sort = "likeposts";
-//        String keyword = "t";
-//
-//        //when
-//        HashMap<String, Object> response = postService.getSearchPosts(page, sort, keyword);
-//        List<UserPostDTO> userPostDTOS = (List<UserPostDTO>) response.get("posts");
-//
-//        //then
-//        Integer priorLikeSize = postRepository.findById(userPostDTOS.get(0).getId()).get()
-//            .getLikePosts().size();
-//        for (int i = 1; i < userPostDTOS.size(); i++) {
-//            assertThat(
-//                postRepository.findById(userPostDTOS.get(i).getId()).get().getLikePosts().size())
-//                .isLessThanOrEqualTo(priorLikeSize);
-//            priorLikeSize = postRepository.findById(userPostDTOS.get(i).getId()).get()
-//                .getLikePosts().size();
-//        }
-//        userPostDTOS.forEach(post -> assertThat(post.getTitle().contains(keyword)));
-//        userPostDTOS.forEach(post -> System.out.println(post.getTitle()));
-//    }
+
+    @Test
+    public void getPostsByKeywordOrderedByCreatedAt() {
+        //given
+        Integer page = 1;
+        String sort = "newest";
+        String keyword = "test";
+        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
+        post.addPostImage(PostImageTest.POST_IMAGE);
+        Post likePost = new Post(2, TITLE, CONTENT, UserTest.SELLER);
+        likePost.addLikePost(new LikePost(1, UserTest.USER, likePost));
+        likePost.addPostImage(PostImageTest.POST_IMAGE);
+
+        //when
+        doReturn(new PageImpl<>(Arrays.asList(post, likePost))).when(postRepository).findByKeyword(any(), any());
+        doReturn(new PageImpl<>(Arrays.asList(likePost, post))).when(postRepository).findByLikePostSizeAndKeyword(any(), any());
+        SimplePostResponses response = postService.getSearchPosts(page, sort, keyword);
+
+        //then
+        assertThat(response.getPosts().get(0).getId()).isEqualTo(post.getId());
+    }
+    @Test
+    public void getPostsByKeywordOrderedByLikePostSize() {
+        //given
+        Integer page = 1;
+        String sort = "popular";
+        String keyword = "test";
+        Post post = new Post(1, TITLE, CONTENT, UserTest.USER);
+        post.addPostImage(PostImageTest.POST_IMAGE);
+        Post likePost = new Post(2, TITLE, CONTENT, UserTest.SELLER);
+        likePost.addLikePost(new LikePost(1, UserTest.USER, likePost));
+        likePost.addPostImage(PostImageTest.POST_IMAGE);
+
+        //when
+        doReturn(new PageImpl<>(Arrays.asList(post, likePost))).when(postRepository).findByKeyword(any(), any());
+        doReturn(new PageImpl<>(Arrays.asList(likePost, post))).when(postRepository).findByLikePostSizeAndKeyword(any(), any());
+        SimplePostResponses response = postService.getSearchPosts(page, sort, keyword);
+
+        //then
+        assertThat(response.getPosts().get(0).getId()).isEqualTo(likePost.getId());
+    }
 //
 //    @Test
 //    public void deletePost() {
