@@ -1,10 +1,9 @@
 package com.yunhalee.walkerholic.product.controller;
 
-import com.yunhalee.walkerholic.product.dto.ProductCreateDTO;
-import com.yunhalee.walkerholic.product.dto.ProductDTO;
+import com.yunhalee.walkerholic.product.dto.ProductRequest;
+import com.yunhalee.walkerholic.product.dto.ProductResponse;
 import com.yunhalee.walkerholic.product.dto.ProductListDTO;
 import com.yunhalee.walkerholic.product.service.ProductService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,12 +13,15 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping("/product/save")
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
+
+    @PostMapping("/products")
     public ProductListDTO saveProduct(@RequestParam(value = "id", required = false) Integer id,
         @RequestParam("name") String name,
         @RequestParam("description") String description,
@@ -30,61 +32,53 @@ public class ProductController {
         @RequestParam("userId") Integer userId,
         @RequestParam(value = "multipartFile", required = false) List<MultipartFile> multipartFiles,
         @RequestParam(value = "deletedImages", required = false) List<String> deletedImages) {
-        ProductCreateDTO productCreateDTO = new ProductCreateDTO(id, name, description, brand,
+        ProductRequest productCreateDTO = new ProductRequest(id, name, description, brand,
             category, stock, price, userId);
         return productService.saveProduct(productCreateDTO, multipartFiles, deletedImages);
     }
 
-    @GetMapping("/product/{id}")
-    public ResponseEntity<?> getProduct(@PathVariable("id") String id) {
-        Integer productId = Integer.parseInt(id);
-        return new ResponseEntity<ProductDTO>(productService.getProduct(productId), HttpStatus.OK);
+    @GetMapping("/products/{id}")
+    public ResponseEntity<?> getProduct(@PathVariable("id") Integer id) {
+        return new ResponseEntity<ProductResponse>(productService.getProduct(id), HttpStatus.OK);
     }
 
-    @GetMapping("/products/{page}")
-    public ResponseEntity<?> getProducts(@PathVariable("page") String page,
+    @GetMapping("/products")
+    public ResponseEntity<?> getProducts(@RequestParam("page") Integer page,
         @RequestParam(value = "sort", required = false) String sort,
         @RequestParam(value = "category", required = false) String category,
         @RequestParam(value = "keyword", required = false) String keyword) {
-        Integer pageNumber = Integer.parseInt(page);
         return new ResponseEntity<HashMap>(
-            productService.getProducts(pageNumber, sort, category, keyword), HttpStatus.OK);
+            productService.getProducts(page, sort, category, keyword), HttpStatus.OK);
     }
 
-    @GetMapping("/products/seller/{id}/{page}")
-    public ResponseEntity<?> getProductsBySeller(@PathVariable("id") String id,
-        @PathVariable("page") String page,
+    @GetMapping("/users/{id}/products")
+    public ResponseEntity<?> getProductsBySeller(@PathVariable("id") Integer id,
+        @RequestParam("page") Integer page,
         @RequestParam(value = "sort", required = false) String sort,
         @RequestParam(value = "category", required = false) String category,
         @RequestParam(value = "keyword", required = false) String keyword) {
-        Integer sellerId = Integer.parseInt(id);
-        Integer pageNumber = Integer.parseInt(page);
         return new ResponseEntity<HashMap>(
-            productService.getProductsBySeller(sellerId, pageNumber, sort, category, keyword),
+            productService.getProductsBySeller(id, page, sort, category, keyword),
             HttpStatus.OK);
     }
 
-    @DeleteMapping("/product/delete/{id}")
-    public Integer deleteProduct(@PathVariable("id") String id) {
-        Integer productId = Integer.parseInt(id);
-        return productService.deleteProduct(productId);
+    @DeleteMapping("/products/{id}")
+    public Integer deleteProduct(@PathVariable("id") Integer id) {
+        return productService.deleteProduct(id);
     }
 
-    @GetMapping("/productlist/{page}/{sort}")
-    public ResponseEntity<?> getProductList(@PathVariable("page") String page,
-        @PathVariable("sort") String sort) {
-        Integer pageNumber = Integer.parseInt(page);
+    @GetMapping("/products/list")
+    public ResponseEntity<?> getProductList(@RequestParam("page") Integer page,
+        @RequestParam("sort") String sort) {
         return new ResponseEntity<HashMap<String, Object>>(
-            productService.getAllProductList(pageNumber, sort), HttpStatus.OK);
+            productService.getAllProductList(page, sort), HttpStatus.OK);
     }
 
-    @GetMapping("/productlistBySeller/{page}/{sort}/{id}")
-    public ResponseEntity<?> getProductListBySeller(@PathVariable("page") String page,
-        @PathVariable("sort") String sort, @PathVariable("id") String id) {
-        Integer pageNumber = Integer.parseInt(page);
-        Integer sellerId = Integer.parseInt(id);
+    @GetMapping("/users/{id}/products/list")
+    public ResponseEntity<?> getProductListBySeller(@RequestParam("page") Integer page,
+        @RequestParam("sort") String sort, @PathVariable("id") Integer id) {
         return new ResponseEntity<HashMap<String, Object>>(
-            productService.getProductListBySeller(pageNumber, sort, sellerId), HttpStatus.OK);
+            productService.getProductListBySeller(page, sort, id), HttpStatus.OK);
     }
 
 

@@ -54,7 +54,8 @@ class ReviewServiceTest extends MockBeans {
             "testBrand",
             Category.TUMBLER,
             12,
-            1000f);
+            1000f,
+            "testDescription");
 
         review = Review.builder()
             .rating(2)
@@ -79,7 +80,7 @@ class ReviewServiceTest extends MockBeans {
         //then
         assertThat(response.getRating()).isEqualTo(rating);
         assertThat(response.getComment()).isEqualTo(comment);
-        assertThat(product.getReviews().size()).isEqualTo(expectedCount);
+        assertThat(product.getReviewInfo().getTotalCount()).isEqualTo(expectedCount);
         assertThat(product.getAverage()).isEqualTo(expected);
     }
 
@@ -103,7 +104,7 @@ class ReviewServiceTest extends MockBeans {
     @DisplayName("주어진 정보로 리뷰를 업데이트 한다.")
     void update_review(Integer rating, String comment, Integer reviewId, BigDecimal expected) {
         //given
-        product.addReview(review);
+        product.addReview(review.getRating());
         ReviewRequest request = new ReviewRequest(rating, comment);
 
         //when
@@ -136,11 +137,11 @@ class ReviewServiceTest extends MockBeans {
     }
 
     @ParameterizedTest
-    @CsvSource({"4, 0", "1, 0", "5, 0"})
+    @CsvSource({"4, 0.00", "1, 0.00", "5, 0.00"})
     @DisplayName("리뷰를 삭제한다.")
     void delete_review(Integer reviewId, BigDecimal expected) {
         //when
-        product.addReview(review);
+        product.addReview(review.getRating());
 
         when(reviewRepository.findById(anyInt())).thenReturn(java.util.Optional.of(review));
         reviewService.deleteReview(reviewId);

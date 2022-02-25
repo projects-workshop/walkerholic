@@ -36,7 +36,7 @@ public class ReviewService {
         User user = userService.findUserById(reviewRequest.getUserId());
         Product product = productService.findProductById(reviewRequest.getProductId());
         Review review = reviewRequest.toReview(user, product);
-        product.addReview(review);
+        product.addReview(review.getRating());
         reviewRepository.save(review);
         return new ReviewResponse(review);
     }

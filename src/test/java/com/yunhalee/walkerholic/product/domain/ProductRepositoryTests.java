@@ -52,14 +52,14 @@ public class ProductRepositoryTests {
         List<ProductImage> productImages = new ArrayList<>();
         productImages.add(productImageRepository.findById(productImageId).get());
 
-        Product product = new Product();
-        product.setPrice(price);
-        product.setBrand(brand);
-        product.setCategory(Category.CLOTHES);
-        product.setName(name);
-        product.setStock(stock);
-        product.setDescription(description);
-        product.setProductImages(productImages);
+        Product product = new Product(name, brand, Category.CLOTHES, stock, price, description);
+//        product.setPrice(price);
+//        product.setBrand(brand);
+//        product.setCategory(Category.CLOTHES);
+//        product.setName(name);
+//        product.setStock(stock);
+//        product.setDescription(description);
+        product.addProductImage(productImageRepository.findById(productImageId).get());
 
         //when
         Product product1 = productRepository.save(product);

@@ -1,7 +1,7 @@
 package com.yunhalee.walkerholic.product.service;
 
-import com.yunhalee.walkerholic.product.dto.ProductCreateDTO;
-import com.yunhalee.walkerholic.product.dto.ProductDTO;
+import com.yunhalee.walkerholic.product.dto.ProductRequest;
+import com.yunhalee.walkerholic.product.dto.ProductResponse;
 import com.yunhalee.walkerholic.product.dto.ProductListDTO;
 import com.yunhalee.walkerholic.product.exception.ProductNotFoundException;
 import com.yunhalee.walkerholic.user.dto.UserSellerDTO;
@@ -14,7 +14,6 @@ import com.yunhalee.walkerholic.product.domain.ProductImage;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.product.domain.ProductImageRepository;
 import com.yunhalee.walkerholic.product.domain.ProductRepository;
-import com.yunhalee.walkerholic.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -58,17 +57,14 @@ public class ProductService {
 
     private void saveProductImage(Product product, List<MultipartFile> multipartFiles){
         multipartFiles.forEach(multipartFile -> {
-            ProductImage productImage = new ProductImage();
+//            ProductImage productImage = new ProductImage();
             try{
                 String uploadDir = "productUploads/" + product.getId();
                 String imageUrl = s3ImageUploader.uploadFile(uploadDir, multipartFile);
                 String fileName = imageUrl.substring(AWS_S3_BUCKET_URL.length()+uploadDir.length()+2);
-                productImage.setName(fileName);
-                productImage.setFilePath(imageUrl);
-                productImage.setProduct(product);
+                ProductImage productImage = new ProductImage(fileName, imageUrl, product);
                 productImageRepository.save(productImage);
                 product.addProductImage(productImage);
-
             }catch (IOException ex){
                 new IOException("Could not save file : " + multipartFile.getOriginalFilename());
             }
@@ -76,7 +72,7 @@ public class ProductService {
 
     }
 
-    public ProductListDTO saveProduct(ProductCreateDTO productCreateDTO, List<MultipartFile> multipartFiles, List<String> deletedImages){
+    public ProductListDTO saveProduct(ProductRequest productCreateDTO, List<MultipartFile> multipartFiles, List<String> deletedImages){
 
         if(productCreateDTO.getId()!=null){
             Product existingProduct = productRepository.findById(productCreateDTO.getId()).get();
@@ -121,9 +117,9 @@ public class ProductService {
 
     }
 
-    public ProductDTO getProduct(Integer id){
+    public ProductResponse getProduct(Integer id){
         Product product = productRepository.findByProductId(id);
-        return new ProductDTO(product);
+        return new ProductResponse();
     }
 
     public HashMap<String,Object> getProducts(Integer page,String sort, String category, String keyword){

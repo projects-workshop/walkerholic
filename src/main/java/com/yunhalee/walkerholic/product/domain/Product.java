@@ -45,53 +45,59 @@ public class Product extends BaseTimeEntity {
     @Column(nullable = false)
     private Float price;
 
-    private BigDecimal average;
+//    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<ProductImage> productImages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductImage> productImages = new ArrayList<>();
+    @Embedded
+    private ProductImages productImages;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("createdAt DESC")
-    private Set<Review> reviews = new HashSet<>();
+    @Embedded
+    private ReviewInfo reviewInfo;
 
-    public Product(String name, String brand, Category category, Integer stock, Float price) {
+//    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @OrderBy("createdAt DESC")
+//    private Set<Review> reviews = new HashSet<>();
+
+    public Product(String name, String brand, Category category, Integer stock, Float price, String description) {
         this.name = name;
         this.brand = brand;
         this.category = category;
         this.stock = stock;
         this.price = price;
+        this.reviewInfo = new ReviewInfo();
+        this.description = description;
     }
 
-    public void addReview(Review review) {
-        reviews.add(review);
-        review.changeProduct(this);
+    public Product(String name, String description, String brand, Category category, Integer stock, Float price, User user) {
+        this.name = name;
+        this.description = description;
+        this.brand = brand;
+        this.category = category;
+        this.stock = stock;
+        this.price = price;
+        this.productImages = new ProductImages();
+        this.user = user;
+        this.reviewInfo = new ReviewInfo();
+    }
 
-        Integer sum = reviews.stream().mapToInt(reviews -> reviews.getRating()).sum();
-        changeAverage(sum, reviews.size());
+    public void addReview(Integer rating) {
+        reviewInfo.addReview(rating);
     }
 
     public void editReview(Integer preRating, Integer postRating) {
-        Integer sum = reviews.stream().mapToInt(reviews -> reviews.getRating()).sum();
-        sum = (sum - preRating + postRating);
-        changeAverage(sum, reviews.size());
+        reviewInfo.editReview(preRating, postRating);
     }
 
     public void deleteReview(Integer rating) {
-        Integer sum = reviews.stream().mapToInt(reviews -> reviews.getRating()).sum();
-        sum -= rating;
-        changeAverage(sum, reviews.size() - 1);
+        reviewInfo.deleteReview(rating);
     }
 
-    private void changeAverage(Integer sum, int size) {
-        if (size == 0) {
-            this.average = BigDecimal.ZERO;
-            return;
-        }
-        this.average = BigDecimal.valueOf(sum).divide(BigDecimal.valueOf(size), 2, RoundingMode.HALF_EVEN);
+    public BigDecimal getAverage(){
+        return reviewInfo.getAverage();
     }
 
     //비지니스 로직
@@ -108,19 +114,21 @@ public class Product extends BaseTimeEntity {
     }
 
     public void addProductImage(ProductImage productImage) {
-        this.productImages.add(productImage);
+        this.productImages.addProductImage(productImage);
     }
 
     @Transient
     public String getMainImageUrl() {
-        return this.productImages.get(0).getFilePath();
+        return this.productImages.getMainImageUrl();
     }
 
     @Transient
     public List<String> getImagesUrl() {
-        List<String> imagesUrl = new ArrayList<>();
-        this.productImages.forEach(productImage -> imagesUrl.add(productImage.getFilePath()));
-        return imagesUrl;
+        return this.productImages.getImageUrls();
+    }
+
+    public List<ProductImage> getProductImages(){
+        return this.productImages.getProductImages();
     }
 
 

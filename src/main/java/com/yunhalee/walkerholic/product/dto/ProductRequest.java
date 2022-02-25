@@ -4,8 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
-public class ProductCreateDTO {
+public class ProductRequest {
 
     private Integer id;
 
@@ -23,8 +22,7 @@ public class ProductCreateDTO {
 
     private Integer userId;
 
-    public ProductCreateDTO(String name, String description, String brand, String category,
-        Integer stock, Float price, Integer userId) {
+    public ProductRequest(String name, String description, String brand, String category, Integer stock, Float price, Integer userId) {
         this.name = name;
         this.description = description;
         this.brand = brand;
@@ -34,8 +32,7 @@ public class ProductCreateDTO {
         this.userId = userId;
     }
 
-    public ProductCreateDTO(Integer id, String name, String description, String brand,
-        String category, Integer stock, Float price, Integer userId) {
+    public ProductRequest(Integer id, String name, String description, String brand, String category, Integer stock, Float price, Integer userId) {
         this.id = id;
         this.name = name;
         this.description = description;

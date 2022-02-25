@@ -47,7 +47,7 @@ public class ReviewRepositoryTest {
             Role.USER);
         userRepository.save(user);
 
-        product = new Product("testProduct", "testBrand", Category.TUMBLER, 12, 1000f);
+        product = new Product("testProduct", "testBrand", Category.TUMBLER, 12, 1000f, "testDescription");
         productRepository.save(product);
 
         review = Review.builder()

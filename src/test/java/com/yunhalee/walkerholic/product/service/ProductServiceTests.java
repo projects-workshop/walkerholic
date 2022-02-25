@@ -1,11 +1,10 @@
 package com.yunhalee.walkerholic.product.service;
 
-import com.yunhalee.walkerholic.product.dto.ProductCreateDTO;
-import com.yunhalee.walkerholic.product.dto.ProductDTO;
+import com.yunhalee.walkerholic.product.dto.ProductRequest;
+import com.yunhalee.walkerholic.product.dto.ProductResponse;
 import com.yunhalee.walkerholic.product.dto.ProductListDTO;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.product.domain.ProductRepository;
-import com.yunhalee.walkerholic.product.service.ProductService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +43,7 @@ public class ProductServiceTests {
         Integer stock = 3;
         Float price = 2.3f;
         Integer userId = 1;
-        ProductCreateDTO productCreateDTO = new ProductCreateDTO(name, description, brand, category,
+        ProductRequest productCreateDTO = new ProductRequest(name, description, brand, category,
             stock, price, userId);
 
         List<MultipartFile> multipartFileList = new ArrayList<>();
@@ -83,7 +82,7 @@ public class ProductServiceTests {
         Float price = 2.7f;
         Integer userId = 1;
 
-        ProductCreateDTO productCreateDTO = new ProductCreateDTO(productId, name, description,
+        ProductRequest productCreateDTO = new ProductRequest(productId, name, description,
             brand, category, stock, price, userId);
 
         List<MultipartFile> multipartFileList = new ArrayList<>();
@@ -119,7 +118,7 @@ public class ProductServiceTests {
         Integer productId = 1;
 
         //when
-        ProductDTO productDTO = productService.getProduct(productId);
+        ProductResponse productDTO = productService.getProduct(productId);
 
         //then
         assertEquals(productDTO.getId(), productId);
@@ -136,10 +135,10 @@ public class ProductServiceTests {
         //when
         HashMap<String, Object> response = productService
             .getProducts(page, sort, category, keyword);
-        List<ProductDTO> products = (List<ProductDTO>) response.get("products");
+        List<ProductResponse> products = (List<ProductResponse>) response.get("products");
 
         //then
-        for (ProductDTO product : products) {
+        for (ProductResponse product : products) {
             assertEquals(product.getCategory(), category);
             assertTrue(product.getName().contains(keyword));
         }
@@ -163,10 +162,10 @@ public class ProductServiceTests {
         //when
         HashMap<String, Object> response = productService
             .getProductsBySeller(sellerId, page, sort, category, keyword);
-        List<ProductDTO> products = (List<ProductDTO>) response.get("products");
+        List<ProductResponse> products = (List<ProductResponse>) response.get("products");
 
         //then
-        for (ProductDTO product : products) {
+        for (ProductResponse product : products) {
             assertEquals(product.getCategory(), category);
             assertTrue(product.getName().contains(keyword));
             assertEquals(productRepository.findById(product.getId()).get().getUser().getId(),
@@ -189,10 +188,10 @@ public class ProductServiceTests {
         //when
         HashMap<String, Object> response = productService
             .getProductListBySeller(page, sort, sellerId);
-        List<ProductDTO> products = (List<ProductDTO>) response.get("products");
+        List<ProductResponse> products = (List<ProductResponse>) response.get("products");
 
         //then
-        for (ProductDTO product : products) {
+        for (ProductResponse product : products) {
             assertEquals(productRepository.findById(product.getId()).get().getUser().getId(),
                 sellerId);
         }
