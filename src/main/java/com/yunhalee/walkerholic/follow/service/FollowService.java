@@ -8,15 +8,15 @@ import com.yunhalee.walkerholic.follow.exception.CannotFollowOneselfException;
 import com.yunhalee.walkerholic.follow.exception.FollowAlreadyExistException;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.follow.domain.FollowRepository;
-import com.yunhalee.walkerholic.user.domain.UserRepository;
-import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
 import com.yunhalee.walkerholic.user.service.UserService;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 public class FollowService {
 
     private FollowRepository followRepository;
@@ -27,6 +27,7 @@ public class FollowService {
         this.userService = userService;
     }
 
+    @Transactional
     public FollowResponse follow(Integer fromId, Integer toId) {
         checkFollowValidate(fromId, toId);
         User fromUser = userService.findUserById(fromId);
@@ -45,6 +46,7 @@ public class FollowService {
         }
     }
 
+    @Transactional
     public void unfollow(Integer id) {
         followRepository.deleteById(id);
     }
