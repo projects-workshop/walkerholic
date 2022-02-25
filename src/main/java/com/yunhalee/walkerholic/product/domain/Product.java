@@ -68,6 +68,7 @@ public class Product extends BaseTimeEntity {
         this.category = category;
         this.stock = stock;
         this.price = price;
+        this.productImages = new ProductImages();
         this.reviewInfo = new ReviewInfo();
         this.description = description;
     }
@@ -149,6 +150,7 @@ public class Product extends BaseTimeEntity {
     public List<ProductImage> getProductImages() {
         return this.productImages.getProductImages();
     }
+
 
 
 }

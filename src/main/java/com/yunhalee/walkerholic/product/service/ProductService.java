@@ -1,10 +1,16 @@
 package com.yunhalee.walkerholic.product.service;
 
+import com.yunhalee.walkerholic.product.dto.ProductImageResponse;
 import com.yunhalee.walkerholic.product.dto.ProductRequest;
 import com.yunhalee.walkerholic.product.dto.ProductResponse;
+import com.yunhalee.walkerholic.product.dto.ProductResponses;
 import com.yunhalee.walkerholic.product.dto.SimpleProductResponse;
 import com.yunhalee.walkerholic.product.exception.ProductNotFoundException;
-import com.yunhalee.walkerholic.user.dto.UserSellerDTO;
+import com.yunhalee.walkerholic.review.domain.Review;
+import com.yunhalee.walkerholic.review.domain.ReviewRepository;
+import com.yunhalee.walkerholic.review.dto.ReviewResponse;
+import com.yunhalee.walkerholic.user.dto.SimpleUserResponse;
+import com.yunhalee.walkerholic.user.dto.SellerUserResponse;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import com.yunhalee.walkerholic.user.service.UserService;
 import com.yunhalee.walkerholic.util.FileUploadUtils;
@@ -16,7 +22,7 @@ import com.yunhalee.walkerholic.product.domain.ProductImageRepository;
 import com.yunhalee.walkerholic.product.domain.ProductRepository;
 import java.util.Collections;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,25 +39,23 @@ import java.util.List;
 @Service
 public class ProductService {
 
-
     public static final int PRODUCT_PER_PAGE = 9;
     public static final int PRODUCT_LIST_PER_PAGE = 10;
 
     private ProductRepository productRepository;
-
+    private ReviewRepository reviewRepository;
     private UserService userService;
-
     private ProductImageRepository productImageRepository;
-
     private S3ImageUploader s3ImageUploader;
-
     private String bucketUrl;
 
-    public ProductService(ProductRepository productRepository, UserService userService,
+    public ProductService(ProductRepository productRepository, ReviewRepository reviewRepository,
+        UserService userService,
         ProductImageRepository productImageRepository,
         S3ImageUploader s3ImageUploader,
         @Value("${AWS_S3_BUCKET_URL}") String bucketUrl) {
         this.productRepository = productRepository;
+        this.reviewRepository = reviewRepository;
         this.userService = userService;
         this.productImageRepository = productImageRepository;
         this.s3ImageUploader = s3ImageUploader;
@@ -66,8 +70,7 @@ public class ProductService {
         return SimpleProductResponse.of(product);
     }
 
-    public SimpleProductResponse updateProduct(ProductRequest request,
-        List<MultipartFile> multipartFiles, List<String> deletedImages) {
+    public SimpleProductResponse updateProduct(ProductRequest request, List<MultipartFile> multipartFiles, List<String> deletedImages) {
         Product product = findProductById(request.getId());
         product.update(request.toProduct());
         deleteProductImage(product, deletedImages);
@@ -75,21 +78,21 @@ public class ProductService {
         return SimpleProductResponse.of(product);
     }
 
-
     private void saveProductImage(Product product, List<MultipartFile> multipartFiles) {
         Optional.ofNullable(multipartFiles).orElseGet(Collections::emptyList)
             .forEach(multipartFile -> {
                 try {
                     String uploadDir = "productUploads/" + product.getId();
                     String imageUrl = s3ImageUploader.uploadFile(uploadDir, multipartFile);
-                    String fileName = imageUrl.substring(bucketUrl.length() + uploadDir.length() + 2);
-                    ProductImage productImage = productImageRepository.save(ProductImage.of(fileName, imageUrl, product));
+                    String fileName = imageUrl
+                        .substring(bucketUrl.length() + uploadDir.length() + 2);
+                    ProductImage productImage = productImageRepository
+                        .save(ProductImage.of(fileName, imageUrl, product));
                     product.addProductImage(productImage);
                 } catch (IOException ex) {
                     new IOException("Could not save file : " + multipartFile.getOriginalFilename());
                 }
             });
-
     }
 
     private void deleteProductImage(Product product, List<String> deletedImages) {
@@ -102,130 +105,57 @@ public class ProductService {
             });
     }
 
-//
-//    public ProductListDTO saveProduct(ProductRequest productCreateDTO, List<MultipartFile> multipartFiles, List<String> deletedImages){
-//
-//        if(productCreateDTO.getId()!=null){
-//            Product existingProduct = productRepository.findById(productCreateDTO.getId()).get();
-//            existingProduct.setName(productCreateDTO.getName());
-//            existingProduct.setDescription(productCreateDTO.getDescription());
-//            existingProduct.setBrand(productCreateDTO.getBrand());
-//            existingProduct.setCategory(Category.valueOf(productCreateDTO.getCategory()));
-//            existingProduct.setStock(productCreateDTO.getStock());
-//            existingProduct.setPrice(productCreateDTO.getPrice());
-//
-//            if(multipartFiles!=null && multipartFiles.size()!=0){
-//                saveProductImage(existingProduct,multipartFiles);
-//            }
-//            if(deletedImages!=null && deletedImages.size()!=0){
-//                deleteProductImage(deletedImages);
-//            }
-//
-//            productRepository.save(existingProduct);
-//
-//            return new ProductListDTO(existingProduct);
-//        }else{
-//            Product product = new Product();
-//            User user = userService.findUserById(productCreateDTO.getUserId());
-//            product.setName(productCreateDTO.getName());
-//            product.setDescription(productCreateDTO.getDescription());
-//            product.setBrand(productCreateDTO.getBrand());
-//            product.setCategory(Category.valueOf(productCreateDTO.getCategory()));
-//            product.setStock(productCreateDTO.getStock());
-//            product.setPrice(productCreateDTO.getPrice());
-//            product.setUser(user);
-//
-//            productRepository.save(product);
-//
-//            if (multipartFiles.size() != 0) {
-//                saveProductImage(product,multipartFiles);
-//            }
-//
-//            productRepository.save(product);
-//
-//            return new ProductListDTO(product);
-//        }
-//
-//    }
-
     public ProductResponse getProduct(Integer id) {
         Product product = productRepository.findByProductId(id);
-        return new ProductResponse();
+        List<Review> reviews = reviewRepository.findAllByPostId(id);
+        return ProductResponse.of(product,
+            productImageResponses(product.getProductImages()),
+            SimpleUserResponse.of(product.getUser()),
+            reviewResponses(reviews));
     }
 
-    public HashMap<String, Object> getProducts(Integer page, String sort, String category,
-        String keyword) {
-
-        Pageable pageable = PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by("createdAt"));
-        System.out.println(sort);
-        if (sort.equals("highest")) {
-            pageable = PageRequest
-                .of(page - 1, PRODUCT_PER_PAGE, Sort.by(Sort.Direction.DESC, "price"));
-        } else if (sort.equals("lowest")) {
-            pageable = PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by("price"));
-        } else if (sort.equals("toprated")) {
-            pageable = PageRequest
-                .of(page - 1, PRODUCT_PER_PAGE, Sort.by(Sort.Direction.DESC, "average"));
-        }
-
-        List<SimpleProductResponse> productDTOS = new ArrayList<>();
-        HashMap<String, Object> productInfo = new HashMap<>();
-
-        Page<Product> productPage;
+    public ProductResponses getProducts(Integer page, String sort, String category, String keyword) {
+        Pageable pageable = pageable(page, sort);
         if (category == null || category.isBlank()) {
-            productPage = productRepository.findAllByKeyword(pageable, keyword);
-            List<Product> products = productPage.getContent();
-            products.forEach(product -> productDTOS.add(new SimpleProductResponse(product)));
-        } else {
-            Category category1 = Category.valueOf(category);
-            productPage = productRepository.findAllByCategory(pageable, category1, keyword);
-            List<Product> products = productPage.getContent();
-            products.forEach(product -> productDTOS.add(new SimpleProductResponse(product)));
+            Page<Product> productPage = productRepository.findAllByKeyword(pageable, keyword);
+            return productResponses(productPage);
         }
-        productInfo.put("products", productDTOS);
-        productInfo.put("totalElement", productPage.getTotalElements());
-        productInfo.put("totalPage", productPage.getTotalPages());
-        return productInfo;
+        Page<Product> productPage = productRepository.findAllByCategory(pageable, Category.valueOf(category), keyword);
+        return productResponses(productPage);
     }
 
-
-    public HashMap<String, Object> getProductsBySeller(Integer id, Integer page, String sort,
-        String category, String keyword) {
-
-        Pageable pageable = PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by("createdAt"));
-
-        if (sort.equals("highest")) {
-            pageable = PageRequest
-                .of(page - 1, PRODUCT_PER_PAGE, Sort.by(Sort.Direction.DESC, "price"));
-        } else if (sort.equals("lowest")) {
-            pageable = PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by("price"));
-        } else if (sort.equals("toprated")) {
-            pageable = PageRequest
-                .of(page - 1, PRODUCT_PER_PAGE, Sort.by(Sort.Direction.DESC, "average"));
-        }
-
-        List<SimpleProductResponse> productDTOS = new ArrayList<>();
-        HashMap<String, Object> productInfo = new HashMap<>();
-
-        Page<Product> productPage;
+    public ProductResponses getProductsBySeller(Integer id, Integer page, String sort, String category, String keyword) {
+        User seller = userService.findUserById(id);
+        Pageable pageable = pageable(page, sort);
         if (category == null || category.isBlank()) {
-            productPage = productRepository.findAllBySellerAndKeyword(pageable, id, keyword);
-            List<Product> products = productPage.getContent();
-            products.forEach(product -> productDTOS.add(new SimpleProductResponse(product)));
-        } else {
-            Category category1 = Category.valueOf(category);
-            productPage = productRepository
-                .findAllBySellerAndCategory(pageable, id, category1, keyword);
-            List<Product> products = productPage.getContent();
-            products.forEach(product -> productDTOS.add(new SimpleProductResponse(product)));
+            Page<Product> productPage = productRepository.findAllBySellerAndKeyword(pageable, id, keyword);
+            return productResponses(productPage, seller);
         }
+        Page<Product> productPage = productRepository.findAllBySellerAndCategory(pageable, id, Category.valueOf(category), keyword);
+        return productResponses(productPage, seller);
+    }
 
-        User user = userService.findUserById(id);
-        productInfo.put("seller", new UserSellerDTO(user));
-        productInfo.put("products", productDTOS);
-        productInfo.put("totalElement", productPage.getTotalElements());
-        productInfo.put("totalPage", productPage.getTotalPages());
-        return productInfo;
+    public ProductResponses getAllProductList(Integer page, String sort) {
+        Pageable pageable = PageRequest.of(page - 1, PRODUCT_LIST_PER_PAGE, Sort.by(sort));
+        Page<Product> productPage = productRepository.findAllProductList(pageable);
+        return productResponses(productPage);
+    }
+
+    public ProductResponses getProductListBySeller(Integer page, String sort, Integer id) {
+        Pageable pageable = PageRequest.of(page - 1, PRODUCT_LIST_PER_PAGE, Sort.by(sort));
+        Page<Product> productPage = productRepository.findByUserId(id, pageable);
+        return productResponses(productPage);
+    }
+
+    private Pageable pageable(Integer page, String sort) {
+        if (sort.equals("highest")) {
+            return PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by(Sort.Direction.DESC, "price"));
+        } else if (sort.equals("lowest")) {
+            return PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by("price"));
+        } else if (sort.equals("toprated")) {
+            return PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by(Sort.Direction.DESC, "average"));
+        }
+        return PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by("createdAt"));
     }
 
     public Integer deleteProduct(Integer id) {
@@ -241,36 +171,35 @@ public class ProductService {
         return id;
     }
 
-    public HashMap<String, Object> getAllProductList(Integer page, String sort) {
-        Pageable pageable = PageRequest.of(page - 1, PRODUCT_LIST_PER_PAGE, Sort.by(sort));
-        Page<Product> productPage = productRepository.findAllProductList(pageable);
-        List<Product> products = productPage.getContent();
-        List<SimpleProductResponse> productListDTOS = new ArrayList<>();
-
-        products.forEach(product -> productListDTOS.add(new SimpleProductResponse(product)));
-
-        HashMap<String, Object> productList = new HashMap<>();
-        productList.put("products", productListDTOS);
-        productList.put("totalElement", productPage.getTotalElements());
-        productList.put("totalPage", productPage.getTotalPages());
-
-        return productList;
+    private List<ReviewResponse> reviewResponses(List<Review> reviews) {
+        return reviews.stream()
+            .map(ReviewResponse::new)
+            .collect(Collectors.toList());
     }
 
-    public HashMap<String, Object> getProductListBySeller(Integer page, String sort, Integer id) {
-        Pageable pageable = PageRequest.of(page - 1, PRODUCT_LIST_PER_PAGE, Sort.by(sort));
-        Page<Product> productPage = productRepository.findByUserId(id, pageable);
-        List<Product> products = productPage.getContent();
-        List<SimpleProductResponse> productListDTOS = new ArrayList<>();
+    private List<ProductImageResponse> productImageResponses(List<ProductImage> productImages) {
+        return productImages.stream()
+            .map(ProductImageResponse::new)
+            .collect(Collectors.toList());
+    }
 
-        products.forEach(product -> productListDTOS.add(new SimpleProductResponse(product)));
+    private List<SimpleProductResponse> simpleProductResponses(List<Product> products) {
+        return products.stream()
+            .map(SimpleProductResponse::new)
+            .collect(Collectors.toList());
+    }
 
-        HashMap<String, Object> productList = new HashMap<>();
-        productList.put("products", productListDTOS);
-        productList.put("totalElement", productPage.getTotalElements());
-        productList.put("totalPage", productPage.getTotalPages());
+    private ProductResponses productResponses(Page<Product> productPage) {
+        return ProductResponses.of(simpleProductResponses(productPage.getContent()),
+            productPage.getTotalElements(),
+            productPage.getTotalPages());
+    }
 
-        return productList;
+    private ProductResponses productResponses(Page<Product> productPage, User seller) {
+        return ProductResponses.of(simpleProductResponses(productPage.getContent()),
+            SellerUserResponse.of(seller),
+            productPage.getTotalElements(),
+            productPage.getTotalPages());
     }
 
     public Product findProductById(Integer id) {

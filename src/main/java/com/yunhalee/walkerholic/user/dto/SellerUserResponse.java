@@ -5,9 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
-public class UserSellerDTO {
-
+public class SellerUserResponse {
 
     private Integer id;
 
@@ -23,7 +21,7 @@ public class UserSellerDTO {
 
     private String description;
 
-    public UserSellerDTO(User user) {
+    public SellerUserResponse(User user) {
         this.id = user.getId();
         this.fullname = user.getFullname();
         this.email = user.getEmail();
@@ -31,5 +29,9 @@ public class UserSellerDTO {
         this.phoneNumber = user.getPhoneNumber();
         this.level = user.getLevel().getName();
         this.description = user.getDescription();
+    }
+
+    public static SellerUserResponse of(User user){
+        return new SellerUserResponse(user);
     }
 }

@@ -2,8 +2,6 @@ package com.yunhalee.walkerholic.product.domain;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.yunhalee.walkerholic.post.domain.PostImage;
-
 public class ProductImageTest {
 
     public static final ProductImage PRODUCT_IMAGE = new ProductImage(1,
