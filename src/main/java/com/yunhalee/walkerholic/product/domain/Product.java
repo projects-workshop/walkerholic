@@ -19,7 +19,6 @@ import java.util.Set;
 @Entity
 @Table(name = "product")
 @Getter
-@Setter
 @NoArgsConstructor
 public class Product extends BaseTimeEntity {
 
@@ -62,7 +61,8 @@ public class Product extends BaseTimeEntity {
 //    @OrderBy("createdAt DESC")
 //    private Set<Review> reviews = new HashSet<>();
 
-    public Product(String name, String brand, Category category, Integer stock, Float price, String description) {
+    public Product(String name, String brand, Category category, Integer stock, Float price,
+        String description) {
         this.name = name;
         this.brand = brand;
         this.category = category;
@@ -72,7 +72,8 @@ public class Product extends BaseTimeEntity {
         this.description = description;
     }
 
-    public Product(String name, String description, String brand, Category category, Integer stock, Float price, User user) {
+    public Product(String name, String description, String brand, Category category, Integer stock,
+        Float price, User user) {
         this.name = name;
         this.description = description;
         this.brand = brand;
@@ -82,6 +83,20 @@ public class Product extends BaseTimeEntity {
         this.productImages = new ProductImages();
         this.user = user;
         this.reviewInfo = new ReviewInfo();
+    }
+
+    public static Product of(String name, String description, String brand, Category category,
+        Integer stock, Float price, User user) {
+        return new Product(name, description, brand, category, stock, price, user);
+    }
+
+    public void update(Product product) {
+        this.name = product.getName();
+        this.description = product.getDescription();
+        this.brand = product.getBrand();
+        this.category = product.getCategory();
+        this.stock = product.getStock();
+        this.price = product.getPrice();
     }
 
     public void addReview(Integer rating) {
@@ -96,7 +111,7 @@ public class Product extends BaseTimeEntity {
         reviewInfo.deleteReview(rating);
     }
 
-    public BigDecimal getAverage(){
+    public BigDecimal getAverage() {
         return reviewInfo.getAverage();
     }
 
@@ -117,17 +132,21 @@ public class Product extends BaseTimeEntity {
         this.productImages.addProductImage(productImage);
     }
 
+    public void deleteProductImage(List<String> deletedImages) {
+        this.productImages.deleteProductImage(deletedImages);
+    }
+
     @Transient
     public String getMainImageUrl() {
         return this.productImages.getMainImageUrl();
     }
 
     @Transient
-    public List<String> getImagesUrl() {
+    public List<String> getImageUrls() {
         return this.productImages.getImageUrls();
     }
 
-    public List<ProductImage> getProductImages(){
+    public List<ProductImage> getProductImages() {
         return this.productImages.getProductImages();
     }
 

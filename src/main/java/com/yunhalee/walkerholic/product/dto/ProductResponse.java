@@ -55,6 +55,10 @@ public class ProductResponse {
         this.average = product.getAverage();
     }
 
+    public static ProductResponse of(Product product, List<ProductImageResponse> productImages, SimpleUserResponse user, List<ReviewResponse> reviews){
+        return new ProductResponse(product, productImages, user, reviews);
+    }
+
 //    @Getter
 //    static class ProductImage {
 //

@@ -2,7 +2,7 @@ package com.yunhalee.walkerholic.product.controller;
 
 import com.yunhalee.walkerholic.product.dto.ProductRequest;
 import com.yunhalee.walkerholic.product.dto.ProductResponse;
-import com.yunhalee.walkerholic.product.dto.ProductListDTO;
+import com.yunhalee.walkerholic.product.dto.SimpleProductResponse;
 import com.yunhalee.walkerholic.product.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,19 +22,19 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    public ProductListDTO saveProduct(@RequestParam(value = "id", required = false) Integer id,
-        @RequestParam("name") String name,
-        @RequestParam("description") String description,
-        @RequestParam("brand") String brand,
-        @RequestParam("category") String category,
-        @RequestParam("stock") Integer stock,
-        @RequestParam("price") Float price,
-        @RequestParam("userId") Integer userId,
-        @RequestParam(value = "multipartFile", required = false) List<MultipartFile> multipartFiles,
-        @RequestParam(value = "deletedImages", required = false) List<String> deletedImages) {
-        ProductRequest productCreateDTO = new ProductRequest(id, name, description, brand,
-            category, stock, price, userId);
-        return productService.saveProduct(productCreateDTO, multipartFiles, deletedImages);
+    public ResponseEntity<SimpleProductResponse> createProduct(
+        @RequestPart("productRequest") ProductRequest productRequest,
+        @RequestPart(value = "multipartFile") List<MultipartFile> multipartFiles) {
+        return new ResponseEntity<>(productService.createProduct(productRequest, multipartFiles),
+            HttpStatus.CREATED);
+    }
+
+    @PatchMapping("/products")
+    public ResponseEntity<SimpleProductResponse> updateProduct(
+        @RequestPart("productRequest") ProductRequest productRequest,
+        @RequestPart(value = "multipartFile", required = false) List<MultipartFile> multipartFiles,
+        @RequestPart(value = "deletedImages", required = false) List<String> deletedImages) {
+        return ResponseEntity.ok(productService.updateProduct(productRequest, multipartFiles, deletedImages));
     }
 
     @GetMapping("/products/{id}")
@@ -47,8 +47,7 @@ public class ProductController {
         @RequestParam(value = "sort", required = false) String sort,
         @RequestParam(value = "category", required = false) String category,
         @RequestParam(value = "keyword", required = false) String keyword) {
-        return new ResponseEntity<HashMap>(
-            productService.getProducts(page, sort, category, keyword), HttpStatus.OK);
+        return new ResponseEntity<HashMap>(productService.getProducts(page, sort, category, keyword), HttpStatus.OK);
     }
 
     @GetMapping("/users/{id}/products")
@@ -57,9 +56,7 @@ public class ProductController {
         @RequestParam(value = "sort", required = false) String sort,
         @RequestParam(value = "category", required = false) String category,
         @RequestParam(value = "keyword", required = false) String keyword) {
-        return new ResponseEntity<HashMap>(
-            productService.getProductsBySeller(id, page, sort, category, keyword),
-            HttpStatus.OK);
+        return new ResponseEntity<HashMap>(productService.getProductsBySeller(id, page, sort, category, keyword), HttpStatus.OK);
     }
 
     @DeleteMapping("/products/{id}")
@@ -70,15 +67,13 @@ public class ProductController {
     @GetMapping("/products/list")
     public ResponseEntity<?> getProductList(@RequestParam("page") Integer page,
         @RequestParam("sort") String sort) {
-        return new ResponseEntity<HashMap<String, Object>>(
-            productService.getAllProductList(page, sort), HttpStatus.OK);
+        return new ResponseEntity<HashMap<String, Object>>(productService.getAllProductList(page, sort), HttpStatus.OK);
     }
 
     @GetMapping("/users/{id}/products/list")
     public ResponseEntity<?> getProductListBySeller(@RequestParam("page") Integer page,
         @RequestParam("sort") String sort, @PathVariable("id") Integer id) {
-        return new ResponseEntity<HashMap<String, Object>>(
-            productService.getProductListBySeller(page, sort, id), HttpStatus.OK);
+        return new ResponseEntity<HashMap<String, Object>>(productService.getProductListBySeller(page, sort, id), HttpStatus.OK);
     }
 
 

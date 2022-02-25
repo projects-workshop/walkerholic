@@ -22,11 +22,11 @@ public class ProductImages {
         this.productImages = productImages;
     }
 
-    public static ProductImages of(ProductImage... productImages){
+    public static ProductImages of(ProductImage... productImages) {
         return new ProductImages(new ArrayList<>(Arrays.asList(productImages)));
     }
 
-    public void addProductImage(ProductImage productImage){
+    public void addProductImage(ProductImage productImage) {
         this.productImages.add(productImage);
     }
 
@@ -34,13 +34,19 @@ public class ProductImages {
         return Collections.unmodifiableList(productImages);
     }
 
-    public String getMainImageUrl(){
+    public String getMainImageUrl() {
         return productImages.get(0).getFilePath();
     }
 
-    public List<String> getImageUrls(){
+    public List<String> getImageUrls() {
         return this.productImages.stream()
             .map(ProductImage::getFilePath)
+            .collect(Collectors.toList());
+    }
+
+    public void deleteProductImage(List<String> deletedImages) {
+        this.productImages = this.productImages.stream()
+            .filter(productImage -> !deletedImages.contains(productImage.getFilePath()))
             .collect(Collectors.toList());
     }
 }

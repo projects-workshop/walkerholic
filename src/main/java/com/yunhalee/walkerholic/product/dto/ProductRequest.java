@@ -1,5 +1,9 @@
 package com.yunhalee.walkerholic.product.dto;
 
+import com.yunhalee.walkerholic.post.domain.Post;
+import com.yunhalee.walkerholic.product.domain.Category;
+import com.yunhalee.walkerholic.product.domain.Product;
+import com.yunhalee.walkerholic.user.domain.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,6 +45,14 @@ public class ProductRequest {
         this.stock = stock;
         this.price = price;
         this.userId = userId;
+    }
+
+    public Product toProduct(User user) {
+        return Product.of(name, description, brand, Category.valueOf(category), stock, price, user);
+    }
+
+    public Product toProduct() {
+        return new Product(name, brand, Category.valueOf(category), stock, price, description);
     }
 
 }

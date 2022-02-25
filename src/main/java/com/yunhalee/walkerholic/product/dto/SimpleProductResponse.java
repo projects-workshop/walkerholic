@@ -3,13 +3,11 @@ package com.yunhalee.walkerholic.product.dto;
 import com.yunhalee.walkerholic.product.domain.Product;
 import java.math.BigDecimal;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
 @Getter
-@Setter
-public class ProductListDTO {
+public class SimpleProductResponse {
 
     private Integer id;
 
@@ -29,7 +27,7 @@ public class ProductListDTO {
 
     private String description;
 
-    public ProductListDTO(Product product) {
+    public SimpleProductResponse(Product product) {
         this.id = product.getId();
         this.name = product.getName();
         this.brand = product.getBrand();
@@ -37,7 +35,11 @@ public class ProductListDTO {
         this.stock = product.getStock();
         this.price = product.getPrice();
         this.average = product.getAverage();
-        this.imagesUrl = product.getImagesUrl();
+        this.imagesUrl = product.getImageUrls();
         this.description = product.getDescription();
+    }
+
+    public static SimpleProductResponse of(Product product) {
+        return new SimpleProductResponse(product);
     }
 }

@@ -26,9 +26,19 @@ public class ProductImage {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    public ProductImage(String name, String filePath, Product product) {
+    private ProductImage(String name, String filePath, Product product) {
         this.name = name;
         this.filePath = filePath;
         this.product = product;
+    }
+
+    public ProductImage(Integer id, String name, String filePath) {
+        this.id = id;
+        this.name = name;
+        this.filePath = filePath;
+    }
+
+    public static ProductImage of(String name, String filePath, Product product) {
+        return new ProductImage(name, filePath, product);
     }
 }
