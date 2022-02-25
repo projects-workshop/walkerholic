@@ -1,6 +1,7 @@
 package com.yunhalee.walkerholic.post.service;
 
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
+import com.yunhalee.walkerholic.follow.service.FollowService;
 import com.yunhalee.walkerholic.likepost.domain.LikePost;
 import com.yunhalee.walkerholic.likepost.dto.LikePostResponse;
 import com.yunhalee.walkerholic.post.PostNotFoundException;
@@ -21,6 +22,7 @@ import com.yunhalee.walkerholic.follow.domain.FollowRepository;
 import com.yunhalee.walkerholic.post.domain.PostImageRepository;
 import com.yunhalee.walkerholic.post.domain.PostRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
+import com.yunhalee.walkerholic.user.service.UserService;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -31,49 +33,53 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class PostService {
 
     public static final int POST_PER_PAGE = 9;
 
     private PostRepository postRepository;
 
-    private UserRepository userRepository;
+    private UserService userService;
 
     private PostImageRepository postImageRepository;
 
-    private FollowRepository followRepository;
+    private FollowService followService;
 
     private S3ImageUploader s3ImageUploader;
 
     private String bucketUrl;
 
     public PostService(PostRepository postRepository,
-        UserRepository userRepository,
+        UserService userService,
         PostImageRepository postImageRepository,
-        FollowRepository followRepository,
+        FollowService followService,
         S3ImageUploader s3ImageUploader,
         @Value("${AWS_S3_BUCKET_URL}") String bucketUrl) {
         this.postRepository = postRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
         this.postImageRepository = postImageRepository;
-        this.followRepository = followRepository;
+        this.followService = followService;
         this.s3ImageUploader = s3ImageUploader;
         this.bucketUrl = bucketUrl;
     }
 
+    @Transactional
     public PostResponse createPost(PostRequest request, List<MultipartFile> multipartFiles) {
-        User user = findUserById(request.getUserId());
+        User user = userService.findUserById(request.getUserId());
         Post post = postRepository.save(request.toPost(user));
         savePostImage(post, multipartFiles);
         return postResponse(post);
     }
 
+    @Transactional
     public PostResponse updatePost(PostRequest request, List<MultipartFile> multipartFiles, List<String> deletedImages) {
         Post post = findPostById(request.getId());
         post.update(request.getTitle(), request.getContent());
@@ -82,11 +88,7 @@ public class PostService {
         return postResponse(post);
     }
 
-    private User findUserById(Integer id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id : " + id));
-    }
-
-    private Post findPostById(Integer id) {
+    public Post findPostById(Integer id) {
         return postRepository.findById(id).orElseThrow(() -> new PostNotFoundException("Post not found with id : " + id));
     }
 
@@ -146,7 +148,7 @@ public class PostService {
     }
 
     public PostResponses getPostsByFollowings(Integer page, Integer userId) {
-        List<Follow> follows = followRepository.findAllByFromUserId(userId);
+        List<Follow> follows = followService.findAllFollowByFromUserId(userId);
         List<Integer> followings = follows.stream()
             .map(Follow::getToUserId)
             .collect(Collectors.toList());
@@ -166,6 +168,7 @@ public class PostService {
         return simplePostResponses(pagePost);
     }
 
+    @Transactional
     public void deletePost(Integer id) {
         String dir = "/productUploads/" + id;
         s3ImageUploader.removeFolder(dir);

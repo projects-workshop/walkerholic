@@ -10,6 +10,7 @@ import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.follow.domain.FollowRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
+import com.yunhalee.walkerholic.user.service.UserService;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
@@ -19,18 +20,17 @@ import java.util.List;
 public class FollowService {
 
     private FollowRepository followRepository;
-    private UserRepository userRepository;
+    private UserService userService;
 
-    public FollowService(FollowRepository followRepository,
-        UserRepository userRepository) {
+    public FollowService(FollowRepository followRepository, UserService userService) {
         this.followRepository = followRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     public FollowResponse follow(Integer fromId, Integer toId) {
         checkFollowValidate(fromId, toId);
-        User fromUser = user(fromId);
-        User toUser = user(toId);
+        User fromUser = userService.findUserById(fromId);
+        User toUser = userService.findUserById(toId);
         Follow follow = Follow.of(fromUser, toUser);
         followRepository.save(follow);
         return FollowResponse.of(follow.getId(), FollowUserResponse.of(follow.getToUser()));
@@ -43,12 +43,6 @@ public class FollowService {
         if (followRepository.existsByFromUserIdAndToUserId(fromId, toId)) {
             throw new FollowAlreadyExistException("user : " + fromId + "already followed user : " + toId);
         }
-    }
-
-    private User user(Integer id) {
-        return userRepository.findById(id)
-            .orElseThrow(() -> new UserNotFoundException(
-                "User not found with id : " + id));
     }
 
     public void unfollow(Integer id) {
@@ -70,16 +64,24 @@ public class FollowService {
     }
 
     private List<FollowResponse> followersResponses(Integer id) {
-        List<Follow> follows = followRepository.findAllByToUserId(id);
+        List<Follow> follows = findAllFollowByToUserId(id);
         return follows.stream()
             .map(follow -> FollowResponse.of(follow.getId(), FollowUserResponse.of(follow.getFromUser())))
             .collect(Collectors.toList());
     }
 
     private List<FollowResponse> followingsResponses(Integer id) {
-        List<Follow> follows = followRepository.findAllByFromUserId(id);
+        List<Follow> follows = findAllFollowByFromUserId(id);
         return follows.stream()
             .map(follow -> FollowResponse.of(follow.getId(), FollowUserResponse.of(follow.getToUser())))
             .collect(Collectors.toList());
+    }
+
+    private List<Follow> findAllFollowByToUserId(Integer id){
+        return followRepository.findAllByToUserId(id);
+    }
+
+    public List<Follow> findAllFollowByFromUserId(Integer id){
+        return followRepository.findAllByFromUserId(id);
     }
 }

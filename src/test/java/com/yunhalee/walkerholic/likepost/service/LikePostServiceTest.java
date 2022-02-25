@@ -42,8 +42,8 @@ class LikePostServiceTest extends MockBeans {
     @Test
     void like_post() {
         //when
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(UserTest.USER));
-        when(postRepository.findById(anyInt())).thenReturn(Optional.of(PostTest.POST));
+        when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
+        when(postService.findPostById(anyInt())).thenReturn(PostTest.POST);
         when(likePostRepository.save(any(LikePost.class))).thenReturn(likePost);
         LikePostResponse response = likePostService.likePost(new LikePostRequest(1, 2));
 

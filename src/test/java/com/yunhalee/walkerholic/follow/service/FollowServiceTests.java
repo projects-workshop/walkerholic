@@ -45,8 +45,9 @@ class FollowServiceTests extends MockBeans {
         //given
         Integer fromUserId = 1;
         Integer toUserId = 2;
-        when(userRepository.findById(fromUserId)).thenReturn(java.util.Optional.of(UserTest.USER));
-        when(userRepository.findById(toUserId)).thenReturn(java.util.Optional.of(UserTest.SELLER));
+        when(userService.findUserById(fromUserId)).thenReturn(UserTest.USER);
+        when(userService.findUserById(toUserId)).thenReturn(UserTest.SELLER);
+        when(followRepository.existsByFromUserIdAndToUserId(anyInt(), anyInt())).thenReturn(false);
 
         //when
         FollowResponse response = followService.follow(fromUserId, toUserId);

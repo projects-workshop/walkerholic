@@ -3,8 +3,10 @@ package com.yunhalee.walkerholic.product.service;
 import com.yunhalee.walkerholic.product.dto.ProductCreateDTO;
 import com.yunhalee.walkerholic.product.dto.ProductDTO;
 import com.yunhalee.walkerholic.product.dto.ProductListDTO;
+import com.yunhalee.walkerholic.product.exception.ProductNotFoundException;
 import com.yunhalee.walkerholic.user.dto.UserSellerDTO;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
+import com.yunhalee.walkerholic.user.service.UserService;
 import com.yunhalee.walkerholic.util.FileUploadUtils;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.product.domain.Product;
@@ -33,7 +35,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     private final ProductImageRepository productImageRepository;
 
@@ -97,7 +99,7 @@ public class ProductService {
             return new ProductListDTO(existingProduct);
         }else{
             Product product = new Product();
-            User user = userRepository.findById(productCreateDTO.getUserId()).get();
+            User user = userService.findUserById(productCreateDTO.getUserId());
             product.setName(productCreateDTO.getName());
             product.setDescription(productCreateDTO.getDescription());
             product.setBrand(productCreateDTO.getBrand());
@@ -185,7 +187,7 @@ public class ProductService {
             products.forEach(product -> productDTOS.add(new ProductListDTO(product)));
         }
 
-        User user = userRepository.findById(id).get();
+        User user = userService.findUserById(id);
         productInfo.put("seller", new UserSellerDTO(user));
         productInfo.put("products",productDTOS);
         productInfo.put("totalElement", productPage.getTotalElements());
@@ -236,6 +238,10 @@ public class ProductService {
         productList.put("totalPage", productPage.getTotalPages());
 
         return productList;
+    }
+
+    public Product findProductById(Integer id){
+        return productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product not found with id : " + id));
     }
 
 }

@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("/follows")
 public class FollowController {
 
-    private FollowService followService;
+    private final FollowService followService;
 
     public FollowController(FollowService followService) {
         this.followService = followService;

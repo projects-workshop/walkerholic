@@ -39,9 +39,7 @@ public class ActivityService {
     }
 
     public ActivityResponse update(Integer id, ActivityRequest activityRequest) {
-        Activity existingActivity = activityRepository.findById(id)
-            .orElseThrow(() -> new ActivityNotFoundException(
-                "Activity not found with id : " + id));
+        Activity existingActivity = findActivityById(id);
         Activity requestActivity = activityRequest.toActivity();
         s3ImageUploader.deleteOriginalImage(
             existingActivity.getImageUrl(), activityRequest.getImageUrl());
@@ -65,9 +63,7 @@ public class ActivityService {
     }
 
     public void delete(Integer id) {
-        Activity activity = activityRepository.findById(id)
-            .orElseThrow(() -> new ActivityNotFoundException(
-                "Activity not found with id : " + id));
+        Activity activity = findActivityById(id);
         s3ImageUploader.deleteFile(activity.getImageUrl());
         activityRepository.delete(activity);
         return;
@@ -77,6 +73,11 @@ public class ActivityService {
         throws IOException {
         String imageUrl = s3ImageUploader.uploadFile(UPLOAD_DIR, multipartFile);
         return imageUrl;
+    }
+
+    public Activity findActivityById(Integer id){
+        return activityRepository.findById(id)
+            .orElseThrow(() -> new ActivityNotFoundException("Activity not found with id : " + id));
     }
 
 

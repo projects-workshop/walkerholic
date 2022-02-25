@@ -1,15 +1,13 @@
 package com.yunhalee.walkerholic.useractivity.service;
 
-import com.yunhalee.walkerholic.activity.exception.ActivityNotFoundException;
-import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
+import com.yunhalee.walkerholic.activity.service.ActivityService;
+import com.yunhalee.walkerholic.user.service.UserService;
 import com.yunhalee.walkerholic.useractivity.dto.UserActivityResponses;
 import com.yunhalee.walkerholic.useractivity.dto.UserActivityRequest;
 import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
-import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivityRepository;
-import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.useractivity.dto.UserActivityResponse;
 import com.yunhalee.walkerholic.useractivity.exception.UserActivityNotFoundException;
 import org.springframework.data.domain.Page;
@@ -27,15 +25,15 @@ public class UserActivityService {
 
     private UserActivityRepository userActivityRepository;
 
-    private UserRepository userRepository;
+    private UserService userService;
 
-    private ActivityRepository activityRepository;
+    private ActivityService activityService;
 
     public UserActivityService(UserActivityRepository userActivityRepository,
-        UserRepository userRepository, ActivityRepository activityRepository) {
+        UserService userService, ActivityService activityService) {
         this.userActivityRepository = userActivityRepository;
-        this.userRepository = userRepository;
-        this.activityRepository = activityRepository;
+        this.userService = userService;
+        this.activityService = activityService;
     }
 
     @Transactional(readOnly = true)
@@ -48,8 +46,8 @@ public class UserActivityService {
     }
 
     public UserActivityResponse create(UserActivityRequest userActivityRequest) {
-        User user = user(userActivityRequest.getUserId());
-        Activity activity = activity(userActivityRequest.getActivityId());
+        User user = userService.findUserById(userActivityRequest.getUserId());
+        Activity activity = activityService.findActivityById(userActivityRequest.getActivityId());
         UserActivity userActivity = userActivityRequest.toUserActivity(user, activity);
         userActivityRepository.save(userActivity);
         updateLevel(user, userActivity);
@@ -57,17 +55,17 @@ public class UserActivityService {
     }
 
     public UserActivityResponse update(UserActivityRequest userActivityRequest, Integer id) {
-        UserActivity userActivity = userActivity(id);
-        User user = user(userActivityRequest.getUserId());
-        Activity activity = activity(userActivityRequest.getActivityId());
+        UserActivity userActivity = findUserActivityById(id);
+        User user = userService.findUserById(userActivityRequest.getUserId());
+        Activity activity = activityService.findActivityById(userActivityRequest.getActivityId());
         UserActivity requestedUserActivity = userActivityRequest.toUserActivity(user, activity);
         userActivity.update(requestedUserActivity);
         return new UserActivityResponse(userActivity, user.getLevel().getName());
     }
 
     public String deleteUserActivity(Integer id, Integer userId) {
-        UserActivity userActivity = userActivity(id);
-        User user = user(userId);
+        UserActivity userActivity = findUserActivityById(id);
+        User user = userService.findUserById(userId);
         user.deleteUserActivity(userActivity);
         userActivityRepository.delete(userActivity);
         return user.getLevel().getName();
@@ -85,23 +83,10 @@ public class UserActivityService {
         }
     }
 
-    private UserActivity userActivity(Integer id) {
+    public UserActivity findUserActivityById(Integer id) {
         return userActivityRepository.findById(id)
             .orElseThrow(() -> new UserActivityNotFoundException(
                 "UserActivity not found with id : " + id));
     }
-
-    private User user(Integer id) {
-        return userRepository.findById(id)
-            .orElseThrow(() -> new UserNotFoundException(
-                "User not found with id : " + id));
-    }
-
-    private Activity activity(Integer id) {
-        return activityRepository.findById(id)
-            .orElseThrow(() -> new ActivityNotFoundException(
-                "Activity not found with id : " + id));
-    }
-
 
 }

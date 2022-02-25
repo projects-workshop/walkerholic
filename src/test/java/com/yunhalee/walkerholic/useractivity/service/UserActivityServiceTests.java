@@ -71,8 +71,8 @@ class UserActivityServiceTests extends MockBeans {
         //given
         UserActivityRequest userActivityRequest = userActivityRequest(1, 1, finished);
         //when
-        when(userRepository.findById(anyInt())).thenReturn(java.util.Optional.of(user));
-        when(activityRepository.findById(anyInt())).thenReturn(java.util.Optional.of(activity));
+        when(userService.findUserById(anyInt())).thenReturn(user);
+        when(activityService.findActivityById(anyInt())).thenReturn(activity);
         UserActivityResponse response = userActivityService.create(userActivityRequest);
         //then
         assertEquals(response.getActivityId(), activity.getId());
@@ -88,8 +88,8 @@ class UserActivityServiceTests extends MockBeans {
         //when
         when(userActivityRepository.findById(anyInt()))
             .thenReturn(java.util.Optional.of(userActivity));
-        when(userRepository.findById(anyInt())).thenReturn(java.util.Optional.of(user));
-        when(activityRepository.findById(anyInt())).thenReturn(java.util.Optional.of(activity));
+        when(userService.findUserById(anyInt())).thenReturn(user);
+        when(activityService.findActivityById(anyInt())).thenReturn(activity);
         UserActivityResponse response = userActivityService.update(userActivityRequest, 1);
         //then
         assertEquals(response.isFinished(), true);
@@ -122,7 +122,7 @@ class UserActivityServiceTests extends MockBeans {
         user.updateLevel(userActivity);
 
         //when
-        when(userRepository.findById(anyInt())).thenReturn(java.util.Optional.of(user));
+        when(userService.findUserById(anyInt())).thenReturn(user);
         when(userActivityRepository.findById(anyInt()))
             .thenReturn(java.util.Optional.of(userActivity));
         userActivityService.deleteUserActivity(1, 1);

@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/likePosts")
+@RequestMapping("/like-posts")
 public class LikePostController {
 
-    private LikePostService likePostService;
+    private final LikePostService likePostService;
 
     public LikePostController(LikePostService likePostService) {
         this.likePostService = likePostService;

@@ -1,7 +1,5 @@
 package com.yunhalee.walkerholic.review.service;
 
-import static org.junit.Assert.assertEquals;
-
 import com.yunhalee.walkerholic.MockBeans;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.product.domain.Product;
@@ -74,8 +72,8 @@ class ReviewServiceTest extends MockBeans {
         ReviewRequest request = new ReviewRequest(rating, comment, productId, userId);
 
         //when
-        when(userRepository.findById(anyInt())).thenReturn(java.util.Optional.of(user));
-        when(productRepository.findById(anyInt())).thenReturn(java.util.Optional.of(product));
+        when(userService.findUserById(anyInt())).thenReturn(user);
+        when(productService.findProductById(anyInt())).thenReturn(product);
         ReviewResponse response = reviewService.create(request);
 
         //then
@@ -93,8 +91,8 @@ class ReviewServiceTest extends MockBeans {
         ReviewRequest request = new ReviewRequest(rating, comment, productId, userId);
 
         //when
-        when(userRepository.findById(anyInt())).thenReturn(java.util.Optional.of(user));
-        when(productRepository.findById(anyInt())).thenReturn(java.util.Optional.of(product));
+        when(userService.findUserById(anyInt())).thenReturn(user);
+        when(productService.findProductById(anyInt())).thenReturn(product);
         assertThatThrownBy(() -> reviewService.create(request))
             .isInstanceOf(InvalidRatingException.class);
     }

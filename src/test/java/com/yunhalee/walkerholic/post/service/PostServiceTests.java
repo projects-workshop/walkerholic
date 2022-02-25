@@ -52,9 +52,9 @@ class PostServiceTests extends MockBeans {
     @InjectMocks
     private PostService postService = new PostService(
         postRepository,
-        userRepository,
+        userService,
         postImageRepository,
-        followRepository,
+        followService,
         s3ImageUploader,
         "https://walkerholic-test-you.s3.ap-northeast10.amazonaws.com");
 
@@ -72,7 +72,7 @@ class PostServiceTests extends MockBeans {
         PostRequest request = new PostRequest(TITLE, CONTENT, 1);
 
         //when
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(UserTest.USER));
+        when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
         when(s3ImageUploader.uploadFile(any(), any())).thenReturn(PostImageTest.POST_IMAGE.getFilePath());
         when(postImageRepository.save(any())).thenReturn(PostImageTest.POST_IMAGE);
         when(postRepository.save(any())).thenReturn(post);
