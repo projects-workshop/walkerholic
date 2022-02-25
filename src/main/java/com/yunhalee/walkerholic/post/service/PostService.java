@@ -170,7 +170,7 @@ public class PostService {
 
     @Transactional
     public void deletePost(Integer id) {
-        String dir = "/productUploads/" + id;
+        String dir = "postUploads/" + id;
         s3ImageUploader.removeFolder(dir);
         postRepository.deleteById(id);
     }

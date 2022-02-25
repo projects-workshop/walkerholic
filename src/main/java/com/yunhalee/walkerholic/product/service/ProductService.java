@@ -158,17 +158,10 @@ public class ProductService {
         return PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by("createdAt"));
     }
 
-    public Integer deleteProduct(Integer id) {
-        Product product = productRepository.findByProductId(id);
-        String dir = "/productUploads/" + id;
-        FileUploadUtils.deleteDir(dir);
-
-        for (ProductImage productImage : product.getProductImages()) {
-            productImageRepository.deleteById(productImage.getId());
-        }
-
+    public void deleteProduct(Integer id) {
+        String dir = "productUploads/" + id;
+        s3ImageUploader.removeFolder(dir);
         productRepository.deleteById(id);
-        return id;
     }
 
     private List<ReviewResponse> reviewResponses(List<Review> reviews) {

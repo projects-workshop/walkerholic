@@ -60,8 +60,9 @@ public class ProductController {
     }
 
     @DeleteMapping("/products/{id}")
-    public Integer deleteProduct(@PathVariable("id") Integer id) {
-        return productService.deleteProduct(id);
+    public ResponseEntity deleteProduct(@PathVariable("id") Integer id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/products/list")

@@ -13,6 +13,7 @@ import com.yunhalee.walkerholic.user.domain.Role;
 import com.yunhalee.walkerholic.user.domain.User;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -245,14 +246,18 @@ class ProductServiceTests extends MockBeans {
         assertThat(responses.getTotalElement()).isEqualTo(2);
     }
 
-//    @Test
-//    public void deleteProduct(){
-//        //given
-//
-//        //when
-//
-//        //then
-//    }
+    @Test
+    public void deleteProduct(){
+        //given
+        Integer id = 1;
+
+        //when
+        productService.deleteProduct(id);
+
+        //then
+        verify(s3ImageUploader).removeFolder(any());
+        verify(productRepository).deleteById(any());
+    }
 
     private void equals(ProductResponse response, Product product){
         assertThat(response.getName()).isEqualTo(product.getName());
