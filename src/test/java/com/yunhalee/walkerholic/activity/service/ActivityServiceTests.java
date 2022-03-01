@@ -34,7 +34,6 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest
 @Transactional
 class ActivityServiceTests extends MockBeans {
 

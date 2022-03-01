@@ -39,7 +39,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest
 @Transactional
 class ProductServiceTests extends MockBeans {
 

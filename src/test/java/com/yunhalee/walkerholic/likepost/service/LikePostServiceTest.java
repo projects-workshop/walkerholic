@@ -28,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @ExtendWith(MockitoExtension.class)
-@SpringBootTest
 @Transactional
 class LikePostServiceTest extends MockBeans {
 
