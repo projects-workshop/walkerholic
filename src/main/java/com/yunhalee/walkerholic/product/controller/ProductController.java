@@ -3,6 +3,7 @@ package com.yunhalee.walkerholic.product.controller;
 import com.yunhalee.walkerholic.product.dto.ProductRequest;
 import com.yunhalee.walkerholic.product.dto.ProductResponse;
 import com.yunhalee.walkerholic.product.dto.ProductResponses;
+import com.yunhalee.walkerholic.product.dto.ProductSearchRequest;
 import com.yunhalee.walkerholic.product.dto.SimpleProductResponse;
 import com.yunhalee.walkerholic.product.service.ProductService;
 import org.springframework.http.HttpStatus;
@@ -40,38 +41,19 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public ResponseEntity<ProductResponses> getProducts(@RequestParam("page") Integer page,
-        @RequestParam(value = "sort", required = false) String sort,
-        @RequestParam(value = "category", required = false) String category,
-        @RequestParam(value = "keyword", required = false) String keyword) {
-        return ResponseEntity.ok(productService.getProducts(page, sort, category, keyword));
+    public ResponseEntity<ProductResponses> getProducts(@RequestParam ProductSearchRequest request) {
+        return ResponseEntity.ok(productService.getProducts(request));
     }
 
     @GetMapping("/users/{id}/products")
-    public ResponseEntity<ProductResponses> getProductsBySeller(@PathVariable("id") Integer id,
-        @RequestParam("page") Integer page,
-        @RequestParam(value = "sort", required = false) String sort,
-        @RequestParam(value = "category", required = false) String category,
-        @RequestParam(value = "keyword", required = false) String keyword) {
-        return ResponseEntity.ok(productService.getProductsBySeller(id, page, sort, category, keyword));
+    public ResponseEntity<ProductResponses> getProductsBySeller(@PathVariable("id") Integer id, @RequestParam ProductSearchRequest request) {
+        return ResponseEntity.ok(productService.getProductsBySeller(id, request));
     }
 
     @DeleteMapping("/products/{id}")
     public ResponseEntity deleteProduct(@PathVariable("id") Integer id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/products/list")
-    public ResponseEntity<ProductResponses> getProductList(@RequestParam("page") Integer page,
-        @RequestParam("sort") String sort) {
-        return ResponseEntity.ok(productService.getAllProductList(page, sort));
-    }
-
-    @GetMapping("/users/{id}/products/list")
-    public ResponseEntity<ProductResponses> getProductListBySeller(@RequestParam("page") Integer page,
-        @RequestParam("sort") String sort, @PathVariable("id") Integer id) {
-        return ResponseEntity.ok(productService.getProductListBySeller(page, sort, id));
     }
 
 

@@ -3,6 +3,7 @@ package com.yunhalee.walkerholic.product.service;
 import com.yunhalee.walkerholic.MockBeans;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.product.domain.ProductImageTest;
+import com.yunhalee.walkerholic.product.dto.ProductSearchRequest;
 import com.yunhalee.walkerholic.productImage.dto.ProductImageResponse;
 import com.yunhalee.walkerholic.product.dto.ProductRequest;
 import com.yunhalee.walkerholic.product.dto.ProductResponse;
@@ -11,18 +12,15 @@ import com.yunhalee.walkerholic.product.dto.SimpleProductResponse;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.user.domain.Role;
 import com.yunhalee.walkerholic.user.domain.User;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,7 +32,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
 @ExtendWith(MockitoExtension.class)
 @Transactional
 class ProductServiceTests extends MockBeans {
@@ -54,9 +51,8 @@ class ProductServiceTests extends MockBeans {
     private ProductService productService = new ProductService(productRepository,
         reviewRepository,
         userService,
-        productImageRepository,
-        s3ImageUploader,
-        "https://walkerholic-test-you.s3.ap-northeast10.amazonaws.com");
+        productImageService,
+        s3ImageUploader);
 
     private Product product;
     private Product firstProduct;
@@ -82,7 +78,7 @@ class ProductServiceTests extends MockBeans {
             user);
     }
 
-    public void setOtherProduct(){
+    public void setOtherProduct() {
         firstProduct = new Product("apple",
             "testBrand",
             Category.TUMBLER,
@@ -96,7 +92,7 @@ class ProductServiceTests extends MockBeans {
             32,
             21.0f,
             user);
-        thirdProduct= new Product("peach",
+        thirdProduct = new Product("peach",
             "testBrand",
             Category.CLOTHES,
             5,
@@ -105,15 +101,18 @@ class ProductServiceTests extends MockBeans {
     }
 
     @Test
-    public void createProduct() throws IOException {
+    public void createProduct() {
         //given
-        ProductRequest request = new ProductRequest(NAME, DESCRIPTION, BRAND, CATEGORY, STOCK, PRICE, 1);
+        ProductRequest request = new ProductRequest(NAME, DESCRIPTION, BRAND, CATEGORY, STOCK,
+            PRICE, 1);
 
         //when
         when(userService.findUserById(anyInt())).thenReturn(user);
         when(productRepository.save(any())).thenReturn(product);
-        when(s3ImageUploader.uploadFile(any(), any())).thenReturn(ProductImageTest.PRODUCT_IMAGE.getFilePath());
-        when(productImageRepository.save(any())).thenReturn(ProductImageTest.PRODUCT_IMAGE);
+        when(productImageService.uploadImages(any(), any())).thenAnswer(invocation -> {
+            product.addProductImage(ProductImageTest.PRODUCT_IMAGE);
+            return null;
+        });
         SimpleProductResponse response = productService.createProduct(request, Arrays.asList(MULTIPART_FILE));
 
         //then
@@ -122,27 +121,23 @@ class ProductServiceTests extends MockBeans {
     }
 
     @Test
-    public void updateProduct() throws IOException {
+    public void updateProduct() {
         //given
-        String updatedDescription = "updateTest";
-        product.addProductImage(ProductImageTest.PRODUCT_IMAGE);
-        ProductRequest request = new ProductRequest(NAME, updatedDescription, BRAND, CATEGORY, STOCK, PRICE, 1);
+        setOtherProduct();
+        ProductRequest request = new ProductRequest(secondProduct.getName(),
+            secondProduct.getDescription(),
+            secondProduct.getBrand(),
+            secondProduct.getCategory().name(),
+            secondProduct.getStock(),
+            secondProduct.getPrice(),
+            1);
 
         //when
-        when(userService.findUserById(anyInt())).thenReturn(user);
         when(productRepository.findById(any())).thenReturn(java.util.Optional.ofNullable(product));
-        when(s3ImageUploader.uploadFile(any(), any())).thenReturn(ProductImageTest.PRODUCT_SECOND_IMAGE.getFilePath());
-        when(productImageRepository.save(any())).thenReturn(ProductImageTest.PRODUCT_SECOND_IMAGE);
-        SimpleProductResponse response = productService.updateProduct(1, request,
-            Arrays.asList(MULTIPART_FILE),
-            Arrays.asList(ProductImageTest.PRODUCT_IMAGE.getFilePath()));
+        SimpleProductResponse response = productService.updateProduct(1, request);
 
         //then
-        verify(productImageRepository).deleteByFilePath(any());
-        verify(s3ImageUploader).deleteFile(any());
-        assertThat(response.getImagesUrl()).contains(ProductImageTest.PRODUCT_SECOND_IMAGE.getFilePath());
-        assertThat(response.getImagesUrl()).doesNotContain(ProductImageTest.PRODUCT_IMAGE.getFilePath());
-        assertThat(response.getDescription()).isEqualTo(updatedDescription);
+        equals(response, secondProduct);
     }
 
 
@@ -164,23 +159,25 @@ class ProductServiceTests extends MockBeans {
     public void find_products_by_sort_and_keyword() {
         //given
         setOtherProduct();
+        ProductSearchRequest request = new ProductSearchRequest(1, "lowest", null, "ba");
 
         //when
         doReturn(new PageImpl<>(Arrays.asList(firstProduct, product, thirdProduct))).when(productRepository).findAllByKeyword(any(), any());
-        ProductResponses responses = productService.getProducts(1, "lowest", null, "ba");
+        ProductResponses responses = productService.getProducts(request);
 
         //then
         assertThat(responses.getTotalElement()).isEqualTo(3L);
     }
 
     @Test
-    public void find_products_by_sort_and_category_and_keyword(){
+    public void find_products_by_sort_and_category_and_keyword() {
         //given
         setOtherProduct();
+        ProductSearchRequest request = new ProductSearchRequest(1, "lowest", "CLOTHES", "ba");
 
         //when
         doReturn(new PageImpl<>(Arrays.asList(secondProduct))).when(productRepository).findAllByCategory(any(), any(), any());
-        ProductResponses responses = productService.getProducts(1, "lowest", "CLOTHES", "ba");
+        ProductResponses responses = productService.getProducts(request);
 
         //then
         assertThat(responses.getTotalElement()).isEqualTo(1L);
@@ -190,11 +187,12 @@ class ProductServiceTests extends MockBeans {
     public void find_products_by_seller_and_sort_and_keyword() {
         //given
         setOtherProduct();
+        ProductSearchRequest request = new ProductSearchRequest(1, "lowest", null, "p");
 
         //when
         when(userService.findUserById(anyInt())).thenReturn(user);
         doReturn(new PageImpl<>(Arrays.asList(product))).when(productRepository).findAllBySellerAndKeyword(any(), any(), any());
-        ProductResponses responses = productService.getProductsBySeller(1, 1, "lowest", null, "p");
+        ProductResponses responses = productService.getProductsBySeller(1, request);
 
         //then
         assertThat(responses.getTotalElement()).isEqualTo(1);
@@ -205,11 +203,12 @@ class ProductServiceTests extends MockBeans {
     public void find_products_by_seller_and_sort_and_category_and_keyword() {
         //given
         setOtherProduct();
+        ProductSearchRequest request = new ProductSearchRequest(1, "lowest", "CLOTHES", "ba");
 
         //when
         when(userService.findUserById(anyInt())).thenReturn(user);
         doReturn(new PageImpl<>(Arrays.asList(secondProduct))).when(productRepository).findAllBySellerAndCategory(any(), any(), any(), any());
-        ProductResponses responses = productService.getProductsBySeller(1, 1, "lowest", "CLOTHES", "ba");
+        ProductResponses responses = productService.getProductsBySeller(1, request);
 
         //then
         assertThat(responses.getTotalElement()).isEqualTo(1);
@@ -217,45 +216,16 @@ class ProductServiceTests extends MockBeans {
     }
 
     @Test
-    public void find_all_products_list_by_sort() {
-        //given
-        setOtherProduct();
-
+    public void deleteProduct() {
         //when
-        doReturn(new PageImpl<>(Arrays.asList(firstProduct, product, secondProduct, thirdProduct))).when(productRepository).findAllProductList(any());
-        ProductResponses responses = productService.getAllProductList(1, "lowest");
-
-        //then
-        assertThat(responses.getTotalElement()).isEqualTo(3);
-    }
-
-    @Test
-    public void find_all_products_list_by_seller_and_sort() {
-        //given
-        setOtherProduct();
-
-        //when
-        doReturn(new PageImpl<>(Arrays.asList(product, secondProduct))).when(productRepository).findByUserId(any(), any());
-        ProductResponses responses = productService.getProductListBySeller(1, "lowest", 1);
-
-        //then
-        assertThat(responses.getTotalElement()).isEqualTo(2);
-    }
-
-    @Test
-    public void deleteProduct(){
-        //given
-        Integer id = 1;
-
-        //when
-        productService.deleteProduct(id);
+        productService.deleteProduct(1);
 
         //then
         verify(s3ImageUploader).removeFolder(any());
         verify(productRepository).deleteById(any());
     }
 
-    private void equals(ProductResponse response, Product product){
+    private void equals(ProductResponse response, Product product) {
         assertThat(response.getName()).isEqualTo(product.getName());
         assertThat(response.getDescription()).isEqualTo(product.getDescription());
         assertThat(response.getBrand()).isEqualTo(product.getBrand());
@@ -268,12 +238,13 @@ class ProductServiceTests extends MockBeans {
         assertThat(response.getStock()).isEqualTo(product.getStock());
     }
 
-    private void equals(SimpleProductResponse response, Product product){
+    private void equals(SimpleProductResponse response, Product product) {
         assertThat(response.getName()).isEqualTo(product.getName());
         assertThat(response.getDescription()).isEqualTo(product.getDescription());
         assertThat(response.getBrand()).isEqualTo(product.getBrand());
         assertThat(response.getCategory()).isEqualTo(product.getCategory().name());
-        response.getImagesUrl().forEach(imageUrl -> assertThat(product.getImageUrls().contains(imageUrl)).isTrue());
+        response.getImagesUrl()
+            .forEach(imageUrl -> assertThat(product.getImageUrls().contains(imageUrl)).isTrue());
         assertThat(response.getPrice()).isEqualTo(product.getPrice());
         assertThat(response.getStock()).isEqualTo(product.getStock());
     }

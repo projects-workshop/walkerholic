@@ -1,35 +1,64 @@
 package com.yunhalee.walkerholic.product.domain;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import com.yunhalee.walkerholic.productImage.domain.ProductImage;
+import com.yunhalee.walkerholic.productImage.domain.ProductImageRepository;
+import com.yunhalee.walkerholic.user.domain.User;
+import com.yunhalee.walkerholic.user.domain.UserRepository;
+import com.yunhalee.walkerholic.user.domain.UserTest;
+import java.util.Arrays;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.test.context.junit4.SpringRunner;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Rollback(false)
-@SpringBootTest
-@ExtendWith(SpringExtension.class)
-@Transactional
+@RunWith(SpringRunner.class)
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class ProductRepositoryTests {
+
+    public static final int PRODUCT_PER_PAGE = 9;
 
     @Autowired
     private ProductRepository productRepository;
 
-    public static final int PRODUCT_PER_PAGE = 9;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ProductImageRepository productImageRepository;
+
+    private User user;
+    private User seller;
+    private Product firstProduct;
+    private Product secondProduct;
+    private Product thirdProduct;
+    private Product fourthProduct;
+    private Product fifthProduct;
+
+    @Before
+    public void setUp() {
+        user = userRepository.save(UserTest.USER);
+        seller = userRepository.save(UserTest.SELLER);
+        firstProduct = save("first", "firstProduct", "test", Category.TUMBLER, 2, 2.00f, user);
+        secondProduct = save("second", "secondProduct", "test", Category.TUMBLER, 200, 3.00f, seller);
+        thirdProduct = save("third", "thirdProduct", "productTest", Category.CLOTHES, 6, 6.00f, user);
+        fourthProduct = save("fourth", "fourthProduct", "test", Category.BAG, 21, 8.00f, seller);
+        fifthProduct = save("fifth", "fifthProduct", "productTest", Category.CLOTHES, 1, 9.00f, seller);
+    }
 
     @Test
     public void find_by_product_id() {
         //given
-        Integer id = 1;
+        Integer id = firstProduct.getId();
 
         //when
         Product product = productRepository.findByProductId(id);
@@ -39,26 +68,10 @@ public class ProductRepositoryTests {
     }
 
     @Test
-    public void find_products_by_user_id() {
-        //given
-        Integer userId = 1;
-
-        //when
-        Pageable pageable = PageRequest.of(0, PRODUCT_PER_PAGE);
-        Page<Product> productPage = productRepository.findByUserId(userId, pageable);
-        List<Product> products = productPage.getContent();
-
-        //then
-        for (Product product : products) {
-            assertThat(product.getUser().getId()).isEqualTo(userId);
-        }
-    }
-
-    @Test
     public void find_products_by_category_and_keyword() {
         //given
         Category category = Category.CLOTHES;
-        String keyword = "a";
+        String keyword = "th";
 
         //when
         Pageable pageable = PageRequest.of(0, PRODUCT_PER_PAGE);
@@ -66,16 +79,18 @@ public class ProductRepositoryTests {
         List<Product> products = productPage.getContent();
 
         //then
+        assertThat(products.equals(Arrays.asList(thirdProduct, fifthProduct))).isTrue();
         for (Product product : products) {
             assertThat(product.getCategory()).isEqualTo(category);
             assertThat(product.getName().contains(keyword)).isTrue();
         }
+
     }
 
     @Test
     public void find_products_by_keyword() {
         //given
-        String keyword = "a";
+        String keyword = "second";
 
         //when
         Pageable pageable = PageRequest.of(0, PRODUCT_PER_PAGE);
@@ -83,6 +98,7 @@ public class ProductRepositoryTests {
         List<Product> products = productPage.getContent();
 
         //then
+        assertThat(products.equals(Arrays.asList(secondProduct))).isTrue();
         for (Product product : products) {
             assertThat(product.getName().contains(keyword)).isTrue();
         }
@@ -91,9 +107,9 @@ public class ProductRepositoryTests {
     @Test
     public void find_products_by_seller_id_and_category_and_keyword() {
         //given
-        Integer sellerId = 1;
+        Integer sellerId = user.getId();
         Category category = Category.CLOTHES;
-        String keyword = "a";
+        String keyword = "th";
 
         //when
         Pageable pageable = PageRequest.of(0, PRODUCT_PER_PAGE);
@@ -101,6 +117,7 @@ public class ProductRepositoryTests {
         List<Product> products = productPage.getContent();
 
         //then
+        assertThat(products.equals(Arrays.asList(thirdProduct))).isTrue();
         for (Product product : products) {
             assertThat(product.getUser().getId()).isEqualTo(sellerId);
             assertThat(product.getCategory()).isEqualTo(category);
@@ -111,8 +128,8 @@ public class ProductRepositoryTests {
     @Test
     public void find_products_by_seller_id_and_keyword() {
         //given
-        Integer sellerId = 1;
-        String keyword = "a";
+        Integer sellerId = seller.getId();
+        String keyword = "th";
 
         //when
         Pageable pageable = PageRequest.of(0, PRODUCT_PER_PAGE);
@@ -120,22 +137,19 @@ public class ProductRepositoryTests {
         List<Product> products = productPage.getContent();
 
         //then
+        assertThat(products.equals(Arrays.asList(fourthProduct, fifthProduct))).isTrue();
         for (Product product : products) {
             assertThat(product.getUser().getId()).isEqualTo(sellerId);
             assertThat(product.getName().contains(keyword)).isTrue();
         }
     }
 
-    @Test
-    public void find_products() {
-        //when
-        Pageable pageable = PageRequest.of(0, PRODUCT_PER_PAGE);
-        Page<Product> productPage = productRepository.findAllProductList(pageable);
-        List<Product> products = productPage.getContent();
-
-        //then
-        assertThat(products.size()).isEqualTo(PRODUCT_PER_PAGE);
+    private Product save(String name, String description, String brand, Category category,
+        Integer stock, Float price, User user) {
+        Product product = productRepository.save(Product.of(name, description, brand, category, stock, price, user));
+        ProductImage productImage = productImageRepository.save(ProductImage.of(name, description, product));
+        product.addProductImage(productImage);
+        return product;
     }
-
 
 }

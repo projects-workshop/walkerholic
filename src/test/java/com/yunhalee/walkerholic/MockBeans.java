@@ -12,6 +12,7 @@ import com.yunhalee.walkerholic.post.service.PostService;
 import com.yunhalee.walkerholic.productImage.domain.ProductImageRepository;
 import com.yunhalee.walkerholic.product.domain.ProductRepository;
 import com.yunhalee.walkerholic.product.service.ProductService;
+import com.yunhalee.walkerholic.productImage.service.ProductImageService;
 import com.yunhalee.walkerholic.review.domain.ReviewRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.user.service.UserService;
@@ -76,4 +77,7 @@ public class MockBeans {
 
     @MockBean
     protected ProductImageRepository productImageRepository;
+
+    @MockBean
+    protected ProductImageService productImageService;
 }

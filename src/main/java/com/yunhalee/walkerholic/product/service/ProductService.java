@@ -1,5 +1,6 @@
 package com.yunhalee.walkerholic.product.service;
 
+import com.yunhalee.walkerholic.product.dto.ProductSearchRequest;
 import com.yunhalee.walkerholic.productImage.dto.ProductImageResponse;
 import com.yunhalee.walkerholic.product.dto.ProductRequest;
 import com.yunhalee.walkerholic.product.dto.ProductResponse;
@@ -20,17 +21,20 @@ import com.yunhalee.walkerholic.productImage.domain.ProductImage;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.product.domain.ProductRepository;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class ProductService {
 
     public static final int PRODUCT_PER_PAGE = 9;
@@ -41,21 +45,19 @@ public class ProductService {
     private UserService userService;
     private ProductImageService productImageService;
     private S3ImageUploader s3ImageUploader;
-    private String bucketUrl;
 
     public ProductService(ProductRepository productRepository, ReviewRepository reviewRepository,
         UserService userService,
         ProductImageService productImageService,
-        S3ImageUploader s3ImageUploader,
-        @Value("${AWS_S3_BUCKET_URL}") String bucketUrl) {
+        S3ImageUploader s3ImageUploader) {
         this.productRepository = productRepository;
         this.reviewRepository = reviewRepository;
         this.userService = userService;
         this.productImageService = productImageService;
         this.s3ImageUploader = s3ImageUploader;
-        this.bucketUrl = bucketUrl;
     }
 
+    @Transactional
     public SimpleProductResponse createProduct(ProductRequest request,
         List<MultipartFile> multipartFiles) {
         User user = userService.findUserById(request.getUserId());
@@ -64,6 +66,7 @@ public class ProductService {
         return SimpleProductResponse.of(product);
     }
 
+    @Transactional
     public SimpleProductResponse updateProduct(Integer id, ProductRequest request) {
         Product product = findProductById(id);
         product.update(request.toProduct());
@@ -79,37 +82,25 @@ public class ProductService {
             reviewResponses(reviews));
     }
 
-    public ProductResponses getProducts(Integer page, String sort, String category, String keyword) {
-        Pageable pageable = pageable(page, sort);
-        if (category == null || category.isBlank()) {
-            Page<Product> productPage = productRepository.findAllByKeyword(pageable, keyword);
+    public ProductResponses getProducts(ProductSearchRequest request) {
+        Pageable pageable = pageable(request.getPage(), request.getSort());
+        if (EnumUtils.isValidEnum(Category.class, request.getCategory())) {
+            Page<Product> productPage = productRepository.findAllByCategory(pageable, Category.valueOf(request.getCategory()), request.getKeyword());
             return productResponses(productPage);
         }
-        Page<Product> productPage = productRepository.findAllByCategory(pageable, Category.valueOf(category), keyword);
+        Page<Product> productPage = productRepository.findAllByKeyword(pageable, request.getKeyword());
         return productResponses(productPage);
     }
 
-    public ProductResponses getProductsBySeller(Integer id, Integer page, String sort, String category, String keyword) {
+    public ProductResponses getProductsBySeller(Integer id, ProductSearchRequest request) {
         User seller = userService.findUserById(id);
-        Pageable pageable = pageable(page, sort);
-        if (category == null || category.isBlank()) {
-            Page<Product> productPage = productRepository.findAllBySellerAndKeyword(pageable, id, keyword);
+        Pageable pageable = pageable(request.getPage(), request.getSort());
+        if (EnumUtils.isValidEnum(Category.class, request.getCategory())) {
+            Page<Product> productPage = productRepository.findAllBySellerAndCategory(pageable, id, Category.valueOf(request.getCategory()), request.getKeyword());
             return productResponses(productPage, seller);
         }
-        Page<Product> productPage = productRepository.findAllBySellerAndCategory(pageable, id, Category.valueOf(category), keyword);
+        Page<Product> productPage = productRepository.findAllBySellerAndKeyword(pageable, id, request.getKeyword());
         return productResponses(productPage, seller);
-    }
-
-    public ProductResponses getAllProductList(Integer page, String sort) {
-        Pageable pageable = PageRequest.of(page - 1, PRODUCT_LIST_PER_PAGE, Sort.by(sort));
-        Page<Product> productPage = productRepository.findAllProductList(pageable);
-        return productResponses(productPage);
-    }
-
-    public ProductResponses getProductListBySeller(Integer page, String sort, Integer id) {
-        Pageable pageable = PageRequest.of(page - 1, PRODUCT_LIST_PER_PAGE, Sort.by(sort));
-        Page<Product> productPage = productRepository.findByUserId(id, pageable);
-        return productResponses(productPage);
     }
 
     private Pageable pageable(Integer page, String sort) {
@@ -120,7 +111,7 @@ public class ProductService {
         } else if (sort.equals("toprated")) {
             return PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by(Sort.Direction.DESC, "average"));
         }
-        return PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by("createdAt"));
+        return PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by(sort));
     }
 
     public void deleteProduct(Integer id) {

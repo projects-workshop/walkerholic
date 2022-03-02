@@ -10,10 +10,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query(value = "SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.productImages i LEFT JOIN FETCH i.productImages LEFT JOIN FETCH p.reviewInfo LEFT JOIN FETCH p.user u WHERE p.id=:id ")
     Product findByProductId(Integer id);
 
-    @Query(value = "SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.productImages i LEFT JOIN FETCH i.productImages LEFT JOIN FETCH p.user u WHERE u.id=:id",
-        countQuery = "SELECT count(DISTINCT p) FROM Product p")
-    Page<Product> findByUserId(Integer id, Pageable pageable);
-
     @Query(value = "SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.productImages i LEFT JOIN FETCH i.productImages LEFT JOIN FETCH p.reviewInfo WHERE p.category=:category AND p.name LIKE %:keyword%",
         countQuery = "SELECT count(DISTINCT p) FROM Product p")
     Page<Product> findAllByCategory(Pageable pageable, Category category, String keyword);
@@ -31,7 +27,4 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
         countQuery = "SELECT count(DISTINCT p) FROM Product p")
     Page<Product> findAllBySellerAndKeyword(Pageable pageable, Integer id, String keyword);
 
-    @Query(value = "SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.productImages i LEFT JOIN FETCH i.productImages LEFT JOIN FETCH p.reviewInfo ",
-        countQuery = "SELECT count(DISTINCT p) FROM Product p")
-    Page<Product> findAllProductList(Pageable pageable);
 }
