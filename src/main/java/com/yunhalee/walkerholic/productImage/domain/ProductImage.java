@@ -1,5 +1,6 @@
-package com.yunhalee.walkerholic.product.domain;
+package com.yunhalee.walkerholic.productImage.domain;
 
+import com.yunhalee.walkerholic.product.domain.Product;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

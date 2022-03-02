@@ -9,7 +9,7 @@ import com.yunhalee.walkerholic.likepost.domain.LikePostRepository;
 import com.yunhalee.walkerholic.post.domain.PostImageRepository;
 import com.yunhalee.walkerholic.post.domain.PostRepository;
 import com.yunhalee.walkerholic.post.service.PostService;
-import com.yunhalee.walkerholic.product.domain.ProductImageRepository;
+import com.yunhalee.walkerholic.productImage.domain.ProductImageRepository;
 import com.yunhalee.walkerholic.product.domain.ProductRepository;
 import com.yunhalee.walkerholic.product.service.ProductService;
 import com.yunhalee.walkerholic.review.domain.ReviewRepository;

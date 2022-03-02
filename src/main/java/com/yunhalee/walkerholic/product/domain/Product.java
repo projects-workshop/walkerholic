@@ -2,19 +2,14 @@ package com.yunhalee.walkerholic.product.domain;
 
 import com.yunhalee.walkerholic.common.domain.BaseTimeEntity;
 import com.yunhalee.walkerholic.product.exception.NotEnoughStockException;
-import com.yunhalee.walkerholic.review.domain.Review;
+import com.yunhalee.walkerholic.productImage.domain.ProductImage;
 import com.yunhalee.walkerholic.user.domain.User;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "product")
@@ -44,22 +39,15 @@ public class Product extends BaseTimeEntity {
     @Column(nullable = false)
     private Float price;
 
-//    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<ProductImage> productImages = new ArrayList<>();
-
     @Embedded
     private ProductImages productImages;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 
     @Embedded
     private ReviewInfo reviewInfo;
-
-//    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @OrderBy("createdAt DESC")
-//    private Set<Review> reviews = new HashSet<>();
 
     public Product(String name, String brand, Category category, Integer stock, Float price,
         String description) {

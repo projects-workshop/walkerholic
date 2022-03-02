@@ -1,16 +1,12 @@
 package com.yunhalee.walkerholic.product.dto;
 
-import com.yunhalee.walkerholic.post.domain.Post;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.user.domain.User;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 public class ProductRequest {
-
-    private Integer id;
 
     private String name;
 
@@ -26,18 +22,10 @@ public class ProductRequest {
 
     private Integer userId;
 
-    public ProductRequest(String name, String description, String brand, String category, Integer stock, Float price, Integer userId) {
-        this.name = name;
-        this.description = description;
-        this.brand = brand;
-        this.category = category;
-        this.stock = stock;
-        this.price = price;
-        this.userId = userId;
+    public ProductRequest() {
     }
 
-    public ProductRequest(Integer id, String name, String description, String brand, String category, Integer stock, Float price, Integer userId) {
-        this.id = id;
+    public ProductRequest(String name, String description, String brand, String category, Integer stock, Float price, Integer userId) {
         this.name = name;
         this.description = description;
         this.brand = brand;

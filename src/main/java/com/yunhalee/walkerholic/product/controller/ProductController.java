@@ -29,12 +29,9 @@ public class ProductController {
         return new ResponseEntity<>(productService.createProduct(productRequest, multipartFiles), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/products")
-    public ResponseEntity<SimpleProductResponse> updateProduct(
-        @RequestPart("productRequest") ProductRequest productRequest,
-        @RequestPart(value = "multipartFile", required = false) List<MultipartFile> multipartFiles,
-        @RequestPart(value = "deletedImages", required = false) List<String> deletedImages) {
-        return ResponseEntity.ok(productService.updateProduct(productRequest, multipartFiles, deletedImages));
+    @PostMapping("/products/{id}")
+    public ResponseEntity<SimpleProductResponse> updateProduct(@PathVariable("id") Integer id, @RequestBody ProductRequest productRequest) {
+        return ResponseEntity.ok(productService.updateProduct(id, productRequest));
     }
 
     @GetMapping("/products/{id}")

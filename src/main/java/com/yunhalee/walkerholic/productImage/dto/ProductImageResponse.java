@@ -1,6 +1,6 @@
-package com.yunhalee.walkerholic.product.dto;
+package com.yunhalee.walkerholic.productImage.dto;
 
-import com.yunhalee.walkerholic.product.domain.ProductImage;
+import com.yunhalee.walkerholic.productImage.domain.ProductImage;
 import lombok.Getter;
 
 @Getter

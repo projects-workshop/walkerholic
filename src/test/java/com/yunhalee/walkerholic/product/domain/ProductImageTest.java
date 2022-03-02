@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.product.domain;
 
-import static org.junit.jupiter.api.Assertions.*;
+import com.yunhalee.walkerholic.productImage.domain.ProductImage;
 
 public class ProductImageTest {
 

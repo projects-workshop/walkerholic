@@ -3,7 +3,7 @@ package com.yunhalee.walkerholic.product.service;
 import com.yunhalee.walkerholic.MockBeans;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.product.domain.ProductImageTest;
-import com.yunhalee.walkerholic.product.dto.ProductImageResponse;
+import com.yunhalee.walkerholic.productImage.dto.ProductImageResponse;
 import com.yunhalee.walkerholic.product.dto.ProductRequest;
 import com.yunhalee.walkerholic.product.dto.ProductResponse;
 import com.yunhalee.walkerholic.product.dto.ProductResponses;
@@ -13,7 +13,6 @@ import com.yunhalee.walkerholic.user.domain.Role;
 import com.yunhalee.walkerholic.user.domain.User;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -29,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 
-import static org.junit.Assert.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -136,7 +133,7 @@ class ProductServiceTests extends MockBeans {
         when(productRepository.findById(any())).thenReturn(java.util.Optional.ofNullable(product));
         when(s3ImageUploader.uploadFile(any(), any())).thenReturn(ProductImageTest.PRODUCT_SECOND_IMAGE.getFilePath());
         when(productImageRepository.save(any())).thenReturn(ProductImageTest.PRODUCT_SECOND_IMAGE);
-        SimpleProductResponse response = productService.updateProduct(request,
+        SimpleProductResponse response = productService.updateProduct(1, request,
             Arrays.asList(MULTIPART_FILE),
             Arrays.asList(ProductImageTest.PRODUCT_IMAGE.getFilePath()));
 

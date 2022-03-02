@@ -1,5 +1,6 @@
 package com.yunhalee.walkerholic.product.domain;
 
+import com.yunhalee.walkerholic.productImage.domain.ProductImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

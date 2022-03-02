@@ -1,4 +1,4 @@
-package com.yunhalee.walkerholic.product.domain;
+package com.yunhalee.walkerholic.productImage.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;

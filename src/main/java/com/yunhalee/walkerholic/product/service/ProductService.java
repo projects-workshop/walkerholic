@@ -1,11 +1,12 @@
 package com.yunhalee.walkerholic.product.service;
 
-import com.yunhalee.walkerholic.product.dto.ProductImageResponse;
+import com.yunhalee.walkerholic.productImage.dto.ProductImageResponse;
 import com.yunhalee.walkerholic.product.dto.ProductRequest;
 import com.yunhalee.walkerholic.product.dto.ProductResponse;
 import com.yunhalee.walkerholic.product.dto.ProductResponses;
 import com.yunhalee.walkerholic.product.dto.SimpleProductResponse;
 import com.yunhalee.walkerholic.product.exception.ProductNotFoundException;
+import com.yunhalee.walkerholic.productImage.service.ProductImageService;
 import com.yunhalee.walkerholic.review.domain.Review;
 import com.yunhalee.walkerholic.review.domain.ReviewRepository;
 import com.yunhalee.walkerholic.review.dto.ReviewResponse;
@@ -13,15 +14,11 @@ import com.yunhalee.walkerholic.user.dto.SimpleUserResponse;
 import com.yunhalee.walkerholic.user.dto.SellerUserResponse;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import com.yunhalee.walkerholic.user.service.UserService;
-import com.yunhalee.walkerholic.util.FileUploadUtils;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.product.domain.Product;
-import com.yunhalee.walkerholic.product.domain.ProductImage;
+import com.yunhalee.walkerholic.productImage.domain.ProductImage;
 import com.yunhalee.walkerholic.user.domain.User;
-import com.yunhalee.walkerholic.product.domain.ProductImageRepository;
 import com.yunhalee.walkerholic.product.domain.ProductRepository;
-import java.util.Collections;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -31,9 +28,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -45,19 +39,19 @@ public class ProductService {
     private ProductRepository productRepository;
     private ReviewRepository reviewRepository;
     private UserService userService;
-    private ProductImageRepository productImageRepository;
+    private ProductImageService productImageService;
     private S3ImageUploader s3ImageUploader;
     private String bucketUrl;
 
     public ProductService(ProductRepository productRepository, ReviewRepository reviewRepository,
         UserService userService,
-        ProductImageRepository productImageRepository,
+        ProductImageService productImageService,
         S3ImageUploader s3ImageUploader,
         @Value("${AWS_S3_BUCKET_URL}") String bucketUrl) {
         this.productRepository = productRepository;
         this.reviewRepository = reviewRepository;
         this.userService = userService;
-        this.productImageRepository = productImageRepository;
+        this.productImageService = productImageService;
         this.s3ImageUploader = s3ImageUploader;
         this.bucketUrl = bucketUrl;
     }
@@ -66,43 +60,14 @@ public class ProductService {
         List<MultipartFile> multipartFiles) {
         User user = userService.findUserById(request.getUserId());
         Product product = productRepository.save(request.toProduct(user));
-        saveProductImage(product, multipartFiles);
+        productImageService.uploadImages(product, multipartFiles);
         return SimpleProductResponse.of(product);
     }
 
-    public SimpleProductResponse updateProduct(ProductRequest request, List<MultipartFile> multipartFiles, List<String> deletedImages) {
-        Product product = findProductById(request.getId());
+    public SimpleProductResponse updateProduct(Integer id, ProductRequest request) {
+        Product product = findProductById(id);
         product.update(request.toProduct());
-        deleteProductImage(product, deletedImages);
-        saveProductImage(product, multipartFiles);
         return SimpleProductResponse.of(product);
-    }
-
-    private void saveProductImage(Product product, List<MultipartFile> multipartFiles) {
-        Optional.ofNullable(multipartFiles).orElseGet(Collections::emptyList)
-            .forEach(multipartFile -> {
-                try {
-                    String uploadDir = "productUploads/" + product.getId();
-                    String imageUrl = s3ImageUploader.uploadFile(uploadDir, multipartFile);
-                    String fileName = imageUrl
-                        .substring(bucketUrl.length() + uploadDir.length() + 2);
-                    ProductImage productImage = productImageRepository
-                        .save(ProductImage.of(fileName, imageUrl, product));
-                    product.addProductImage(productImage);
-                } catch (IOException ex) {
-                    new IOException("Could not save file : " + multipartFile.getOriginalFilename());
-                }
-            });
-    }
-
-    private void deleteProductImage(Product product, List<String> deletedImages) {
-        Optional.ofNullable(deletedImages).orElseGet(Collections::emptyList)
-            .forEach(deletedImage -> {
-                product.deleteProductImage(deletedImages);
-                productImageRepository.deleteByFilePath(deletedImage);
-                String fileName = deletedImage.substring(bucketUrl.length() + 1);
-                s3ImageUploader.deleteFile(fileName);
-            });
     }
 
     public ProductResponse getProduct(Integer id) {
