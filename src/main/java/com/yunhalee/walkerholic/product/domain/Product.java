@@ -21,23 +21,8 @@ public class Product extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, length = 45)
-    private String name;
-
-    private String description;
-
-    @Column(nullable = false)
-    private String brand;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Category category;
-
-    @Column(nullable = false)
-    private Integer stock;
-
-    @Column(nullable = false)
-    private Float price;
+    @Embedded
+    private ProductInfo productInfo;
 
     @Embedded
     private ProductImages productImages;
@@ -49,43 +34,25 @@ public class Product extends BaseTimeEntity {
     @Embedded
     private ReviewInfo reviewInfo;
 
-    public Product(String name, String brand, Category category, Integer stock, Float price,
-        String description) {
-        this.name = name;
-        this.brand = brand;
-        this.category = category;
-        this.stock = stock;
-        this.price = price;
+    public Product(String name, String brand, Category category, Integer stock, Float price, String description) {
+        this.productInfo = ProductInfo.of(name, description, brand, category, stock, price);
         this.productImages = new ProductImages();
         this.reviewInfo = new ReviewInfo();
-        this.description = description;
     }
 
-    public Product(String name, String description, String brand, Category category, Integer stock,
-        Float price, User user) {
-        this.name = name;
-        this.description = description;
-        this.brand = brand;
-        this.category = category;
-        this.stock = stock;
-        this.price = price;
+    public Product(String name, String description, String brand, Category category, Integer stock, Float price, User user) {
+        this.productInfo = ProductInfo.of(name, description, brand, category, stock, price);
         this.productImages = new ProductImages();
         this.user = user;
         this.reviewInfo = new ReviewInfo();
     }
 
-    public static Product of(String name, String description, String brand, Category category,
-        Integer stock, Float price, User user) {
+    public static Product of(String name, String description, String brand, Category category, Integer stock, Float price, User user) {
         return new Product(name, description, brand, category, stock, price, user);
     }
 
     public void update(Product product) {
-        this.name = product.getName();
-        this.description = product.getDescription();
-        this.brand = product.getBrand();
-        this.category = product.getCategory();
-        this.stock = product.getStock();
-        this.price = product.getPrice();
+        productInfo.update(product.getProductInfo());
     }
 
     public void addReview(Integer rating) {
@@ -104,17 +71,12 @@ public class Product extends BaseTimeEntity {
         return reviewInfo.getAverage();
     }
 
-    //비지니스 로직
     public void addStock(Integer qty) {
-        this.stock += qty;
+        productInfo.addStock(qty);
     }
 
     public void removeStock(Integer qty) {
-        Integer restStock = this.stock - qty;
-        if (restStock < 0) {
-            throw new NotEnoughStockException("Stock is not enough.");
-        }
-        this.stock = restStock;
+        productInfo.removeStock(qty);
     }
 
     public void addProductImage(ProductImage productImage) {
@@ -124,6 +86,31 @@ public class Product extends BaseTimeEntity {
     public void deleteProductImage(List<String> deletedImages) {
         this.productImages.deleteProductImage(deletedImages);
     }
+
+    public String getName(){
+        return productInfo.getName();
+    }
+
+    public String getDescription(){
+        return productInfo.getDescription();
+    }
+
+    public String getBrand(){
+        return productInfo.getBrand();
+    }
+
+    public Category getCategory(){
+        return productInfo.getCategory();
+    }
+
+    public Integer getStock(){
+        return productInfo.getStock();
+    }
+
+    public Float getPrice(){
+        return productInfo.getPrice();
+    }
+
 
     @Transient
     public String getMainImageUrl() {
