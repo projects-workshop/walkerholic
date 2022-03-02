@@ -29,7 +29,7 @@ public class OrderItemDTO {
         this.qty = orderItem.getQty();
         this.productId = orderItem.getProduct().getId();
         this.productName = orderItem.getProduct().getName();
-        this.productPrice = orderItem.getProduct().getPrice();
+        this.productPrice = orderItem.getProduct().getPrice().floatValue();
         this.productDescription = orderItem.getProduct().getDescription();
         this.productBrand = orderItem.getProduct().getBrand();
         this.productImageUrl = orderItem.getProduct().getMainImageUrl();

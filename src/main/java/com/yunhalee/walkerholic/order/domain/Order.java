@@ -58,7 +58,7 @@ public class Order extends BaseTimeEntity {
     public Float getTotalAmount() {
         Float totalAmount = 0f;
         for (OrderItem orderItem : this.orderItems) {
-            totalAmount += orderItem.getProduct().getPrice() * orderItem.getQty();
+            totalAmount += orderItem.getProduct().getPrice().floatValue() * orderItem.getQty();
         }
         return totalAmount;
     }

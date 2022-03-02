@@ -1,6 +1,7 @@
 package com.yunhalee.walkerholic.product.domain;
 
 import com.yunhalee.walkerholic.product.exception.NotEnoughStockException;
+import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
@@ -27,7 +28,7 @@ public class ProductInfo {
     private Integer stock;
 
     @Column(nullable = false)
-    private Float price;
+    private BigDecimal price;
 
     public ProductInfo() {
     }
@@ -38,7 +39,7 @@ public class ProductInfo {
         this.brand = brand;
         this.category = category;
         this.stock = stock;
-        this.price = price;
+        this.price = BigDecimal.valueOf(price);
     }
 
     public static ProductInfo of(String name, String description, String brand, Category category, Integer stock, Float price) {

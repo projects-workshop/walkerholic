@@ -107,7 +107,7 @@ public class Product extends BaseTimeEntity {
         return productInfo.getStock();
     }
 
-    public Float getPrice(){
+    public BigDecimal getPrice(){
         return productInfo.getPrice();
     }
 

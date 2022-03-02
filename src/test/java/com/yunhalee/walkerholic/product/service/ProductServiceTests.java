@@ -103,8 +103,7 @@ class ProductServiceTests extends MockBeans {
     @Test
     public void createProduct() {
         //given
-        ProductRequest request = new ProductRequest(NAME, DESCRIPTION, BRAND, CATEGORY, STOCK,
-            PRICE, 1);
+        ProductRequest request = new ProductRequest(NAME, DESCRIPTION, BRAND, CATEGORY, STOCK, PRICE, 1);
 
         //when
         when(userService.findUserById(anyInt())).thenReturn(user);
@@ -129,7 +128,7 @@ class ProductServiceTests extends MockBeans {
             secondProduct.getBrand(),
             secondProduct.getCategory().name(),
             secondProduct.getStock(),
-            secondProduct.getPrice(),
+            secondProduct.getPrice().floatValue(),
             1);
 
         //when

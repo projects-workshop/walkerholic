@@ -24,7 +24,7 @@ public class ProductResponse {
 
     private Integer stock;
 
-    private Float price;
+    private BigDecimal price;
 
     private BigDecimal average;
 
