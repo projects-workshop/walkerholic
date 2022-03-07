@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.product.service;
 
-import com.yunhalee.walkerholic.product.dto.ProductSearchRequest;
+import com.yunhalee.walkerholic.common.dto.PageSortRequest;
 import com.yunhalee.walkerholic.productImage.dto.ProductImageResponse;
 import com.yunhalee.walkerholic.product.dto.ProductRequest;
 import com.yunhalee.walkerholic.product.dto.ProductResponse;
@@ -82,24 +82,24 @@ public class ProductService {
             reviewResponses(reviews));
     }
 
-    public ProductResponses getProducts(ProductSearchRequest request) {
+    public ProductResponses getProducts(PageSortRequest request, String category, String keyword) {
         Pageable pageable = pageable(request.getPage(), request.getSort());
-        if (EnumUtils.isValidEnum(Category.class, request.getCategory())) {
-            Page<Product> productPage = productRepository.findAllByCategory(pageable, Category.valueOf(request.getCategory()), request.getKeyword());
+        if (EnumUtils.isValidEnum(Category.class, category)) {
+            Page<Product> productPage = productRepository.findAllByCategory(pageable, Category.valueOf(category), keyword);
             return productResponses(productPage);
         }
-        Page<Product> productPage = productRepository.findAllByKeyword(pageable, request.getKeyword());
+        Page<Product> productPage = productRepository.findAllByKeyword(pageable, keyword);
         return productResponses(productPage);
     }
 
-    public ProductResponses getProductsBySeller(Integer id, ProductSearchRequest request) {
+    public ProductResponses getProductsBySeller(Integer id, PageSortRequest request, String category, String keyword) {
         User seller = userService.findUserById(id);
         Pageable pageable = pageable(request.getPage(), request.getSort());
-        if (EnumUtils.isValidEnum(Category.class, request.getCategory())) {
-            Page<Product> productPage = productRepository.findAllBySellerAndCategory(pageable, id, Category.valueOf(request.getCategory()), request.getKeyword());
+        if (EnumUtils.isValidEnum(Category.class, category)) {
+            Page<Product> productPage = productRepository.findAllBySellerAndCategory(pageable, id, Category.valueOf(category), keyword);
             return productResponses(productPage, seller);
         }
-        Page<Product> productPage = productRepository.findAllBySellerAndKeyword(pageable, id, request.getKeyword());
+        Page<Product> productPage = productRepository.findAllBySellerAndKeyword(pageable, id, keyword);
         return productResponses(productPage, seller);
     }
 

@@ -2,6 +2,8 @@ package com.yunhalee.walkerholic.common.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import com.yunhalee.walkerholic.product.domain.Product;
+import com.yunhalee.walkerholic.productImage.domain.ProductImage;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -57,6 +59,23 @@ public class S3ImageUploader {
             new IOException("Could not save file : " + multipartFile.getOriginalFilename());
         }
         return "";
+    }
+
+    public ProductImage uploadProductImage(Product product , MultipartFile multipartFile) {
+        try {
+            String uploadDir = "productUploads/" + product.getId();
+            String imageUrl = uploadFile(uploadDir, multipartFile);
+            String fileName = imageUrl.substring(bucketUrl.length() + uploadDir.length() + 2);
+            return ProductImage.of(fileName, imageUrl, product);
+        } catch (IOException ex) {
+            new IOException("Could not save file : " + multipartFile.getOriginalFilename());
+        }
+        return null;
+    }
+
+    public void deleteByFilePath(String filePath) {
+        String fileName = filePath.substring(bucketUrl.length() + 1);
+        deleteFile(fileName);
     }
 
     public void deleteOriginalImage(String originalImageUrl, String changedImageUrl) {

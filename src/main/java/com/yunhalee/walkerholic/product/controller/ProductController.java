@@ -1,9 +1,9 @@
 package com.yunhalee.walkerholic.product.controller;
 
+import com.yunhalee.walkerholic.common.dto.PageSortRequest;
 import com.yunhalee.walkerholic.product.dto.ProductRequest;
 import com.yunhalee.walkerholic.product.dto.ProductResponse;
 import com.yunhalee.walkerholic.product.dto.ProductResponses;
-import com.yunhalee.walkerholic.product.dto.ProductSearchRequest;
 import com.yunhalee.walkerholic.product.dto.SimpleProductResponse;
 import com.yunhalee.walkerholic.product.service.ProductService;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -41,13 +40,14 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public ResponseEntity<ProductResponses> getProducts(@RequestParam ProductSearchRequest request) {
-        return ResponseEntity.ok(productService.getProducts(request));
+    public ResponseEntity<ProductResponses> getProducts(@RequestParam("pageRequest") PageSortRequest request, @RequestParam("category") String category, @RequestParam("keyword") String keyword) {
+        return ResponseEntity.ok(productService.getProducts(request, category, keyword));
     }
 
+
     @GetMapping("/users/{id}/products")
-    public ResponseEntity<ProductResponses> getProductsBySeller(@PathVariable("id") Integer id, @RequestParam ProductSearchRequest request) {
-        return ResponseEntity.ok(productService.getProductsBySeller(id, request));
+    public ResponseEntity<ProductResponses> getProductsBySeller(@PathVariable("id") Integer id, @RequestParam("pageRequest") PageSortRequest request, @RequestParam("category") String category, @RequestParam("keyword") String keyword) {
+        return ResponseEntity.ok(productService.getProductsBySeller(id, request, category, keyword));
     }
 
     @DeleteMapping("/products/{id}")
