@@ -62,15 +62,20 @@ public class S3ImageUploader {
     }
 
     public ProductImage uploadProductImage(Product product , MultipartFile multipartFile) {
+        String uploadDir = "productUploads/" + product.getId();
+        String imageUrl = "";
+        String fileName = "";
         try {
-            String uploadDir = "productUploads/" + product.getId();
-            String imageUrl = uploadFile(uploadDir, multipartFile);
-            String fileName = imageUrl.substring(bucketUrl.length() + uploadDir.length() + 2);
-            return ProductImage.of(fileName, imageUrl, product);
+            imageUrl = uploadFile(uploadDir, multipartFile);
+            fileName = getImageUrl(imageUrl, uploadDir);
         } catch (IOException ex) {
             new IOException("Could not save file : " + multipartFile.getOriginalFilename());
         }
-        return null;
+        return ProductImage.of(fileName, imageUrl, product);
+    }
+
+    private String getImageUrl(String imageUrl, String uploadDir) {
+        return imageUrl.substring(bucketUrl.length() + uploadDir.length() + 2);
     }
 
     public void deleteByFilePath(String filePath) {
