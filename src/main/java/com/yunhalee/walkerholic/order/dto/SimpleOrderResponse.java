@@ -2,14 +2,16 @@ package com.yunhalee.walkerholic.order.dto;
 
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.user.domain.User;
+import com.yunhalee.walkerholic.user.dto.UserIconResponse;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-public class OrderListDTO {
+@NoArgsConstructor
+public class SimpleOrderResponse {
 
     private Integer id;
 
@@ -23,35 +25,39 @@ public class OrderListDTO {
 
     private LocalDateTime deliveredAt;
 
-    private OrderUser user;
+    private UserIconResponse user;
 
     private Float totalAmount;
 
 
-    public OrderListDTO(Order order) {
+    private SimpleOrderResponse(Order order, UserIconResponse user) {
         this.id = order.getId();
         this.orderStatus = order.getOrderStatus().name();
         this.isPaid = order.isPaid();
         this.paidAt = order.getPaidAt();
         this.isDelivered = order.isDelivered();
         this.deliveredAt = order.getDeliveredAt();
-        this.user = new OrderUser(order.getUser());
+        this.user = user;
         this.totalAmount = order.getTotalAmount();
     }
 
-    @Getter
-    static class OrderUser {
-
-        private Integer id;
-        private String fullname;
-        private String imageUrl;
-
-        public OrderUser(User user) {
-            this.id = user.getId();
-            this.fullname = user.getFullname();
-            this.imageUrl = user.getImageUrl();
-        }
+    public static SimpleOrderResponse of(Order order, UserIconResponse user){
+        return new SimpleOrderResponse(order, user);
     }
+
+//    @Getter
+//    static class OrderUser {
+//
+//        private Integer id;
+//        private String fullname;
+//        private String imageUrl;
+//
+//        public OrderUser(User user) {
+//            this.id = user.getId();
+//            this.fullname = user.getFullname();
+//            this.imageUrl = user.getImageUrl();
+//        }
+//    }
 
 
 }

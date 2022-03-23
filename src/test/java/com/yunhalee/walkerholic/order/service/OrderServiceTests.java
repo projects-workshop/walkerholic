@@ -5,7 +5,7 @@ import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.order.dto.OrderCartDTO;
 import com.yunhalee.walkerholic.order.dto.OrderCreateDTO;
 import com.yunhalee.walkerholic.order.dto.OrderDTO;
-import com.yunhalee.walkerholic.order.dto.OrderListDTO;
+import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.order.domain.OrderStatus;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItemRepository;
@@ -138,7 +138,7 @@ public class OrderServiceTests {
             .map(orderItem -> orderItem.getQty()).collect(Collectors.toList());
 
         //when
-        OrderListDTO orderListDTO = orderService.cancelOrder(orderId);
+        SimpleOrderResponse orderListDTO = orderService.cancelOrder(orderId);
 
         //then
         assertEquals(orderListDTO.getOrderStatus(), OrderStatus.CANCEL.name());
@@ -158,7 +158,7 @@ public class OrderServiceTests {
         Integer orderId = 1;
 
         //when
-        OrderListDTO orderListDTO = orderService.deliverOrder(orderId);
+        SimpleOrderResponse orderListDTO = orderService.deliverOrder(orderId);
 
         //then
         assertTrue(orderListDTO.isDelivered());
@@ -200,7 +200,7 @@ public class OrderServiceTests {
 
         //when
         HashMap<String, Object> response = orderService.getOrderList(page);
-        List<OrderListDTO> orderListDTOS = (List<OrderListDTO>) response.get("orders");
+        List<SimpleOrderResponse> orderListDTOS = (List<SimpleOrderResponse>) response.get("orders");
 
         //then
         assertNotEquals(orderListDTOS.size(), 0);
@@ -214,10 +214,10 @@ public class OrderServiceTests {
 
         //when
         HashMap<String, Object> response = orderService.getOrderListBySeller(page, sellerId);
-        List<OrderListDTO> orderListDTOS = (List<OrderListDTO>) response.get("orders");
+        List<SimpleOrderResponse> orderListDTOS = (List<SimpleOrderResponse>) response.get("orders");
 
         //then
-        for (OrderListDTO orderListDTO : orderListDTOS) {
+        for (SimpleOrderResponse orderListDTO : orderListDTOS) {
             List<Integer> sellerIds = orderRepository.findById(orderListDTO.getId()).get()
                 .getOrderItems().stream().map(orderItem -> orderItem.getProduct().getUser().getId())
                 .collect(Collectors.toList());
@@ -233,10 +233,10 @@ public class OrderServiceTests {
 
         //when
         HashMap<String, Object> response = orderService.getOrderListByUser(page, userId);
-        List<OrderListDTO> orderListDTOS = (List<OrderListDTO>) response.get("orders");
+        List<SimpleOrderResponse> orderListDTOS = (List<SimpleOrderResponse>) response.get("orders");
 
         //then
-        for (OrderListDTO orderListDTO : orderListDTOS) {
+        for (SimpleOrderResponse orderListDTO : orderListDTOS) {
             assertEquals(orderRepository.findById(orderListDTO.getId()).get().getUser().getId(),
                 userId);
         }

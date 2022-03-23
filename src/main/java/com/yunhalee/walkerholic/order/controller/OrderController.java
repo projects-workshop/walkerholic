@@ -3,7 +3,7 @@ package com.yunhalee.walkerholic.order.controller;
 import com.yunhalee.walkerholic.order.dto.OrderCartDTO;
 import com.yunhalee.walkerholic.order.dto.OrderCreateDTO;
 import com.yunhalee.walkerholic.order.dto.OrderDTO;
-import com.yunhalee.walkerholic.order.dto.OrderListDTO;
+import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.service.OrderService;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
@@ -36,14 +36,13 @@ public class OrderController {
         return ResponseEntity.ok(orderService.createCart(id));
     }
 
-    @PostMapping("/order/cancel/{id}")
-    public OrderListDTO deleteOrder(@PathVariable("id") String id) {
-        Integer orderId = Integer.parseInt(id);
-        return orderService.cancelOrder(orderId);
+    @PutMapping("/orders/{id}/cancel")
+    public SimpleOrderResponse cancelOrder(@PathVariable("id") Integer id) {
+        return orderService.cancelOrder(id);
     }
 
     @PostMapping("/order/deliver/{id}")
-    public OrderListDTO deliverOrder(@PathVariable("id") String id) {
+    public SimpleOrderResponse deliverOrder(@PathVariable("id") String id) {
         Integer orderId = Integer.parseInt(id);
         return orderService.deliverOrder(orderId);
     }

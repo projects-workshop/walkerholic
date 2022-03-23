@@ -1,10 +1,12 @@
 package com.yunhalee.walkerholic.order.service;
 
+import com.yunhalee.walkerholic.common.service.MailService;
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.order.dto.OrderCartDTO;
 import com.yunhalee.walkerholic.order.dto.OrderCreateDTO;
 import com.yunhalee.walkerholic.order.dto.OrderDTO;
-import com.yunhalee.walkerholic.order.dto.OrderListDTO;
+import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
+import com.yunhalee.walkerholic.order.exception.OrderNotFoundException;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.order.domain.OrderStatus;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
@@ -16,6 +18,7 @@ import com.yunhalee.walkerholic.product.domain.ProductRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.order.domain.Address;
+import com.yunhalee.walkerholic.user.dto.UserIconResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -31,15 +34,25 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class OrderService {
 
-    private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
-    private final ProductRepository productRepository;
-    private final OrderItemRepository orderItemRepository;
+    private  OrderRepository orderRepository;
+    private UserRepository userRepository;
+    private  ProductRepository productRepository;
+    private  OrderItemRepository orderItemRepository;
+    private MailService mailService;
 
-    private final JavaMailSender mailSender;
+    public OrderService(OrderRepository orderRepository,
+        UserRepository userRepository,
+        ProductRepository productRepository,
+        OrderItemRepository orderItemRepository,
+        MailService mailService) {
+        this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
+        this.productRepository = productRepository;
+        this.orderItemRepository = orderItemRepository;
+        this.mailService = mailService;
+    }
 
     @Value("${spring.mail.username}")
     private String sender;
@@ -89,33 +102,20 @@ public class OrderService {
         return new OrderDTO(order);
     }
 
-    public OrderListDTO cancelOrder(Integer id) {
-        Order order = orderRepository.findById(id).get();
-        order.cancel();
-        orderRepository.save(order);
-
-        SimpleMailMessage message = new SimpleMailMessage();
+    public SimpleOrderResponse cancelOrder(Integer id) {
+        Order order = findOrderById(id);
         User user = order.getUser();
-        message.setTo(user.getEmail());
-        message.setFrom(sender);
-        message.setSubject(user.getFullname() + " : Cancel Order " + id);
-        message.setText(
-            "Hello" + user.getFirstname() + "! Your order has been canceled successfully. " +
-                "\n\nOrder Id :  " + order.getId() +
-                "\nTotal Amount : " + order.getTotalAmount() +
-                "\nCanceled At : " + order.getUpdatedAt() +
-                "\n\nFor more Details visit " + baseUrl + "/order/" + order.getId());
-        mailSender.send(message);
-
-        return new OrderListDTO(order);
+        order.cancel();
+        mailService.sendCancelOrderMail(order, user);
+        return SimpleOrderResponse.of(order, UserIconResponse.of(user));
     }
 
-    public OrderListDTO deliverOrder(Integer id) {
+    public SimpleOrderResponse deliverOrder(Integer id) {
         Order order = orderRepository.findById(id).get();
         order.deliver();
         orderRepository.save(order);
 
-        return new OrderListDTO(order);
+        return new SimpleOrderResponse(order);
     }
 
     public OrderDTO getOrder(Integer id) {
@@ -163,8 +163,8 @@ public class OrderService {
         Pageable pageable = PageRequest.of(page - 1, ORDER_LIST_PER_PAGE);
         Page<Order> orderPage = orderRepository.findAll(pageable, OrderStatus.CART);
         List<Order> orders = orderPage.getContent();
-        List<OrderListDTO> orderListDTOS = new ArrayList<>();
-        orders.forEach(order -> orderListDTOS.add(new OrderListDTO(order)));
+        List<SimpleOrderResponse> orderListDTOS = new ArrayList<>();
+        orders.forEach(order -> orderListDTOS.add(new SimpleOrderResponse(order)));
 
         HashMap<String, Object> orderList = new HashMap<>();
         orderList.put("orders", orderListDTOS);
@@ -178,8 +178,8 @@ public class OrderService {
         Pageable pageable = PageRequest.of(page - 1, ORDER_LIST_PER_PAGE);
         Page<Order> orderPage = orderRepository.findBySellerId(pageable, id, OrderStatus.CART);
         List<Order> orders = orderPage.getContent();
-        List<OrderListDTO> orderListDTOS = new ArrayList<>();
-        orders.forEach(order -> orderListDTOS.add(new OrderListDTO(order)));
+        List<SimpleOrderResponse> orderListDTOS = new ArrayList<>();
+        orders.forEach(order -> orderListDTOS.add(new SimpleOrderResponse(order)));
 
         HashMap<String, Object> orderList = new HashMap<>();
         orderList.put("orders", orderListDTOS);
@@ -193,8 +193,8 @@ public class OrderService {
         Pageable pageable = PageRequest.of(page - 1, ORDER_LIST_PER_PAGE);
         Page<Order> orderPage = orderRepository.findByUserId(pageable, id, OrderStatus.CART);
         List<Order> orders = orderPage.getContent();
-        List<OrderListDTO> orderListDTOS = new ArrayList<>();
-        orders.forEach(order -> orderListDTOS.add(new OrderListDTO(order)));
+        List<SimpleOrderResponse> orderListDTOS = new ArrayList<>();
+        orders.forEach(order -> orderListDTOS.add(new SimpleOrderResponse(order)));
 
         HashMap<String, Object> orderList = new HashMap<>();
         orderList.put("orders", orderListDTOS);
@@ -216,5 +216,10 @@ public class OrderService {
         order.setPaidAt(LocalDateTime.now());
         order.setOrderStatus(OrderStatus.ORDER);
         orderRepository.save(order);
+    }
+
+    public Order findOrderById(Integer id){
+        return orderRepository.findById(id)
+            .orElseThrow(()->new OrderNotFoundException("Order not found with id : " + id));
     }
 }
