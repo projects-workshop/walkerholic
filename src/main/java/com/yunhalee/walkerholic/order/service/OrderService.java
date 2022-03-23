@@ -132,11 +132,8 @@ public class OrderService {
     }
 
     public Integer createCart(Integer id) {
-        Order order = new Order();
         User user = userRepository.findById(id).get();
-        order.setOrderStatus(OrderStatus.CART);
-        order.setUser(user);
-        orderRepository.save(order);
+        Order order = orderRepository.save(Order.createCart(user));
         return order.getId();
     }
 

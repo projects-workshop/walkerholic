@@ -29,7 +29,7 @@ public class ProductController {
         return new ResponseEntity<>(productService.createProduct(productRequest, multipartFiles), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/products/{id}")
+    @PutMapping("/products/{id}")
     public ResponseEntity<SimpleProductResponse> updateProduct(@PathVariable("id") Integer id, @RequestBody ProductRequest productRequest) {
         return ResponseEntity.ok(productService.updateProduct(id, productRequest));
     }

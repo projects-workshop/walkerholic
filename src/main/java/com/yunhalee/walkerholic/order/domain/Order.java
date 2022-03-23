@@ -14,7 +14,6 @@ import java.util.*;
 @Entity
 @Table(name = "orders")
 @Getter
-@Setter
 @NoArgsConstructor
 public class Order extends BaseTimeEntity {
 
@@ -54,6 +53,11 @@ public class Order extends BaseTimeEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderItem> orderItems = new HashSet<>();
 
+    public Order(OrderStatus orderStatus, User user) {
+        this.orderStatus = orderStatus;
+        this.user = user;
+    }
+
     @Transient
     public Float getTotalAmount() {
         Float totalAmount = 0f;
@@ -81,6 +85,10 @@ public class Order extends BaseTimeEntity {
         order.setOrderStatus(OrderStatus.ORDER);
         order.setPaymentMethod(paymentMethod);
         return order;
+    }
+
+    public static Order createCart(User user) {
+        return new Order(OrderStatus.CART, user);
     }
 
     public void cancel() {

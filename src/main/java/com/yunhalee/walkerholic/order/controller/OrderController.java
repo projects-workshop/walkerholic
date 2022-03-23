@@ -22,13 +22,18 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("/order/create")
+    @PostMapping("/orders")
     public ResponseEntity<?> createOrder(@RequestBody OrderCreateDTO orderCreateDTO) {
         AddressDTO addressDTO = orderCreateDTO.getAddress();
         List<OrderItemRequest> orderItemCreateDTOS = orderCreateDTO.getOrderItems();
 
         return new ResponseEntity<OrderDTO>(orderService.createOrder(orderCreateDTO),
             HttpStatus.CREATED);
+    }
+
+    @PostMapping("/users/{id}/orders")
+    public ResponseEntity createCart(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(orderService.createCart(id));
     }
 
     @PostMapping("/order/cancel/{id}")
@@ -53,12 +58,6 @@ public class OrderController {
     public OrderCartDTO getCart(@PathVariable("id") String id) {
         Integer userId = Integer.parseInt(id);
         return orderService.getCart(userId);
-    }
-
-    @PostMapping("/createCart/{id}")
-    public Integer createCart(@PathVariable("id") String id) {
-        Integer userId = Integer.parseInt(id);
-        return orderService.createCart(userId);
     }
 
     @PostMapping("/addToCart/{id}")

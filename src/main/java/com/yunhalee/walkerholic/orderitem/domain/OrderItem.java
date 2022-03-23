@@ -42,7 +42,7 @@ public class OrderItem {
         return orderItem;
     }
 
-    public void changeQty (Integer qty){
+    public void changeQty(Integer qty) {
         this.qty = qty;
     }
 

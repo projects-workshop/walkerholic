@@ -16,10 +16,10 @@ public class OrderItemController {
         this.orderItemService = orderItemService;
     }
 
-    @PostMapping("/order-items/{id}")
+    @PutMapping("/order-items/{id}")
     public ResponseEntity update(@PathVariable("id") Integer id, @Param("qty") Integer qty) {
         orderItemService.update(id, qty);
-        return ResponseEntity.created(URI.create("/order-items/" + id)).build();
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/order-items/{id}")
