@@ -47,7 +47,7 @@ public class OrderItem {
     }
 
     public void cancel() {
-        getProduct().addStock(qty);
+        this.product.addStock(qty);
     }
 
 

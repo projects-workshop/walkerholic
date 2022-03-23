@@ -1,11 +1,12 @@
 package com.yunhalee.walkerholic.order.domain;
 
 import com.yunhalee.walkerholic.common.domain.BaseTimeEntity;
+import com.yunhalee.walkerholic.order.exception.OrderAlreadyDeliveredException;
+import com.yunhalee.walkerholic.order.exception.OrderNotPaidException;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.user.domain.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -93,9 +94,9 @@ public class Order extends BaseTimeEntity {
 
     public void cancel() {
         if (isDelivered) {
-            throw new IllegalStateException("Order Already Completed.");
+            throw new OrderAlreadyDeliveredException("Order Already Completed. All the items has been delivered.");
         }
-        this.setOrderStatus(OrderStatus.CANCEL);
+        this.orderStatus = OrderStatus.CANCEL;
         orderItems.forEach(orderItem -> {
             orderItem.cancel();
         });
@@ -103,10 +104,10 @@ public class Order extends BaseTimeEntity {
 
     public void deliver() {
         if (!isPaid) {
-            throw new IllegalStateException("Order must be paid.");
+            throw new OrderNotPaidException("Order must be paid.");
         }
-        this.setDelivered(true);
-        this.setDeliveredAt(LocalDateTime.now());
+        this.isDelivered=true;
+        this.deliveredAt=LocalDateTime.now();
     }
 
 }

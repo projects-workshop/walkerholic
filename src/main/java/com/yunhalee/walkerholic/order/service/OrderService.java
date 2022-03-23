@@ -111,11 +111,10 @@ public class OrderService {
     }
 
     public SimpleOrderResponse deliverOrder(Integer id) {
-        Order order = orderRepository.findById(id).get();
+        Order order = findOrderById(id);
+        User user = order.getUser();
         order.deliver();
-        orderRepository.save(order);
-
-        return new SimpleOrderResponse(order);
+        return SimpleOrderResponse.of(order, UserIconResponse.of(user));
     }
 
     public OrderDTO getOrder(Integer id) {
@@ -222,4 +221,5 @@ public class OrderService {
         return orderRepository.findById(id)
             .orElseThrow(()->new OrderNotFoundException("Order not found with id : " + id));
     }
+
 }

@@ -37,14 +37,13 @@ public class OrderController {
     }
 
     @PutMapping("/orders/{id}/cancel")
-    public SimpleOrderResponse cancelOrder(@PathVariable("id") Integer id) {
-        return orderService.cancelOrder(id);
+    public ResponseEntity<SimpleOrderResponse> cancelOrder(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(orderService.cancelOrder(id));
     }
 
-    @PostMapping("/order/deliver/{id}")
-    public SimpleOrderResponse deliverOrder(@PathVariable("id") String id) {
-        Integer orderId = Integer.parseInt(id);
-        return orderService.deliverOrder(orderId);
+    @PutMapping("/orders/{id}/deliver")
+    public ResponseEntity<SimpleOrderResponse> deliverOrder(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(orderService.deliverOrder(id));
     }
 
     @GetMapping("/getOrder/{id}")
