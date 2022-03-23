@@ -2,6 +2,8 @@ package com.yunhalee.walkerholic.common.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
+import com.yunhalee.walkerholic.post.domain.Post;
+import com.yunhalee.walkerholic.postImage.domain.PostImage;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.productImage.domain.ProductImage;
 import java.util.Objects;
@@ -45,13 +47,10 @@ public class S3ImageUploader {
         this.s3 = s3;
     }
 
-    public String saveImageByFolder(String uploadDir, MultipartFile multipartFile)
-        throws IOException {
-
+    public String saveImageByFolder(String uploadDir, MultipartFile multipartFile) throws IOException {
         if (isEmpty(multipartFile)) {
             return defaultImageUrl;
         }
-
         try {
             removeFolder(uploadDir);
             return uploadFile(uploadDir, multipartFile);
@@ -61,20 +60,17 @@ public class S3ImageUploader {
         return "";
     }
 
-    public ProductImage uploadProductImage(Product product , MultipartFile multipartFile) {
-        String uploadDir = "productUploads/" + product.getId();
+    public String uploadImage(String uploadDir, MultipartFile multipartFile) {
         String imageUrl = "";
-        String fileName = "";
         try {
             imageUrl = uploadFile(uploadDir, multipartFile);
-            fileName = getImageUrl(imageUrl, uploadDir);
         } catch (IOException ex) {
             new IOException("Could not save file : " + multipartFile.getOriginalFilename());
         }
-        return ProductImage.of(fileName, imageUrl, product);
+        return imageUrl;
     }
 
-    private String getImageUrl(String imageUrl, String uploadDir) {
+    public String getFileName(String imageUrl, String uploadDir) {
         return imageUrl.substring(bucketUrl.length() + uploadDir.length() + 2);
     }
 

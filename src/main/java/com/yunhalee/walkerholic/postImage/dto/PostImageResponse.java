@@ -1,9 +1,11 @@
-package com.yunhalee.walkerholic.post.dto;
+package com.yunhalee.walkerholic.postImage.dto;
 
-import com.yunhalee.walkerholic.post.domain.PostImage;
+import com.yunhalee.walkerholic.postImage.domain.PostImage;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class PostImageResponse {
 
     private Integer id;

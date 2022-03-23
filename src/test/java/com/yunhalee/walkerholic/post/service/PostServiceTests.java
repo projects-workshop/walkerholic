@@ -2,7 +2,7 @@ package com.yunhalee.walkerholic.post.service;
 
 import com.yunhalee.walkerholic.MockBeans;
 import com.yunhalee.walkerholic.likepost.domain.LikePost;
-import com.yunhalee.walkerholic.post.domain.PostImageTest;
+import com.yunhalee.walkerholic.postImage.domain.PostImageTest;
 import com.yunhalee.walkerholic.post.dto.PostRequest;
 import com.yunhalee.walkerholic.post.dto.PostResponse;
 import com.yunhalee.walkerholic.post.dto.PostResponses;
@@ -10,21 +10,13 @@ import com.yunhalee.walkerholic.post.dto.SimplePostResponses;
 import com.yunhalee.walkerholic.post.dto.UserPostResponse;
 import com.yunhalee.walkerholic.user.domain.UserTest;
 import com.yunhalee.walkerholic.post.domain.Post;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,9 +27,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@ExtendWith(MockitoExtension.class)
-@Transactional
 class PostServiceTests extends MockBeans {
 
     private static final String TITLE = "testTitle";
@@ -52,10 +41,8 @@ class PostServiceTests extends MockBeans {
     private PostService postService = new PostService(
         postRepository,
         userService,
-        postImageRepository,
-        followService,
-        s3ImageUploader,
-        "https://walkerholic-test-you.s3.ap-northeast10.amazonaws.com");
+        postImageService,
+        followService);
 
     private Post post;
 
@@ -66,14 +53,13 @@ class PostServiceTests extends MockBeans {
     }
 
     @Test
-    public void createPost() throws IOException {
+    public void createPost() {
         //given
         PostRequest request = new PostRequest(TITLE, CONTENT, 1);
 
         //when
         when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
-        when(s3ImageUploader.uploadFile(any(), any())).thenReturn(PostImageTest.POST_IMAGE.getFilePath());
-        when(postImageRepository.save(any())).thenReturn(PostImageTest.POST_IMAGE);
+        when(postImageService.uploadImages(any(), any())).thenReturn(Arrays.asList(PostImageTest.POST_IMAGE));
         when(postRepository.save(any())).thenReturn(post);
         PostResponse response = postService.createPost(request, Arrays.asList(MULTIPART_FILE));
 
@@ -86,22 +72,18 @@ class PostServiceTests extends MockBeans {
     }
 
     @Test
-    public void updatePost() throws IOException {
+    public void updatePost() {
         //given
         String newContent = "updateTestPost";
-        PostRequest request = new PostRequest(post.getId(), post.getTitle(), newContent, post.getUser().getId());
+        PostRequest request = new PostRequest(post.getTitle(), newContent, post.getUser().getId());
 
         //when
-        when(postRepository.findById(any())).thenReturn(Optional.of(post));
-        when(s3ImageUploader.uploadFile(any(), any())).thenReturn(PostImageTest.POST_IMAGE.getFilePath());
-        when(postImageRepository.save(any())).thenReturn(PostImageTest.POST_IMAGE);
-        PostResponse response = postService.updatePost(request, Arrays.asList(MULTIPART_FILE), null);
+        when(postRepository.findByPostId(any())).thenReturn(post);
+        PostResponse response = postService.updatePost(post.getId(), request);
 
         //then
         assertThat(response.getId()).isEqualTo(post.getId());
         assertThat(response.getContent()).isEqualTo(newContent);
-        assertThat(response.getPostImages().get(0).getId()).isEqualTo(PostImageTest.POST_IMAGE.getId());
-        assertThat(response.getPostImages().get(0).getImageUrl()).isEqualTo(PostImageTest.POST_IMAGE.getFilePath());
     }
 
     @Test
@@ -258,7 +240,7 @@ class PostServiceTests extends MockBeans {
         postService.deletePost(id);
 
         //then
-        verify(s3ImageUploader).removeFolder(any());
+        verify(postImageService).deletePost(anyInt());
         verify(postRepository).deleteById(anyInt());
     }
 

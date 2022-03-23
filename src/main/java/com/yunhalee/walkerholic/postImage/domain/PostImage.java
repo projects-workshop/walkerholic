@@ -1,10 +1,13 @@
-package com.yunhalee.walkerholic.post.domain;
+package com.yunhalee.walkerholic.postImage.domain;
 
+import com.yunhalee.walkerholic.post.domain.Post;
 import java.util.Objects;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import lombok.NonNull;
 
 @Entity
 @Table(name = "post_image")
@@ -27,21 +30,19 @@ public class PostImage {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    public PostImage(Integer id, String name, String filePath) {
+    @Builder
+    public PostImage(Integer id, @NonNull String name, @NonNull String filePath, Post post) {
         this.id = id;
-        this.name = name;
-        this.filePath = filePath;
-    }
-
-    private PostImage(String name, String filePath, Post post) {
         this.name = name;
         this.filePath = filePath;
         this.post = post;
     }
 
     public static PostImage of(String name, String filePath, Post post) {
-        PostImage postImage = new PostImage(name, filePath, post);
-        return postImage;
+        return PostImage.builder()
+            .name(name)
+            .filePath(filePath)
+            .post(post).build();
     }
 
     @Override

@@ -9,36 +9,36 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Integer> {
 
-    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.user u LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts k LEFT JOIN FETCH k.user WHERE p.id=:id")
+    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.user u LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH i.postImages LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts k LEFT JOIN FETCH k.user WHERE p.id=:id")
     Post findByPostId(Integer id);
 
-    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts k LEFT JOIN FETCH p.user u WHERE u.id=:id")
+    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH i.postImages LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts k LEFT JOIN FETCH p.user u WHERE u.id=:id")
     List<Post> findByUserId(Integer id);
 
-    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts k LEFT JOIN FETCH k.user u WHERE u.id=id")
+    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH i.postImages LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts k LEFT JOIN FETCH k.user u WHERE u.id=id")
     List<Post> findByLikePostUserId(Integer id);
 
-    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts LEFT JOIN FETCH p.user u WHERE NOT u.id=:id ORDER BY RAND()",
+    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH i.postImages LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts LEFT JOIN FETCH p.user u WHERE NOT u.id=:id ORDER BY RAND()",
         countQuery = "SELECT count(DISTINCT p) FROM Post p")
     Page<Post> findByRandom(Pageable pageable, Integer id);
 
-    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts LEFT JOIN FETCH p.user u ORDER BY p.createdAt DESC",
+    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH i.postImages LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts LEFT JOIN FETCH p.user u ORDER BY p.createdAt DESC",
         countQuery = "SELECT count(DISTINCT p) FROM Post p")
     Page<Post> findByCreateAt(Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts t LEFT JOIN FETCH t.user LEFT JOIN FETCH p.user u WHERE u.id in :followings",
+    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH i.postImages LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts t LEFT JOIN FETCH t.user LEFT JOIN FETCH p.user u WHERE u.id in :followings",
         countQuery = "SELECT count(DISTINCT p) FROM Post p")
     Page<Post> findByFollowings(Pageable pageable, List<Integer> followings);
 
-    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts k LEFT JOIN FETCH p.user u ORDER BY SIZE(k) DESC",
+    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH i.postImages LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts k LEFT JOIN FETCH p.user u ORDER BY SIZE(k) DESC",
         countQuery = "SELECT count(DISTINCT p) FROM Post p")
     Page<Post> findByLikePostSize(Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts LEFT JOIN FETCH p.user u WHERE p.title LIKE %:keyword% ORDER BY p.createdAt DESC",
+    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH i.postImages LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts LEFT JOIN FETCH p.user u WHERE p.title LIKE %:keyword% ORDER BY p.createdAt DESC",
         countQuery = "SELECT count(DISTINCT p) FROM Post p")
     Page<Post> findByKeyword(Pageable pageable, String keyword);
 
-    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts k LEFT JOIN FETCH p.user u WHERE p.title LIKE %:keyword%  ORDER BY SIZE(k) DESC",
+    @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH i.postImages LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts k LEFT JOIN FETCH p.user u WHERE p.title LIKE %:keyword%  ORDER BY SIZE(k) DESC",
         countQuery = "SELECT count(DISTINCT p) FROM Post p")
     Page<Post> findByLikePostSizeAndKeyword(Pageable pageable, String keyword);
 }

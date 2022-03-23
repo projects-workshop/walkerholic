@@ -2,15 +2,11 @@ package com.yunhalee.walkerholic.post.domain;
 
 import com.yunhalee.walkerholic.common.domain.BaseTimeEntity;
 import com.yunhalee.walkerholic.likepost.domain.LikePost;
+import com.yunhalee.walkerholic.postImage.domain.PostImage;
 import com.yunhalee.walkerholic.user.domain.User;
-import java.util.Objects;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -80,6 +76,10 @@ public class Post extends BaseTimeEntity {
 
     public void addPostImage(PostImage postImage) {
         this.postImages.addPostImage(postImage);
+    }
+
+    public void deletePostImage(List<String> deletedImages) {
+        this.postImages.deletePostImages(deletedImages);
     }
 
     public Integer getId() {

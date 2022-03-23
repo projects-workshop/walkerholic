@@ -3,7 +3,7 @@ package com.yunhalee.walkerholic.product.service;
 import com.yunhalee.walkerholic.MockBeans;
 import com.yunhalee.walkerholic.common.dto.PageSortRequest;
 import com.yunhalee.walkerholic.product.domain.Category;
-import com.yunhalee.walkerholic.product.domain.ProductImageTest;
+import com.yunhalee.walkerholic.productImage.domain.ProductImageTest;
 import com.yunhalee.walkerholic.productImage.dto.ProductImageResponse;
 import com.yunhalee.walkerholic.product.dto.ProductRequest;
 import com.yunhalee.walkerholic.product.dto.ProductResponse;
@@ -16,12 +16,9 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -32,8 +29,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-@Transactional
 class ProductServiceTests extends MockBeans {
 
     private static final String NAME = "testProduct";
@@ -48,11 +43,7 @@ class ProductServiceTests extends MockBeans {
         "This is the file content".getBytes());
 
     @InjectMocks
-    private ProductService productService = new ProductService(productRepository,
-        reviewRepository,
-        userService,
-        productImageService,
-        s3ImageUploader);
+    private ProductService productService = new ProductService(productRepository, reviewRepository, userService, productImageService);
 
     private Product product;
     private Product firstProduct;
@@ -220,7 +211,7 @@ class ProductServiceTests extends MockBeans {
         productService.deleteProduct(1);
 
         //then
-        verify(s3ImageUploader).removeFolder(any());
+        verify(productImageService).deleteProduct(any());
         verify(productRepository).deleteById(any());
     }
 

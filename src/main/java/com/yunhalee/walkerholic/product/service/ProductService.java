@@ -44,22 +44,16 @@ public class ProductService {
     private ReviewRepository reviewRepository;
     private UserService userService;
     private ProductImageService productImageService;
-    private S3ImageUploader s3ImageUploader;
 
-    public ProductService(ProductRepository productRepository, ReviewRepository reviewRepository,
-        UserService userService,
-        ProductImageService productImageService,
-        S3ImageUploader s3ImageUploader) {
+    public ProductService(ProductRepository productRepository, ReviewRepository reviewRepository, UserService userService, ProductImageService productImageService) {
         this.productRepository = productRepository;
         this.reviewRepository = reviewRepository;
         this.userService = userService;
         this.productImageService = productImageService;
-        this.s3ImageUploader = s3ImageUploader;
     }
 
     @Transactional
-    public SimpleProductResponse createProduct(ProductRequest request,
-        List<MultipartFile> multipartFiles) {
+    public SimpleProductResponse createProduct(ProductRequest request, List<MultipartFile> multipartFiles) {
         User user = userService.findUserById(request.getUserId());
         Product product = productRepository.save(request.toProduct(user));
         productImageService.uploadImages(product, multipartFiles);
@@ -92,7 +86,8 @@ public class ProductService {
         return productResponses(productPage);
     }
 
-    public ProductResponses getProductsBySeller(Integer id, PageSortRequest request, String category, String keyword) {
+    public ProductResponses getProductsBySeller(Integer id, PageSortRequest request,
+        String category, String keyword) {
         User seller = userService.findUserById(id);
         Pageable pageable = pageable(request.getPage(), request.getSort());
         if (EnumUtils.isValidEnum(Category.class, category)) {
@@ -115,8 +110,7 @@ public class ProductService {
     }
 
     public void deleteProduct(Integer id) {
-        String dir = "productUploads/" + id;
-        s3ImageUploader.removeFolder(dir);
+        productImageService.deleteProduct(id);
         productRepository.deleteById(id);
     }
 

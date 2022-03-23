@@ -1,10 +1,12 @@
 package com.yunhalee.walkerholic.productImage.domain;
 
 import com.yunhalee.walkerholic.product.domain.Product;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import lombok.NonNull;
 
 @Entity
 @Table(name = "product_image")
@@ -27,19 +29,18 @@ public class ProductImage {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    private ProductImage(String name, String filePath, Product product) {
+    @Builder
+    public ProductImage(Integer id, @NonNull String name, @NonNull String filePath, Product product) {
+        this.id = id;
         this.name = name;
         this.filePath = filePath;
         this.product = product;
     }
 
-    public ProductImage(Integer id, String name, String filePath) {
-        this.id = id;
-        this.name = name;
-        this.filePath = filePath;
-    }
-
     public static ProductImage of(String name, String filePath, Product product) {
-        return new ProductImage(name, filePath, product);
+        return ProductImage.builder()
+        .name(name)
+        .filePath(filePath)
+        .product(product).build();
     }
 }

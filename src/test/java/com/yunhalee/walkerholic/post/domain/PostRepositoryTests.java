@@ -1,5 +1,6 @@
 package com.yunhalee.walkerholic.post.domain;
 
+import com.yunhalee.walkerholic.postImage.domain.PostImageRepository;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;

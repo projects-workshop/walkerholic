@@ -1,9 +1,11 @@
 package com.yunhalee.walkerholic.post.domain;
 
+import com.yunhalee.walkerholic.postImage.domain.PostImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -32,5 +34,11 @@ public class PostImages {
 
     public List<PostImage> getPostImages() {
         return Collections.unmodifiableList(postImages);
+    }
+
+    public void deletePostImages(List<String> deletedImages) {
+        this.postImages = this.postImages.stream()
+            .filter(postImage -> !deletedImages.contains(postImage.getFilePath()))
+            .collect(Collectors.toList());
     }
 }
