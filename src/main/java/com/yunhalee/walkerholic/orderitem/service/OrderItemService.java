@@ -26,17 +26,15 @@ public class OrderItemService {
     private ProductService productService;
     private OrderRepository orderRepository;
 
-    public OrderItemService(
-        OrderItemRepository orderItemRepository,
-        ProductService productService,
-        OrderRepository orderRepository) {
+    public OrderItemService(OrderItemRepository orderItemRepository, ProductService productService, OrderRepository orderRepository) {
         this.orderItemRepository = orderItemRepository;
         this.productService = productService;
         this.orderRepository = orderRepository;
     }
 
-    public OrderItemResponse create(Integer id, OrderItemRequest request){
-        Order order = orderRepository.findById(id).orElseThrow(()-> new OrderNotFoundException(""));
+    public OrderItemResponse create(Integer id, OrderItemRequest request) {
+        Order order = orderRepository.findById(id)
+            .orElseThrow(() -> new OrderNotFoundException("Order not found with id : " + id));
         Product product = productService.findProductById(request.getProductId());
         OrderItem orderItem = OrderItem.of(request.getQty(), product, order);
         orderItemRepository.save(orderItem);
@@ -52,6 +50,17 @@ public class OrderItemService {
     public void deleteOrderItem(Integer id) {
         OrderItem orderItem = findOrderItemById(id);
         orderItemRepository.delete(orderItem);
+    }
+
+    public OrderItemResponses createOrderItems(Order order, List<OrderItemRequest> requests) {
+        List<OrderItemResponse> orderItemResponses = requests.stream()
+            .map(request -> {
+                Product product = productService.findProductById(request.getProductId());
+                OrderItem orderItem = OrderItem.of(request.getQty(), product, order);
+                return OrderItemResponse.of(orderItemRepository.save(orderItem));
+            })
+            .collect(Collectors.toList());
+        return OrderItemResponses.of(orderItemResponses);
     }
 
     public OrderItem findOrderItemById(Integer id) {

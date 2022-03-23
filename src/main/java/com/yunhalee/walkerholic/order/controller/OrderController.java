@@ -1,20 +1,19 @@
 package com.yunhalee.walkerholic.order.controller;
 
 import com.yunhalee.walkerholic.order.dto.CartResponse;
-import com.yunhalee.walkerholic.order.dto.OrderCreateDTO;
+import com.yunhalee.walkerholic.order.dto.OrderRequest;
+import com.yunhalee.walkerholic.order.dto.PayOrderRequest;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.OrderResponses;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.service.OrderService;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
 import com.yunhalee.walkerholic.useractivity.dto.AddressDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -24,12 +23,8 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/orders")
-    public ResponseEntity<?> createOrder(@RequestBody OrderCreateDTO orderCreateDTO) {
-        AddressDTO addressDTO = orderCreateDTO.getAddress();
-        List<OrderItemRequest> orderItemCreateDTOS = orderCreateDTO.getOrderItems();
-
-        return new ResponseEntity<OrderResponse>(orderService.createOrder(orderCreateDTO),
-            HttpStatus.CREATED);
+    public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest request) {
+        return ResponseEntity.ok(orderService.createOrder(request));
     }
 
     @PostMapping("/users/{id}/orders")
@@ -73,9 +68,10 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrderListByUser(page, id));
     }
 
-    @PostMapping("/payOrder")
-    public void payOrder(@RequestBody OrderCreateDTO orderCreateDTO) {
-        orderService.payOrder(orderCreateDTO);
+    @PutMapping("/orders/{id}/pay")
+    public ResponseEntity payOrder(@PathVariable("id") Integer id, @RequestBody PayOrderRequest request) {
+        orderService.payOrder(id, request);
+        return ResponseEntity.ok().build();
     }
 
 

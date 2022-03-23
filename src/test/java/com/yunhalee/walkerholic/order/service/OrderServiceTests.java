@@ -3,7 +3,7 @@ package com.yunhalee.walkerholic.order.service;
 
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.order.dto.CartResponse;
-import com.yunhalee.walkerholic.order.dto.OrderCreateDTO;
+import com.yunhalee.walkerholic.order.dto.PayOrderRequest;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
@@ -54,7 +54,7 @@ public class OrderServiceTests {
         Integer userId = 1;
         List<OrderItemRequest> orderItems = new ArrayList<>();
         orderItems.add(new OrderItemRequest(orderItemRepository.findById(orderItemId).get()));
-        OrderCreateDTO orderCreateDTO = new OrderCreateDTO(paymentMethod, addressDTO, orderItems,
+        PayOrderRequest orderCreateDTO = new PayOrderRequest(paymentMethod, addressDTO, orderItems,
             userId);
 
         //when
@@ -111,7 +111,7 @@ public class OrderServiceTests {
         AddressDTO addressDTO = new AddressDTO("testAddress", "testCountry", "testCity",
             "testZipcode", "testAddress");
 
-        OrderCreateDTO orderCreateDTO = new OrderCreateDTO(orderId, paymentMethod, shipping,
+        PayOrderRequest orderCreateDTO = new PayOrderRequest(orderId, paymentMethod, shipping,
             addressDTO);
 
         //when

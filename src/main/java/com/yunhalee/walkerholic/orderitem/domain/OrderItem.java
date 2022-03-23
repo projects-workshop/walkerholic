@@ -22,7 +22,6 @@ public class OrderItem {
     @Column(nullable = false)
     private Integer qty;
 
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
@@ -44,7 +43,6 @@ public class OrderItem {
 
     public static OrderItem of(Integer qty, Product product, Order order) {
         OrderItem orderItem = new OrderItem(qty, product, order);
-        product.removeStock(qty);
         order.addOrderItem(orderItem);
         return orderItem;
     }
@@ -55,6 +53,10 @@ public class OrderItem {
 
     public void cancel() {
         this.product.addStock(qty);
+    }
+
+    public void payOrder() {
+        this.product.removeStock(qty);
     }
 
 

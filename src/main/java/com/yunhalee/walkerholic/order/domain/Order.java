@@ -4,7 +4,9 @@ import com.yunhalee.walkerholic.common.domain.BaseTimeEntity;
 import com.yunhalee.walkerholic.order.exception.OrderAlreadyDeliveredException;
 import com.yunhalee.walkerholic.order.exception.OrderNotPaidException;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
+import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
 import com.yunhalee.walkerholic.user.domain.User;
+import com.yunhalee.walkerholic.useractivity.dto.AddressDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,7 +32,7 @@ public class Order extends BaseTimeEntity {
     private Float shipping;
 
     @Column(name = "is_paid")
-    private boolean isPaid;
+    private boolean isPaid = false;
 
     @Column(name = "payment_method")
     private String paymentMethod;
@@ -39,7 +41,7 @@ public class Order extends BaseTimeEntity {
     private LocalDateTime paidAt;
 
     @Column(name = "is_delivered")
-    private boolean isDelivered;
+    private boolean isDelivered = false;
 
     @Column(name = "delivered_at")
     private LocalDateTime deliveredAt;
@@ -59,6 +61,31 @@ public class Order extends BaseTimeEntity {
         this.user = user;
     }
 
+    public Order(String paymentMethod, Address address, Float shipping) {
+        this.paymentMethod = paymentMethod;
+        this.address = address;
+        this.shipping = shipping;
+    }
+
+    public Order(OrderStatus orderStatus, Float shipping, String paymentMethod,
+        Address address, User user) {
+        this.orderStatus = orderStatus;
+        this.shipping = shipping;
+        this.paymentMethod = paymentMethod;
+        this.address = address;
+        this.user = user;
+    }
+
+    public Order(OrderStatus orderStatus, Float shipping, boolean isPaid,
+        String paymentMethod, Address address, User user) {
+        this.orderStatus = orderStatus;
+        this.shipping = shipping;
+        this.isPaid = isPaid;
+        this.paymentMethod = paymentMethod;
+        this.address = address;
+        this.user = user;
+    }
+
     @Transient
     public Float getTotalAmount() {
         Float totalAmount = 0f;
@@ -73,22 +100,15 @@ public class Order extends BaseTimeEntity {
         orderItems.add(orderItem);
     }
 
-    //비지니스 로직
-    public static Order createOrder(User user, Address address, List<OrderItem> orderItems,
-        String paymentMethod) {
-        Order order = new Order();
-        order.setUser(user);
-        order.setAddress(address);
-        orderItems.forEach(orderItem -> {
-            order.addOrderItem(orderItem);
-        });
-        order.setOrderStatus(OrderStatus.ORDER);
-        order.setPaymentMethod(paymentMethod);
-        return order;
-    }
 
     public static Order createCart(User user) {
         return new Order(OrderStatus.CART, user);
+    }
+
+    public Order createOrder(){
+        this.orderStatus = OrderStatus.ORDER;
+        this.isPaid = true;
+        return this;
     }
 
     public void cancel() {
@@ -107,6 +127,16 @@ public class Order extends BaseTimeEntity {
         }
         this.isDelivered=true;
         this.deliveredAt=LocalDateTime.now();
+    }
+
+    public void pay(Order order){
+        orderItems.forEach(orderItem -> orderItem.payOrder());
+        this.address = order.getAddress();
+        this.shipping = order.shipping;
+        this.paymentMethod = order.getPaymentMethod();
+        this.isPaid = true;
+        this.paidAt = LocalDateTime.now();
+        this.orderStatus = OrderStatus.ORDER;
     }
 
 }
