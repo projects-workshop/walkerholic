@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class OrderItemDTO {
+public class OrderItemResponse {
 
     private Integer id;
 
@@ -24,7 +24,7 @@ public class OrderItemDTO {
 
     private String productImageUrl;
 
-    public OrderItemDTO(OrderItem orderItem) {
+    public OrderItemResponse(OrderItem orderItem) {
         this.id = orderItem.getId();
         this.qty = orderItem.getQty();
         this.productId = orderItem.getProduct().getId();

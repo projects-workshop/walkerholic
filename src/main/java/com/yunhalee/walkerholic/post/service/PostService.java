@@ -3,7 +3,7 @@ package com.yunhalee.walkerholic.post.service;
 import com.yunhalee.walkerholic.follow.service.FollowService;
 import com.yunhalee.walkerholic.likepost.domain.LikePost;
 import com.yunhalee.walkerholic.likepost.dto.LikePostResponse;
-import com.yunhalee.walkerholic.post.PostNotFoundException;
+import com.yunhalee.walkerholic.post.exception.PostNotFoundException;
 import com.yunhalee.walkerholic.postImage.dto.PostImageResponse;
 import com.yunhalee.walkerholic.post.dto.PostResponses;
 import com.yunhalee.walkerholic.post.dto.SimplePostResponses;

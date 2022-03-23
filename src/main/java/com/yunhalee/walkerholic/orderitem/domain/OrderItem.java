@@ -11,7 +11,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "order_item")
 @Getter
-@Setter
 @NoArgsConstructor
 public class OrderItem {
 
@@ -32,13 +31,19 @@ public class OrderItem {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    public static OrderItem createOrderItem(Product product, Integer qty) {
-        OrderItem orderItem = new OrderItem();
-        orderItem.setProduct(product);
-        orderItem.setQty(qty);
+    public OrderItem(Integer qty, Product product) {
+        this.qty = qty;
+        this.product = product;
+    }
 
+    public static OrderItem createOrderItem(Product product, Integer qty) {
+        OrderItem orderItem = new OrderItem(qty, product);
         product.removeStock(qty);
         return orderItem;
+    }
+
+    public void changeQty (Integer qty){
+        this.qty = qty;
     }
 
     public void cancel() {

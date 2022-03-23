@@ -10,9 +10,8 @@ import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.order.domain.OrderStatus;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItemRepository;
 import com.yunhalee.walkerholic.order.domain.OrderRepository;
-import com.yunhalee.walkerholic.order.service.OrderService;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemCreateDTO;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemDTO;
+import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
+import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
 import com.yunhalee.walkerholic.useractivity.dto.AddressDTO;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,8 +52,8 @@ public class OrderServiceTests {
         String paymentMethod = "testPaymentMethod";
         Integer orderItemId = 1;
         Integer userId = 1;
-        List<OrderItemCreateDTO> orderItems = new ArrayList<>();
-        orderItems.add(new OrderItemCreateDTO(orderItemRepository.findById(orderItemId).get()));
+        List<OrderItemRequest> orderItems = new ArrayList<>();
+        orderItems.add(new OrderItemRequest(orderItemRepository.findById(orderItemId).get()));
         OrderCreateDTO orderCreateDTO = new OrderCreateDTO(paymentMethod, addressDTO, orderItems,
             userId);
 
@@ -89,10 +88,10 @@ public class OrderServiceTests {
         Integer orderId = 1;
         Integer qty = 2;
         Integer productId = 1;
-        OrderItemCreateDTO orderItemCreateDTO = new OrderItemCreateDTO(qty, productId, orderId);
+        OrderItemRequest orderItemCreateDTO = new OrderItemRequest(qty, productId, orderId);
 
         //when
-        OrderItemDTO orderItemDTO = orderService.addToCart(orderId, orderItemCreateDTO);
+        OrderItemResponse orderItemDTO = orderService.addToCart(orderId, orderItemCreateDTO);
 
         //then
         assertNotNull(orderItemDTO.getId());

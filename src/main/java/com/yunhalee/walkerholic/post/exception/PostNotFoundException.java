@@ -1,4 +1,4 @@
-package com.yunhalee.walkerholic.post;
+package com.yunhalee.walkerholic.post.exception;
 
 import com.yunhalee.walkerholic.common.exception.EntityNotFoundException;
 

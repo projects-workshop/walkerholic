@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.order.dto;
 
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemCreateDTO;
+import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
 import com.yunhalee.walkerholic.useractivity.dto.AddressDTO;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +19,7 @@ public class OrderCreateDTO {
 
     private AddressDTO address;
 
-    private List<OrderItemCreateDTO> orderItems;
+    private List<OrderItemRequest> orderItems;
 
     private Integer userId;
 
@@ -34,7 +34,7 @@ public class OrderCreateDTO {
     }
 
     public OrderCreateDTO(Integer id, String paymentMethod, AddressDTO address,
-        List<OrderItemCreateDTO> orderItems, Integer userId) {
+        List<OrderItemRequest> orderItems, Integer userId) {
         this.id = id;
         this.paymentMethod = paymentMethod;
         this.address = address;
@@ -43,7 +43,7 @@ public class OrderCreateDTO {
     }
 
     public OrderCreateDTO(String paymentMethod, AddressDTO address,
-        List<OrderItemCreateDTO> orderItems, Integer userId) {
+        List<OrderItemRequest> orderItems, Integer userId) {
         this.paymentMethod = paymentMethod;
         this.address = address;
         this.orderItems = orderItems;

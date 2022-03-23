@@ -7,8 +7,8 @@ import com.yunhalee.walkerholic.order.dto.OrderDTO;
 import com.yunhalee.walkerholic.order.dto.OrderListDTO;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.order.domain.OrderStatus;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemCreateDTO;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemDTO;
+import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
+import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItemRepository;
 import com.yunhalee.walkerholic.order.domain.OrderRepository;
@@ -62,7 +62,7 @@ public class OrderService {
 
         User user = userRepository.findById(orderCreateDTO.getUserId()).get();
 
-        List<OrderItemCreateDTO> orderItemCreateDTOS = orderCreateDTO.getOrderItems();
+        List<OrderItemRequest> orderItemCreateDTOS = orderCreateDTO.getOrderItems();
         List<OrderItem> orderItems = new ArrayList<>();
         orderItemCreateDTOS.forEach(orderItemCreateDTO -> {
             Product product = productRepository.findById(orderItemCreateDTO.getProductId()).get();
@@ -140,22 +140,22 @@ public class OrderService {
         return order.getId();
     }
 
-    public OrderItemDTO addToCart(Integer id, OrderItemCreateDTO orderItemCreateDTO) {
+    public OrderItemResponse addToCart(Integer id, OrderItemRequest orderItemCreateDTO) {
         Order order = orderRepository.findById(id).get();
         Product product = productRepository.findById(orderItemCreateDTO.getProductId()).get();
 
-        OrderItemDTO createdOrderItemDTO;
+        OrderItemResponse createdOrderItemDTO;
         if (orderItemCreateDTO.getId() == null) {
             OrderItem orderItem = OrderItem.createOrderItem(product, orderItemCreateDTO.getQty());
             orderItemRepository.save(orderItem);
             order.addOrderItem(orderItem);
-            createdOrderItemDTO = new OrderItemDTO(orderItem);
+            createdOrderItemDTO = new OrderItemResponse(orderItem);
         } else {
             OrderItem orderItem = orderItemRepository.findById(orderItemCreateDTO.getId()).get();
-            orderItem.setQty(orderItemCreateDTO.getQty());
+            orderItem.changeQty(orderItemCreateDTO.getQty());
             orderItemRepository.save(orderItem);
             order.addOrderItem(orderItem);
-            createdOrderItemDTO = new OrderItemDTO(orderItem);
+            createdOrderItemDTO = new OrderItemResponse(orderItem);
         }
 
         orderRepository.save(order);

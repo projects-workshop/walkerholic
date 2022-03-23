@@ -1,7 +1,7 @@
 package com.yunhalee.walkerholic.postImage.service;
 
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
-import com.yunhalee.walkerholic.post.PostNotFoundException;
+import com.yunhalee.walkerholic.post.exception.PostNotFoundException;
 import com.yunhalee.walkerholic.post.domain.Post;
 import com.yunhalee.walkerholic.post.domain.PostRepository;
 import com.yunhalee.walkerholic.postImage.domain.PostImage;
