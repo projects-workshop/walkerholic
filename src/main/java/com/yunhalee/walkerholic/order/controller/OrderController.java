@@ -56,14 +56,6 @@ public class OrderController {
         return orderService.getCart(id);
     }
 
-    @PostMapping("/addToCart/{id}")
-    public OrderItemResponse addToCart(@PathVariable("id") String id,
-        @RequestBody OrderItemRequest orderItem) {
-        Integer orderId = Integer.parseInt(id);
-        System.out.println(orderItem);
-        return orderService.addToCart(orderId, orderItem);
-    }
-
     @GetMapping("/orderlist/{page}")
     public ResponseEntity<?> getOrderList(@PathVariable("page") String page) {
         Integer pageNumber = Integer.parseInt(page);

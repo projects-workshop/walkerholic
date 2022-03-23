@@ -1,5 +1,7 @@
 package com.yunhalee.walkerholic.orderitem.controller;
 
+import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
+import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
 import com.yunhalee.walkerholic.orderitem.service.OrderItemService;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +18,14 @@ public class OrderItemController {
         this.orderItemService = orderItemService;
     }
 
+    @PostMapping("/orders/{id}/order-items")
+    public ResponseEntity<OrderItemResponse> addToCart(@PathVariable("id") Integer id, @RequestBody OrderItemRequest request){
+        return ResponseEntity.ok(orderItemService.create(id, request));
+    }
+
     @PutMapping("/order-items/{id}")
-    public ResponseEntity update(@PathVariable("id") Integer id, @Param("qty") Integer qty) {
-        orderItemService.update(id, qty);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<OrderItemResponse> update(@PathVariable("id") Integer id, @Param("qty") Integer qty) {
+        return ResponseEntity.ok(orderItemService.update(id, qty));
     }
 
     @DeleteMapping("/order-items/{id}")

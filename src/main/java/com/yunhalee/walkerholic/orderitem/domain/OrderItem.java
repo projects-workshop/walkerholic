@@ -36,9 +36,16 @@ public class OrderItem {
         this.product = product;
     }
 
-    public static OrderItem createOrderItem(Product product, Integer qty) {
-        OrderItem orderItem = new OrderItem(qty, product);
+    public OrderItem(Integer qty, Product product, Order order) {
+        this.qty = qty;
+        this.product = product;
+        this.order = order;
+    }
+
+    public static OrderItem of(Integer qty, Product product, Order order) {
+        OrderItem orderItem = new OrderItem(qty, product, order);
         product.removeStock(qty);
+        order.addOrderItem(orderItem);
         return orderItem;
     }
 

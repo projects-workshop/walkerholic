@@ -71,7 +71,6 @@ public class Order extends BaseTimeEntity {
     //연관관계메서드
     public void addOrderItem(OrderItem orderItem) {
         orderItems.add(orderItem);
-        orderItem.setOrder(this);
     }
 
     //비지니스 로직

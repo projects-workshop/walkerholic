@@ -16,6 +16,7 @@ import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItemRepository;
 import com.yunhalee.walkerholic.order.domain.OrderRepository;
 import com.yunhalee.walkerholic.product.domain.ProductRepository;
+import com.yunhalee.walkerholic.product.service.ProductService;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.order.domain.Address;
@@ -38,23 +39,23 @@ public class OrderService {
 
     private  OrderRepository orderRepository;
     private UserRepository userRepository;
-    private  ProductRepository productRepository;
+//    private  ProductRepository productRepository;
     private  OrderItemRepository orderItemRepository;
     private OrderItemService orderItemService;
     private MailService mailService;
+    private ProductService productService;
 
     public OrderService(OrderRepository orderRepository,
         UserRepository userRepository,
-        ProductRepository productRepository,
         OrderItemRepository orderItemRepository,
         OrderItemService orderItemService,
-        MailService mailService) {
+        MailService mailService, ProductService productService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
-        this.productRepository = productRepository;
         this.orderItemRepository = orderItemRepository;
         this.orderItemService = orderItemService;
         this.mailService = mailService;
+        this.productService = productService;
     }
 
     @Value("${spring.mail.username}")
@@ -139,28 +140,6 @@ public class OrderService {
         User user = userRepository.findById(id).get();
         Order order = orderRepository.save(Order.createCart(user));
         return order.getId();
-    }
-
-    public OrderItemResponse addToCart(Integer id, OrderItemRequest orderItemCreateDTO) {
-        Order order = orderRepository.findById(id).get();
-        Product product = productRepository.findById(orderItemCreateDTO.getProductId()).get();
-
-        OrderItemResponse createdOrderItemDTO;
-        if (orderItemCreateDTO.getId() == null) {
-            OrderItem orderItem = OrderItem.createOrderItem(product, orderItemCreateDTO.getQty());
-            orderItemRepository.save(orderItem);
-            order.addOrderItem(orderItem);
-            createdOrderItemDTO = new OrderItemResponse(orderItem);
-        } else {
-            OrderItem orderItem = orderItemRepository.findById(orderItemCreateDTO.getId()).get();
-            orderItem.changeQty(orderItemCreateDTO.getQty());
-            orderItemRepository.save(orderItem);
-            order.addOrderItem(orderItem);
-            createdOrderItemDTO = new OrderItemResponse(orderItem);
-        }
-
-        orderRepository.save(order);
-        return createdOrderItemDTO;
     }
 
     public HashMap<String, Object> getOrderList(Integer page) {
