@@ -4,13 +4,15 @@ import com.yunhalee.walkerholic.common.service.MailService;
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.order.dto.OrderCartDTO;
 import com.yunhalee.walkerholic.order.dto.OrderCreateDTO;
-import com.yunhalee.walkerholic.order.dto.OrderDTO;
+import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.exception.OrderNotFoundException;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.order.domain.OrderStatus;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
+import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponses;
+import com.yunhalee.walkerholic.orderitem.service.OrderItemService;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItemRepository;
 import com.yunhalee.walkerholic.order.domain.OrderRepository;
@@ -19,13 +21,11 @@ import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.order.domain.Address;
 import com.yunhalee.walkerholic.user.dto.UserIconResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -40,17 +40,20 @@ public class OrderService {
     private UserRepository userRepository;
     private  ProductRepository productRepository;
     private  OrderItemRepository orderItemRepository;
+    private OrderItemService orderItemService;
     private MailService mailService;
 
     public OrderService(OrderRepository orderRepository,
         UserRepository userRepository,
         ProductRepository productRepository,
         OrderItemRepository orderItemRepository,
+        OrderItemService orderItemService,
         MailService mailService) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.orderItemRepository = orderItemRepository;
+        this.orderItemService = orderItemService;
         this.mailService = mailService;
     }
 
@@ -63,7 +66,7 @@ public class OrderService {
     public static final int ORDER_LIST_PER_PAGE = 10;
 
 
-    public OrderDTO createOrder(OrderCreateDTO orderCreateDTO) {
+    public OrderResponse createOrder(OrderCreateDTO orderCreateDTO) {
 
         Address address = new Address(orderCreateDTO.getAddress().getName(),
             orderCreateDTO.getAddress().getCountry(),
@@ -99,7 +102,7 @@ public class OrderService {
                 "\n\nFor more Details visit " + baseUrl + "/order/" + order.getId());
         mailSender.send(message);
 
-        return new OrderDTO(order);
+        return new OrderResponse(order);
     }
 
     public SimpleOrderResponse cancelOrder(Integer id) {
@@ -117,9 +120,9 @@ public class OrderService {
         return SimpleOrderResponse.of(order, UserIconResponse.of(user));
     }
 
-    public OrderDTO getOrder(Integer id) {
+    public OrderResponse getOrder(Integer id) {
         Order order = orderRepository.findByOrderId(id);
-        return new OrderDTO(order);
+        return orderResponse(order);
     }
 
     public OrderCartDTO getCart(Integer id) {
@@ -220,6 +223,12 @@ public class OrderService {
     public Order findOrderById(Integer id){
         return orderRepository.findById(id)
             .orElseThrow(()->new OrderNotFoundException("Order not found with id : " + id));
+    }
+
+    private OrderResponse orderResponse(Order order){
+        return OrderResponse.of(order,
+            UserIconResponse.of(order.getUser()),
+            orderItemService.orderItemResponses(order.getOrderItems()));
     }
 
 }

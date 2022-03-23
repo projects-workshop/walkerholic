@@ -2,7 +2,12 @@ package com.yunhalee.walkerholic.orderitem.service;
 
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItemRepository;
+import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
+import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponses;
 import com.yunhalee.walkerholic.orderitem.exception.OrderItemNotFoundException;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,8 +32,16 @@ public class OrderItemService {
         orderItemRepository.delete(orderItem);
     }
 
-    public OrderItem findOrderItemById(Integer id){
+    public OrderItem findOrderItemById(Integer id) {
         return orderItemRepository.findById(id)
-            .orElseThrow(()->new OrderItemNotFoundException("OrderItem not found with id : " + id));
+            .orElseThrow(
+                () -> new OrderItemNotFoundException("OrderItem not found with id : " + id));
+    }
+
+    public OrderItemResponses orderItemResponses(Set<OrderItem> orderItems) {
+        return OrderItemResponses.of(
+            orderItems.stream()
+                .map(OrderItemResponse::of)
+                .collect(Collectors.toList()));
     }
 }

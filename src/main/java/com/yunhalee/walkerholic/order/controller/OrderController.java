@@ -2,7 +2,7 @@ package com.yunhalee.walkerholic.order.controller;
 
 import com.yunhalee.walkerholic.order.dto.OrderCartDTO;
 import com.yunhalee.walkerholic.order.dto.OrderCreateDTO;
-import com.yunhalee.walkerholic.order.dto.OrderDTO;
+import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.service.OrderService;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
@@ -27,7 +27,7 @@ public class OrderController {
         AddressDTO addressDTO = orderCreateDTO.getAddress();
         List<OrderItemRequest> orderItemCreateDTOS = orderCreateDTO.getOrderItems();
 
-        return new ResponseEntity<OrderDTO>(orderService.createOrder(orderCreateDTO),
+        return new ResponseEntity<OrderResponse>(orderService.createOrder(orderCreateDTO),
             HttpStatus.CREATED);
     }
 
@@ -46,10 +46,9 @@ public class OrderController {
         return ResponseEntity.ok(orderService.deliverOrder(id));
     }
 
-    @GetMapping("/getOrder/{id}")
-    public OrderDTO getOrder(@PathVariable("id") String id) {
-        Integer orderId = Integer.parseInt(id);
-        return orderService.getOrder(orderId);
+    @GetMapping("/orders/{id}")
+    public OrderResponse getOrder(@PathVariable("id") Integer id) {
+        return orderService.getOrder(id);
     }
 
     @GetMapping("/cartItems/{id}")
