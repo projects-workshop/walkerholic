@@ -45,19 +45,4 @@ public class SimpleOrderResponse {
         return new SimpleOrderResponse(order, user);
     }
 
-//    @Getter
-//    static class OrderUser {
-//
-//        private Integer id;
-//        private String fullname;
-//        private String imageUrl;
-//
-//        public OrderUser(User user) {
-//            this.id = user.getId();
-//            this.fullname = user.getFullname();
-//            this.imageUrl = user.getImageUrl();
-//        }
-//    }
-
-
 }

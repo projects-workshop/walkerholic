@@ -1,5 +1,6 @@
 package com.yunhalee.walkerholic.order.domain;
 
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +14,7 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     Order findByOrderId(Integer id);
 
     @Query(value = "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.orderItems i LEFT JOIN FETCH i.product p LEFT JOIN FETCH p.productImages m LEFT JOIN FETCH o.user u WHERE u.id=:id AND o.orderStatus=:orderStatus")
-    Order findCartItemsByUserId(OrderStatus orderStatus, Integer id);
+    Optional<Order> findCartItemsByUserId(OrderStatus orderStatus, Integer id);
 
     @Query(value = "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.orderItems i LEFT JOIN FETCH i.product p LEFT JOIN FETCH p.user u LEFT JOIN FETCH o.user WHERE u.id=:id AND o.orderStatus!=:orderStatus ORDER BY o.createdAt",
         countQuery = "SELECT count(DISTINCT o) FROM Order o")

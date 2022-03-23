@@ -2,7 +2,7 @@ package com.yunhalee.walkerholic.order.service;
 
 
 import com.yunhalee.walkerholic.order.domain.Order;
-import com.yunhalee.walkerholic.order.dto.OrderCartDTO;
+import com.yunhalee.walkerholic.order.dto.CartResponse;
 import com.yunhalee.walkerholic.order.dto.OrderCreateDTO;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
@@ -183,7 +183,7 @@ public class OrderServiceTests {
         Integer userId = 1;
 
         //when
-        OrderCartDTO orderCartDTO = orderService.getCart(userId);
+        CartResponse orderCartDTO = orderService.getCart(userId);
 
         //then
         assertNotNull(orderCartDTO.getId());

@@ -2,7 +2,7 @@ package com.yunhalee.walkerholic.order.service;
 
 import com.yunhalee.walkerholic.common.service.MailService;
 import com.yunhalee.walkerholic.order.domain.Order;
-import com.yunhalee.walkerholic.order.dto.OrderCartDTO;
+import com.yunhalee.walkerholic.order.dto.CartResponse;
 import com.yunhalee.walkerholic.order.dto.OrderCreateDTO;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
@@ -11,7 +11,6 @@ import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.order.domain.OrderStatus;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponses;
 import com.yunhalee.walkerholic.orderitem.service.OrderItemService;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItemRepository;
@@ -21,6 +20,7 @@ import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.order.domain.Address;
 import com.yunhalee.walkerholic.user.dto.UserIconResponse;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -125,12 +125,14 @@ public class OrderService {
         return orderResponse(order);
     }
 
-    public OrderCartDTO getCart(Integer id) {
-        Order order = orderRepository.findCartItemsByUserId(OrderStatus.CART, id);
-        if (order == null) {
-            return new OrderCartDTO();
+    public CartResponse getCart(Integer id) {
+        Optional<Order> order = orderRepository.findCartItemsByUserId(OrderStatus.CART, id);
+        if (order.isPresent()) {
+            Order cart = order.get();
+            return new CartResponse(cart,
+                orderItemService.orderItemResponses(cart.getOrderItems()));
         }
-        return new OrderCartDTO(order);
+        return new CartResponse();
     }
 
     public Integer createCart(Integer id) {

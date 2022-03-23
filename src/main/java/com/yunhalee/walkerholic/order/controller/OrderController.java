@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.order.controller;
 
-import com.yunhalee.walkerholic.order.dto.OrderCartDTO;
+import com.yunhalee.walkerholic.order.dto.CartResponse;
 import com.yunhalee.walkerholic.order.dto.OrderCreateDTO;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
@@ -51,10 +51,9 @@ public class OrderController {
         return orderService.getOrder(id);
     }
 
-    @GetMapping("/cartItems/{id}")
-    public OrderCartDTO getCart(@PathVariable("id") String id) {
-        Integer userId = Integer.parseInt(id);
-        return orderService.getCart(userId);
+    @GetMapping("/users/{id}/orders/cart")
+    public CartResponse getCart(@PathVariable("id") Integer id) {
+        return orderService.getCart(id);
     }
 
     @PostMapping("/addToCart/{id}")
