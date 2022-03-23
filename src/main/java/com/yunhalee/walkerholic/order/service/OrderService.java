@@ -5,6 +5,7 @@ import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.order.dto.CartResponse;
 import com.yunhalee.walkerholic.order.dto.OrderCreateDTO;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
+import com.yunhalee.walkerholic.order.dto.OrderResponses;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.exception.OrderNotFoundException;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
@@ -22,6 +23,7 @@ import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.order.domain.Address;
 import com.yunhalee.walkerholic.user.dto.UserIconResponse;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -142,49 +144,22 @@ public class OrderService {
         return order.getId();
     }
 
-    public HashMap<String, Object> getOrderList(Integer page) {
+    public OrderResponses getOrderList(Integer page) {
         Pageable pageable = PageRequest.of(page - 1, ORDER_LIST_PER_PAGE);
         Page<Order> orderPage = orderRepository.findAll(pageable, OrderStatus.CART);
-        List<Order> orders = orderPage.getContent();
-        List<SimpleOrderResponse> orderListDTOS = new ArrayList<>();
-        orders.forEach(order -> orderListDTOS.add(new SimpleOrderResponse(order)));
-
-        HashMap<String, Object> orderList = new HashMap<>();
-        orderList.put("orders", orderListDTOS);
-        orderList.put("totalElement", orderPage.getTotalElements());
-        orderList.put("totalPage", orderPage.getTotalPages());
-
-        return orderList;
+        return orderResponses(orderPage);
     }
 
-    public HashMap<String, Object> getOrderListBySeller(Integer page, Integer id) {
+    public OrderResponses getOrderListBySeller(Integer page, Integer id) {
         Pageable pageable = PageRequest.of(page - 1, ORDER_LIST_PER_PAGE);
         Page<Order> orderPage = orderRepository.findBySellerId(pageable, id, OrderStatus.CART);
-        List<Order> orders = orderPage.getContent();
-        List<SimpleOrderResponse> orderListDTOS = new ArrayList<>();
-        orders.forEach(order -> orderListDTOS.add(new SimpleOrderResponse(order)));
-
-        HashMap<String, Object> orderList = new HashMap<>();
-        orderList.put("orders", orderListDTOS);
-        orderList.put("totalElement", orderPage.getTotalElements());
-        orderList.put("totalPage", orderPage.getTotalPages());
-
-        return orderList;
+        return orderResponses(orderPage);
     }
 
-    public HashMap<String, Object> getOrderListByUser(Integer page, Integer id) {
+    public OrderResponses getOrderListByUser(Integer page, Integer id) {
         Pageable pageable = PageRequest.of(page - 1, ORDER_LIST_PER_PAGE);
         Page<Order> orderPage = orderRepository.findByUserId(pageable, id, OrderStatus.CART);
-        List<Order> orders = orderPage.getContent();
-        List<SimpleOrderResponse> orderListDTOS = new ArrayList<>();
-        orders.forEach(order -> orderListDTOS.add(new SimpleOrderResponse(order)));
-
-        HashMap<String, Object> orderList = new HashMap<>();
-        orderList.put("orders", orderListDTOS);
-        orderList.put("totalElement", orderPage.getTotalElements());
-        orderList.put("totalPage", orderPage.getTotalPages());
-
-        return orderList;
+        return orderResponses(orderPage);
     }
 
     public void payOrder(OrderCreateDTO orderCreateDTO) {
@@ -210,6 +185,15 @@ public class OrderService {
         return OrderResponse.of(order,
             UserIconResponse.of(order.getUser()),
             orderItemService.orderItemResponses(order.getOrderItems()));
+    }
+
+    private OrderResponses orderResponses(Page<Order> orderPage){
+        return OrderResponses.of(
+            orderPage.getContent().stream()
+            .map(order -> SimpleOrderResponse.of(order, UserIconResponse.of(order.getUser())))
+            .collect(Collectors.toList()),
+            orderPage.getTotalElements(),
+            orderPage.getTotalPages());
     }
 
 }

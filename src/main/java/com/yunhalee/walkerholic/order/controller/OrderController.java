@@ -3,6 +3,7 @@ package com.yunhalee.walkerholic.order.controller;
 import com.yunhalee.walkerholic.order.dto.CartResponse;
 import com.yunhalee.walkerholic.order.dto.OrderCreateDTO;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
+import com.yunhalee.walkerholic.order.dto.OrderResponses;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.service.OrderService;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
@@ -56,29 +57,20 @@ public class OrderController {
         return orderService.getCart(id);
     }
 
-    @GetMapping("/orderlist/{page}")
-    public ResponseEntity<?> getOrderList(@PathVariable("page") String page) {
-        Integer pageNumber = Integer.parseInt(page);
-        return new ResponseEntity<HashMap<String, Object>>(orderService.getOrderList(pageNumber),
-            HttpStatus.OK);
+    @GetMapping("/orders")
+    public ResponseEntity<OrderResponses> getOrderList(@RequestParam("page") Integer page) {
+        return ResponseEntity.ok(orderService.getOrderList(page));
     }
 
-    @GetMapping("/orderlistBySeller/{page}/{id}")
-    public ResponseEntity<?> getOrderListBySeller(@PathVariable("page") String page,
-        @PathVariable("id") String id) {
-        Integer pageNumber = Integer.parseInt(page);
-        Integer sellerId = Integer.parseInt(id);
-        return new ResponseEntity<HashMap<String, Object>>(
-            orderService.getOrderListBySeller(pageNumber, sellerId), HttpStatus.OK);
+    @GetMapping("/users/{id}/orders/seller")
+    public ResponseEntity<OrderResponses> getOrderListBySeller(@RequestParam("page") Integer page, @PathVariable("id") Integer id) {
+        return ResponseEntity.ok(orderService.getOrderListBySeller(page, id));
     }
 
-    @GetMapping("/orderlistByUser/{page}/{id}")
-    public ResponseEntity<?> getOrderListByUser(@PathVariable("page") String page,
-        @PathVariable("id") String id) {
-        Integer pageNumber = Integer.parseInt(page);
-        Integer userId = Integer.parseInt(id);
-        return new ResponseEntity<HashMap<String, Object>>(
-            orderService.getOrderListByUser(pageNumber, userId), HttpStatus.OK);
+    @GetMapping("/users/{id}/orders")
+    public ResponseEntity<OrderResponses> getOrderListByUser(@RequestParam("page") Integer page,
+        @PathVariable("id") Integer id) {
+        return ResponseEntity.ok(orderService.getOrderListByUser(page, id));
     }
 
     @PostMapping("/payOrder")
