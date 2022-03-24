@@ -8,7 +8,7 @@ public class DeliveryInfoTest {
         .address(AddressTest.ADDRESS).build();
 
     public static final DeliveryInfo DELIVERED_DELIVERY_INFO = DeliveryInfo.builder()
-        .isDelivered(false)
+        .isDelivered(true)
         .deliveredAt(LocalDateTime.now())
         .address(AddressTest.ADDRESS).build();
 }

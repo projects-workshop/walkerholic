@@ -15,6 +15,9 @@ import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.OrderResponses;
 import com.yunhalee.walkerholic.order.dto.PayOrderRequest;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
+import com.yunhalee.walkerholic.order.exception.NothingToPayException;
+import com.yunhalee.walkerholic.order.exception.OrderAlreadyDeliveredException;
+import com.yunhalee.walkerholic.order.exception.OrderNotPaidException;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
@@ -34,6 +37,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,6 +48,10 @@ class OrderServiceTests extends MockBeans {
     private static final Address ADDRESS = AddressTest.ADDRESS;
     private static final Float SHIPPING = 10.0f;
     private static final String PAYMENT_METHOD = "testPaymentMethod";
+
+    private static final String NOTHING_TO_PAY_EXCEPTION = "Nothing to pay. Please add items.";
+    private static final String ORDER_NOT_PAID_EXCEPTION = "Order must be paid.";
+    private static final String ORDER_ALREADY_DELIVERED_EXCEPTION = "Order Already Completed. All the items has been delivered.";
 
     @InjectMocks
     OrderService orderService = new OrderService(
@@ -131,9 +139,9 @@ class OrderServiceTests extends MockBeans {
         //given
         cart.addOrderItem(orderItem);
         PayOrderRequest request = new PayOrderRequest(
-            "testPaymentMethod",
-            10.0f,
-            new AddressResponse(AddressTest.ADDRESS));
+            PAYMENT_METHOD,
+            SHIPPING,
+            new AddressResponse(ADDRESS));
 
         //when
         when(orderRepository.findById(anyInt())).thenReturn(Optional.of(cart));
@@ -143,6 +151,19 @@ class OrderServiceTests extends MockBeans {
         verify(mailService).sendCreateOrderMail(any(), any());
         assertThat(product.getStock()).isEqualTo(12);
         checkPay(cart, ADDRESS, SHIPPING, PAYMENT_METHOD);
+    }
+
+    @Test
+    public void pay_without_items_is_invalid() {
+        PayOrderRequest request = new PayOrderRequest(
+            PAYMENT_METHOD,
+            SHIPPING,
+            new AddressResponse(ADDRESS));
+
+        when(orderRepository.findById(anyInt())).thenReturn(Optional.of(cart));
+        assertThatThrownBy(() -> orderService.payOrder(cart.getId(), request))
+            .isInstanceOf(NothingToPayException.class)
+            .hasMessage(NOTHING_TO_PAY_EXCEPTION);
     }
 
     @Test
@@ -157,6 +178,17 @@ class OrderServiceTests extends MockBeans {
     }
 
     @Test
+    public void deliver_without_pay_is_invalid() {
+        cart.addOrderItem(orderItem);
+        when(orderRepository.findById(anyInt())).thenReturn(Optional.of(cart));
+
+        assertThatThrownBy(() -> orderService.deliverOrder(cart.getId()))
+            .isInstanceOf(OrderNotPaidException.class)
+            .hasMessage(ORDER_NOT_PAID_EXCEPTION);
+    }
+
+
+    @Test
     public void cancel_order() {
         //when
         when(orderRepository.findById(anyInt())).thenReturn(Optional.of(order));
@@ -169,8 +201,27 @@ class OrderServiceTests extends MockBeans {
 
     }
 
+
     @Test
-    public void get_order() {
+    public void cancel_with_already_delivered_order_is_invalid() {
+        Order deliveredOrder = new Order(
+            1,
+            OrderStatus.ORDER,
+            PaymentInfoTest.PAID_PAYMENT_INFO,
+            DeliveryInfoTest.DELIVERED_DELIVERY_INFO,
+            UserTest.USER
+        );
+        when(orderRepository.findById(anyInt())).thenReturn(Optional.of(deliveredOrder));
+
+        assertThatThrownBy(() -> orderService.cancelOrder(deliveredOrder.getId()))
+            .isInstanceOf(OrderAlreadyDeliveredException.class)
+            .hasMessage(ORDER_ALREADY_DELIVERED_EXCEPTION);
+
+    }
+
+
+    @Test
+    public void find_order() {
         //then
         when(orderRepository.findByOrderId(anyInt())).thenReturn(order);
         when(orderItemService.orderItemResponses(any())).thenReturn(OrderItemResponses.of(Arrays.asList(OrderItemResponse.of(orderItem))));
@@ -181,7 +232,7 @@ class OrderServiceTests extends MockBeans {
     }
 
     @Test
-    public void get_cart() {
+    public void find_cart() {
         //given
         cart.addOrderItem(orderItem);
 

@@ -37,7 +37,7 @@ public class OrderItems {
     }
 
     public void payOrder() {
-        if (orderItems.size() < 0) {
+        if (orderItems.size() == 0) {
             throw new NothingToPayException("Nothing to pay. Please add items.");
         }
         orderItems.forEach(orderItem -> orderItem.payOrder());
