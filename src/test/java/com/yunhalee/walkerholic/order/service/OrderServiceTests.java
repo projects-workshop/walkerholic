@@ -1,246 +1,244 @@
 package com.yunhalee.walkerholic.order.service;
 
 
+import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.order.domain.Address;
+import com.yunhalee.walkerholic.order.domain.AddressTest;
+import com.yunhalee.walkerholic.order.domain.DeliveryInfoTest;
 import com.yunhalee.walkerholic.order.domain.Order;
+import com.yunhalee.walkerholic.order.domain.OrderStatus;
+import com.yunhalee.walkerholic.order.domain.PaymentInfoTest;
+import com.yunhalee.walkerholic.order.dto.AddressResponse;
 import com.yunhalee.walkerholic.order.dto.CartResponse;
-import com.yunhalee.walkerholic.order.dto.PayOrderRequest;
+import com.yunhalee.walkerholic.order.dto.OrderRequest;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
+import com.yunhalee.walkerholic.order.dto.OrderResponses;
+import com.yunhalee.walkerholic.order.dto.PayOrderRequest;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
-import com.yunhalee.walkerholic.order.domain.OrderStatus;
-import com.yunhalee.walkerholic.orderitem.domain.OrderItemRepository;
-import com.yunhalee.walkerholic.order.domain.OrderRepository;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
-import com.yunhalee.walkerholic.useractivity.dto.AddressDTO;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
+import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponses;
+import com.yunhalee.walkerholic.product.domain.Category;
+import com.yunhalee.walkerholic.product.domain.Product;
+import com.yunhalee.walkerholic.product.domain.ProductTest;
+import com.yunhalee.walkerholic.productImage.domain.ProductImageTest;
+import com.yunhalee.walkerholic.user.domain.UserTest;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.InjectMocks;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyInt;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+class OrderServiceTests extends MockBeans {
 
-import static org.junit.Assert.*;
+    private static final Address ADDRESS = AddressTest.ADDRESS;
+    private static final Float SHIPPING = 10.0f;
+    private static final String PAYMENT_METHOD = "testPaymentMethod";
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@Transactional
-public class OrderServiceTests {
+    @InjectMocks
+    OrderService orderService = new OrderService(
+        orderRepository,
+        userService,
+        orderItemService,
+        mailService
+    );
 
-    @Autowired
-    OrderService orderService;
+    private OrderItem orderItem;
+    private Product product;
+    private Order cart;
+    private Order order;
 
-    @Autowired
-    OrderRepository orderRepository;
 
-    @Autowired
-    OrderItemRepository orderItemRepository;
+    @BeforeEach
+    public void setUp() {
+        product = new Product(
+            2,
+            "secondProduct",
+            "testDescription",
+            "testBrand",
+            Category.BAG,
+            32,
+            21.0f,
+            UserTest.SELLER,
+            ProductImageTest.PRODUCT_IMAGE);
+        orderItem = new OrderItem(
+            1,
+            20,
+            product);
+        order = new Order(
+            1,
+            OrderStatus.ORDER,
+            PaymentInfoTest.PAID_PAYMENT_INFO,
+            DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO,
+            UserTest.USER
+        );
+        order.addOrderItem(orderItem);
+
+        cart = new Order(
+            2,
+            OrderStatus.CART,
+            PaymentInfoTest.NOT_PAID_PAYMENT_INFO,
+            DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO,
+            UserTest.USER
+        );
+    }
+
 
     @Test
     public void createOrder() {
         //given
-        AddressDTO addressDTO = new AddressDTO("testAddress", "testCountry", "testCity",
-            "testZipcode", "testAddress");
-        String paymentMethod = "testPaymentMethod";
-        Integer orderItemId = 1;
-        Integer userId = 1;
-        List<OrderItemRequest> orderItems = new ArrayList<>();
-        orderItems.add(new OrderItemRequest(orderItemRepository.findById(orderItemId).get()));
-        PayOrderRequest orderCreateDTO = new PayOrderRequest(paymentMethod, addressDTO, orderItems,
-            userId);
+        OrderRequest request = new OrderRequest(
+            SHIPPING,
+            PAYMENT_METHOD,
+            new AddressResponse(ADDRESS),
+            Arrays.asList(new OrderItemRequest(20, product.getId())));
 
         //when
-        OrderResponse orderDTO = orderService.createOrder(orderCreateDTO);
+        when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
+        when(orderRepository.save(any())).thenReturn(cart);
+        when(orderItemService.createOrderItems(any(), any())).thenReturn(OrderItemResponses.of(Arrays.asList(OrderItemResponse.of(orderItem))));
+        orderService.createOrder(UserTest.USER.getId(), request);
 
         //then
-        assertNotNull(orderDTO.getId());
-        assertEquals(orderDTO.getPaymentMethod(), paymentMethod);
-        assertNotEquals(orderDTO.getOrderItems().size(), 0);
-        assertNotNull(orderDTO.getUser());
-        assertEquals(orderDTO.getAddress().getName(), "testAddress");
+        verify(mailService).sendCreateOrderMail(any(), any());
+        checkPay(cart, ADDRESS, SHIPPING, PAYMENT_METHOD);
     }
 
     @Test
-    public void createCart() {
-        //given
-        Integer userId = 1;
-
+    public void create_cart() {
         //when
-        Integer orderId = orderService.createCart(userId);
+        when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
+        when(orderRepository.save(any())).thenReturn(cart);
+        Integer orderId = orderService.createCart(UserTest.USER.getId());
 
         //then
-        assertNotNull(orderId);
-        assertEquals(orderRepository.findById(orderId).get().getOrderStatus(), OrderStatus.CART);
-        assertEquals(orderRepository.findById(orderId).get().getUser().getId(), userId);
+        assertThat(orderId).isEqualTo(cart.getId());
+    }
+
+
+    @Test
+    public void pay_order() {
+        //given
+        cart.addOrderItem(orderItem);
+        PayOrderRequest request = new PayOrderRequest(
+            "testPaymentMethod",
+            10.0f,
+            new AddressResponse(AddressTest.ADDRESS));
+
+        //when
+        when(orderRepository.findById(anyInt())).thenReturn(Optional.of(cart));
+        orderService.payOrder(cart.getId(), request);
+
+        //then
+        verify(mailService).sendCreateOrderMail(any(), any());
+        assertThat(product.getStock()).isEqualTo(12);
+        checkPay(cart, ADDRESS, SHIPPING, PAYMENT_METHOD);
     }
 
     @Test
-    public void addToCart() {
-        //given
-        Integer orderId = 1;
-        Integer qty = 2;
-        Integer productId = 1;
-        OrderItemRequest orderItemCreateDTO = new OrderItemRequest(qty, productId, orderId);
-
+    public void deliver_order() {
         //when
-        OrderItemResponse orderItemDTO = orderService.addToCart(orderId, orderItemCreateDTO);
+        when(orderRepository.findById(anyInt())).thenReturn(Optional.of(order));
+        SimpleOrderResponse response = orderService.deliverOrder(order.getId());
 
         //then
-        assertNotNull(orderItemDTO.getId());
-        assertEquals(orderItemDTO.getProductId(), productId);
-        assertEquals(orderItemDTO.getQty(), qty);
-        List<Integer> productIds = orderRepository.findById(orderId).get().getOrderItems().stream()
-            .map(orderItem -> orderItem.getProduct().getId()).collect(Collectors.toList());
-        assertThat(productIds).contains(productId);
+        assertThat(response.isDelivered()).isTrue();
+        assertThat(response.getDeliveredAt()).isNotNull();
     }
 
     @Test
-    public void payOrder() {
-        //given
-        Integer orderId = 1;
-        String paymentMethod = "testPaymentMethod";
-        Float shipping = 2.00f;
-        AddressDTO addressDTO = new AddressDTO("testAddress", "testCountry", "testCity",
-            "testZipcode", "testAddress");
-
-        PayOrderRequest orderCreateDTO = new PayOrderRequest(orderId, paymentMethod, shipping,
-            addressDTO);
-
+    public void cancel_order() {
         //when
-        orderService.payOrder(orderCreateDTO);
-        Order order = orderRepository.findById(orderId).get();
+        when(orderRepository.findById(anyInt())).thenReturn(Optional.of(order));
+        SimpleOrderResponse response = orderService.cancelOrder(order.getId());
 
         //then
-        assertEquals(order.getOrderStatus(), OrderStatus.ORDER);
-        assertNotNull(order.getPaidAt());
-        assertTrue(order.isPaid());
-        assertEquals(order.getShipping(), shipping);
-        assertEquals(order.getPaymentMethod(), paymentMethod);
-        assertEquals(order.getAddress().getName(), "testAddress");
+        verify(mailService).sendCancelOrderMail(any(), any());
+        assertThat(product.getStock()).isEqualTo(52);
+        assertThat(response.getOrderStatus()).isEqualTo(OrderStatus.CANCEL.name());
+
     }
 
     @Test
-    public void cancelOrder() {
-        //given
-        Integer orderId = 1;
-        List<Integer> originalStock = orderRepository.findById(orderId).get().getOrderItems()
-            .stream().map(orderItem -> orderItem.getProduct().getStock())
-            .collect(Collectors.toList());
-        List<Integer> qty = orderRepository.findById(orderId).get().getOrderItems().stream()
-            .map(orderItem -> orderItem.getQty()).collect(Collectors.toList());
-
-        //when
-        SimpleOrderResponse orderListDTO = orderService.cancelOrder(orderId);
+    public void get_order() {
+        //then
+        when(orderRepository.findByOrderId(anyInt())).thenReturn(order);
+        when(orderItemService.orderItemResponses(any())).thenReturn(OrderItemResponses.of(Arrays.asList(OrderItemResponse.of(orderItem))));
+        OrderResponse response = orderService.getOrder(order.getId());
 
         //then
-        assertEquals(orderListDTO.getOrderStatus(), OrderStatus.CANCEL.name());
-        List<Integer> canceledStock = orderRepository.findById(orderId).get().getOrderItems()
-            .stream().map(orderItem -> orderItem.getProduct().getStock())
-            .collect(Collectors.toList());
-        for (int i = 0; i < originalStock.size(); i++) {
-            Set<OrderItem> orderItems = orderRepository.findById(orderId).get().getOrderItems();
-            Integer recoveredStock = originalStock.get(i) + qty.get(i);
-            assertEquals(recoveredStock, canceledStock.get(i));
-        }
+        isEqual(order, response);
     }
 
     @Test
-    public void deliverOrder() {
+    public void get_cart() {
         //given
-        Integer orderId = 1;
+        cart.addOrderItem(orderItem);
 
         //when
-        SimpleOrderResponse orderListDTO = orderService.deliverOrder(orderId);
+        when(orderRepository.findCartItemsByUserId(any(), anyInt())).thenReturn(Optional.of(cart));
+        when(orderItemService.orderItemResponses(any())).thenReturn(OrderItemResponses.of(Arrays.asList(OrderItemResponse.of(orderItem))));
+        CartResponse response = orderService.getCart(cart.getId());
 
         //then
-        assertTrue(orderListDTO.isDelivered());
-        assertNotNull(orderListDTO.getDeliveredAt());
+        assertThat(response.getId()).isEqualTo(cart.getId());
+        assertThat(response.getOrderItems().getOrderItems().size()).isEqualTo(1);
     }
 
     @Test
-    public void getOrderById() {
-        //given
-        Integer orderId = 1;
-
+    public void find_orders() {
         //when
-        OrderResponse orderDTO = orderService.getOrder(orderId);
+        when(orderRepository.findAllOrders(PageRequest.of(0, 10), OrderStatus.CART)).thenReturn(new PageImpl<>(Arrays.asList(order)));
+        OrderResponses responses = orderService.getOrderList(1);
 
         //then
-        assertEquals(orderDTO.getId(), orderId);
+        assertThat(responses.getOrders().size()).isEqualTo(1);
+        isEqual(order, responses.getOrders().get(0));
     }
 
-    @Test
-    public void getCartByUserId() {
-        //given
-        Integer userId = 1;
 
-        //when
-        CartResponse orderCartDTO = orderService.getCart(userId);
-
-        //then
-        assertNotNull(orderCartDTO.getId());
-        assertEquals(orderRepository.findById(orderCartDTO.getId()).get().getUser().getId(),
-            userId);
-        assertEquals(orderRepository.findById(orderCartDTO.getId()).get().getOrderStatus(),
-            OrderStatus.CART);
+    private void isEqual(Order order, OrderResponse response) {
+        assertThat(response.getId()).isEqualTo(order.getId());
+        assertThat(response.getOrderStatus()).isEqualTo(order.getOrderStatus().name());
+        assertThat(response.isPaid()).isEqualTo(order.isPaid());
+        assertThat(response.getPaymentMethod()).isEqualTo(order.getPaymentMethod());
+        assertThat(response.getPaidAt()).isEqualTo(order.getPaidAt());
+        assertThat(response.isDelivered()).isEqualTo(order.isDelivered());
+        assertThat(response.getDeliveredAt()).isEqualTo(order.getDeliveredAt());
+        assertThat(response.getUser().getId()).isEqualTo(order.getUser().getId());
+        assertThat(response.getOrderItems().getOrderItems().size()).isEqualTo(order.getOrderItems().size());
+        assertThat(response.getTotal()).isEqualTo(order.getTotalAmount());
+        assertThat(response.getShipping()).isEqualTo(order.getShipping());
     }
 
-    @Test
-    public void getOrders() {
-        //given
-        Integer page = 1;
-
-        //when
-        HashMap<String, Object> response = orderService.getOrderList(page);
-        List<SimpleOrderResponse> orderListDTOS = (List<SimpleOrderResponse>) response.get("orders");
-
-        //then
-        assertNotEquals(orderListDTOS.size(), 0);
+    private void isEqual(Order order, SimpleOrderResponse response) {
+        assertThat(response.getId()).isEqualTo(order.getId());
+        assertThat(response.getOrderStatus()).isEqualTo(order.getOrderStatus().name());
+        assertThat(response.isPaid()).isEqualTo(order.isPaid());
+        assertThat(response.getPaidAt()).isEqualTo(order.getPaidAt());
+        assertThat(response.isDelivered()).isEqualTo(order.isDelivered());
+        assertThat(response.getDeliveredAt()).isEqualTo(order.getDeliveredAt());
+        assertThat(response.getUser().getId()).isEqualTo(order.getUser().getId());
+        assertThat(response.getTotalAmount()).isEqualTo(order.getTotalAmount());
     }
 
-    @Test
-    public void getOrdersBySellerId() {
-        //given
-        Integer sellerId = 1;
-        Integer page = 1;
-
-        //when
-        HashMap<String, Object> response = orderService.getOrderListBySeller(page, sellerId);
-        List<SimpleOrderResponse> orderListDTOS = (List<SimpleOrderResponse>) response.get("orders");
-
-        //then
-        for (SimpleOrderResponse orderListDTO : orderListDTOS) {
-            List<Integer> sellerIds = orderRepository.findById(orderListDTO.getId()).get()
-                .getOrderItems().stream().map(orderItem -> orderItem.getProduct().getUser().getId())
-                .collect(Collectors.toList());
-            assertThat(sellerIds).contains(sellerId);
-        }
+    private void checkPay(Order order, Address address, Float shipping, String paymentMethod) {
+        assertThat(order.getDeliveryInfo().getAddress()).isEqualTo(address);
+        assertThat(order.getShipping()).isEqualTo(BigDecimal.valueOf(shipping));
+        assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.ORDER);
+        assertThat(order.getPaymentMethod()).isEqualTo(paymentMethod);
+        assertThat(order.isPaid()).isEqualTo(true);
+        assertThat(order.getPaidAt()).isNotNull();
     }
-
-    @Test
-    public void getOrdersByUserId() {
-        //given
-        Integer userId = 1;
-        Integer page = 1;
-
-        //when
-        HashMap<String, Object> response = orderService.getOrderListByUser(page, userId);
-        List<SimpleOrderResponse> orderListDTOS = (List<SimpleOrderResponse>) response.get("orders");
-
-        //then
-        for (SimpleOrderResponse orderListDTO : orderListDTOS) {
-            assertEquals(orderRepository.findById(orderListDTO.getId()).get().getUser().getId(),
-                userId);
-        }
-    }
-
 
 }

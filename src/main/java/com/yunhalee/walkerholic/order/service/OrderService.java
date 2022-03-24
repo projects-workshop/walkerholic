@@ -43,15 +43,34 @@ public class OrderService {
 
     public static final int ORDER_LIST_PER_PAGE = 10;
 
-    public OrderResponse createOrder(OrderRequest request) {
-        User user = userService.findUserById(request.getUserId());
+    public OrderResponse createOrder(Integer id, OrderRequest request) {
+        User user = userService.findUserById(id);
         Order order = orderRepository.save(Order.createCart(user));
-        order.pay(request.toOrder());
         OrderItemResponses orderItems = orderItemService.createOrderItems(order, request.getOrderItems());
+        order.pay(request.toOrder());
         mailService.sendCreateOrderMail(order, user);
         return OrderResponse.of(order,
             UserIconResponse.of(user),
             orderItems);
+    }
+
+    public Integer createCart(Integer id) {
+        User user = userService.findUserById(id);
+        Order order = orderRepository.save(Order.createCart(user));
+        return order.getId();
+    }
+
+    public void payOrder(Integer id, PayOrderRequest request) {
+        Order order = findOrderById(id);
+        order.pay(request.toOrder());
+        mailService.sendCreateOrderMail(order, order.getUser());
+    }
+
+    public SimpleOrderResponse deliverOrder(Integer id) {
+        Order order = findOrderById(id);
+        User user = order.getUser();
+        order.deliver();
+        return SimpleOrderResponse.of(order, UserIconResponse.of(user));
     }
 
     public SimpleOrderResponse cancelOrder(Integer id) {
@@ -59,13 +78,6 @@ public class OrderService {
         User user = order.getUser();
         order.cancel();
         mailService.sendCancelOrderMail(order, user);
-        return SimpleOrderResponse.of(order, UserIconResponse.of(user));
-    }
-
-    public SimpleOrderResponse deliverOrder(Integer id) {
-        Order order = findOrderById(id);
-        User user = order.getUser();
-        order.deliver();
         return SimpleOrderResponse.of(order, UserIconResponse.of(user));
     }
 
@@ -80,21 +92,17 @@ public class OrderService {
         Optional<Order> order = orderRepository.findCartItemsByUserId(OrderStatus.CART, id);
         if (order.isPresent()) {
             Order cart = order.get();
-            return new CartResponse(cart, orderItemService.orderItemResponses(cart.getOrderItems()));
+            return new CartResponse(cart,
+                orderItemService.orderItemResponses(cart.getOrderItems()));
         }
         return new CartResponse();
     }
 
-    public Integer createCart(Integer id) {
-        User user = userService.findUserById(id);
-        Order order = orderRepository.save(Order.createCart(user));
-        return order.getId();
-    }
 
     @Transactional(readOnly = true)
     public OrderResponses getOrderList(Integer page) {
         Pageable pageable = PageRequest.of(page - 1, ORDER_LIST_PER_PAGE);
-        Page<Order> orderPage = orderRepository.findAll(pageable, OrderStatus.CART);
+        Page<Order> orderPage = orderRepository.findAllOrders(pageable, OrderStatus.CART);
         return orderResponses(orderPage);
     }
 
@@ -112,11 +120,6 @@ public class OrderService {
         return orderResponses(orderPage);
     }
 
-    public void payOrder(Integer id, PayOrderRequest request) {
-        Order order = findOrderById(id);
-        order.pay(request.toOrder());
-        mailService.sendCreateOrderMail(order, order.getUser());
-    }
 
     public Order findOrderById(Integer id) {
         return orderRepository.findById(id)

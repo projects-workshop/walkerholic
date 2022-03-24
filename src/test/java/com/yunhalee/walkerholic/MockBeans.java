@@ -2,10 +2,14 @@ package com.yunhalee.walkerholic;
 
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import com.yunhalee.walkerholic.activity.service.ActivityService;
+import com.yunhalee.walkerholic.common.service.MailService;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import com.yunhalee.walkerholic.follow.domain.FollowRepository;
 import com.yunhalee.walkerholic.follow.service.FollowService;
 import com.yunhalee.walkerholic.likepost.domain.LikePostRepository;
+import com.yunhalee.walkerholic.order.domain.OrderRepository;
+import com.yunhalee.walkerholic.orderitem.domain.OrderItemRepository;
+import com.yunhalee.walkerholic.orderitem.service.OrderItemService;
 import com.yunhalee.walkerholic.postImage.domain.PostImageRepository;
 import com.yunhalee.walkerholic.post.domain.PostRepository;
 import com.yunhalee.walkerholic.post.service.PostService;
@@ -87,4 +91,16 @@ public class MockBeans {
 
     @MockBean
     protected PostImageService postImageService;
+
+    @MockBean
+    protected OrderItemService orderItemService;
+
+    @MockBean
+    protected MailService mailService;
+
+    @MockBean
+    protected OrderRepository orderRepository;
+
+    @MockBean
+    protected OrderItemRepository orderItemRepository;
 }

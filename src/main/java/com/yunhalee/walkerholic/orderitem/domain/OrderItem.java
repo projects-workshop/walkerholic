@@ -2,6 +2,7 @@ package com.yunhalee.walkerholic.orderitem.domain;
 
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.product.domain.Product;
+import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -41,6 +42,19 @@ public class OrderItem {
         this.order = order;
     }
 
+    public OrderItem(Integer id, Integer qty, Product product) {
+        this.id = id;
+        this.qty = qty;
+        this.product = product;
+    }
+
+    public OrderItem(Integer id, Integer qty, Product product, Order order) {
+        this.id = id;
+        this.qty = qty;
+        this.product = product;
+        this.order = order;
+    }
+
     public static OrderItem of(Integer qty, Product product, Order order) {
         OrderItem orderItem = new OrderItem(qty, product, order);
         order.addOrderItem(orderItem);
@@ -57,6 +71,10 @@ public class OrderItem {
 
     public void payOrder() {
         this.product.removeStock(qty);
+    }
+
+    public BigDecimal getAmount() {
+        return product.getPrice().multiply(BigDecimal.valueOf(qty));
     }
 
 

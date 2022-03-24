@@ -1,5 +1,6 @@
 package com.yunhalee.walkerholic.order.domain;
 
+import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -29,5 +30,25 @@ public class Address {
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Address address1 = (Address) o;
+        return Objects.equals(name, address1.name) && Objects
+            .equals(country, address1.country) && Objects.equals(city, address1.city)
+            && Objects.equals(zipcode, address1.zipcode) && Objects
+            .equals(address, address1.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, country, city, zipcode, address);
     }
 }

@@ -26,6 +26,6 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     @Query(value = "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.orderItems i LEFT JOIN FETCH i.product p LEFT JOIN FETCH p.user u LEFT JOIN FETCH o.user WHERE o.orderStatus!=:orderStatus ORDER BY o.createdAt",
         countQuery = "SELECT count(DISTINCT o) FROM Order o")
-    Page<Order> findAll(Pageable pageable, OrderStatus orderStatus);
+    Page<Order> findAllOrders(Pageable pageable, OrderStatus orderStatus);
 
 }

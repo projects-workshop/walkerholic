@@ -13,7 +13,6 @@ public class OrderItemResponse {
     private Integer id;
     private Integer qty;
     private Integer stock;
-
     private Integer productId;
     private String productName;
     private BigDecimal productPrice;

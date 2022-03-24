@@ -2,16 +2,11 @@ package com.yunhalee.walkerholic.order.dto;
 
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponses;
-import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.dto.UserIconResponse;
-import com.yunhalee.walkerholic.useractivity.dto.AddressDTO;
+import java.math.BigDecimal;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @Getter
 public class OrderResponse {
@@ -23,11 +18,11 @@ public class OrderResponse {
     private LocalDateTime paidAt;
     private boolean isDelivered;
     private LocalDateTime deliveredAt;
-    private AddressDTO address;
+    private AddressResponse address;
     private UserIconResponse user;
     private OrderItemResponses orderItems;
-    private Float total;
-    private Float shipping;
+    private BigDecimal total;
+    private BigDecimal shipping;
 
     private OrderResponse(Order order, UserIconResponse user, OrderItemResponses orderItems) {
         this.id = order.getId();
@@ -37,7 +32,7 @@ public class OrderResponse {
         this.paidAt = order.getPaidAt();
         this.isDelivered = order.isDelivered();
         this.deliveredAt = order.getDeliveredAt();
-        this.address = new AddressDTO(order.getAddress());
+        this.address = new AddressResponse(order.getAddress());
         this.user = user;
         this.orderItems = orderItems;
         this.total = order.getTotalAmount();

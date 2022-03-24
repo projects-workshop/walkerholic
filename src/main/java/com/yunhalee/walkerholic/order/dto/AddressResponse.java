@@ -1,26 +1,22 @@
-package com.yunhalee.walkerholic.useractivity.dto;
+package com.yunhalee.walkerholic.order.dto;
 
 import com.yunhalee.walkerholic.order.domain.Address;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-public class AddressDTO {
+@NoArgsConstructor
+public class AddressResponse {
 
     private String name;
-
     private String country;
-
     private String city;
-
     private String zipcode;
-
     private String address;
-
     private Integer latitude;
-
     private Integer longitude;
 
-    public AddressDTO(String name, String country, String city, String zipcode, String address) {
+    public AddressResponse(String name, String country, String city, String zipcode, String address) {
         this.name = name;
         this.country = country;
         this.city = city;
@@ -28,8 +24,7 @@ public class AddressDTO {
         this.address = address;
     }
 
-    public AddressDTO(String name, String country, String city, String zipcode, String address,
-        Integer latitude, Integer longitude) {
+    public AddressResponse(String name, String country, String city, String zipcode, String address, Integer latitude, Integer longitude) {
         this.name = name;
         this.country = country;
         this.city = city;
@@ -39,7 +34,7 @@ public class AddressDTO {
         this.longitude = longitude;
     }
 
-    public AddressDTO(Address address) {
+    public AddressResponse(Address address) {
         this.name = address.getName();
         this.country = address.getCountry();
         this.city = address.getCity();

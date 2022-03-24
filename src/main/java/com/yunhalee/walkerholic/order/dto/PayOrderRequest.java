@@ -2,13 +2,9 @@ package com.yunhalee.walkerholic.order.dto;
 
 import com.yunhalee.walkerholic.order.domain.Address;
 import com.yunhalee.walkerholic.order.domain.Order;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
-import com.yunhalee.walkerholic.useractivity.dto.AddressDTO;
+import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -16,9 +12,9 @@ public class PayOrderRequest {
 
     private Float shipping;
     private String paymentMethod;
-    private AddressDTO address;
+    private AddressResponse address;
 
-    public PayOrderRequest(String paymentMethod, Float shipping, AddressDTO address) {
+    public PayOrderRequest(String paymentMethod, Float shipping, AddressResponse address) {
         this.paymentMethod = paymentMethod;
         this.shipping = shipping;
         this.address = address;
@@ -33,6 +29,6 @@ public class PayOrderRequest {
                 .city(address.getCity())
                 .zipcode(address.getZipcode())
                 .address(address.getAddress()).build(),
-            shipping);
+            BigDecimal.valueOf(shipping));
     }
 }

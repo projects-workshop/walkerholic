@@ -3,6 +3,7 @@ package com.yunhalee.walkerholic.order.dto;
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.dto.UserIconResponse;
+import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,20 +15,13 @@ import java.time.LocalDateTime;
 public class SimpleOrderResponse {
 
     private Integer id;
-
     private String orderStatus;
-
     private boolean isPaid;
-
     private LocalDateTime paidAt;
-
     private boolean isDelivered;
-
     private LocalDateTime deliveredAt;
-
     private UserIconResponse user;
-
-    private Float totalAmount;
+    private BigDecimal totalAmount;
 
 
     private SimpleOrderResponse(Order order, UserIconResponse user) {
@@ -41,7 +35,7 @@ public class SimpleOrderResponse {
         this.totalAmount = order.getTotalAmount();
     }
 
-    public static SimpleOrderResponse of(Order order, UserIconResponse user){
+    public static SimpleOrderResponse of(Order order, UserIconResponse user) {
         return new SimpleOrderResponse(order, user);
     }
 

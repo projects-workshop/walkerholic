@@ -1,12 +1,9 @@
 package com.yunhalee.walkerholic.order.domain;
 
 import com.yunhalee.walkerholic.common.domain.BaseTimeEntity;
-import com.yunhalee.walkerholic.order.exception.OrderAlreadyDeliveredException;
-import com.yunhalee.walkerholic.order.exception.OrderNotPaidException;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
 import com.yunhalee.walkerholic.user.domain.User;
-import com.yunhalee.walkerholic.useractivity.dto.AddressDTO;
+import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,114 +26,104 @@ public class Order extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    private Float shipping;
-
-    @Column(name = "is_paid")
-    private boolean isPaid = false;
-
-    @Column(name = "payment_method")
-    private String paymentMethod;
-
-    @Column(name = "paid_at")
-    private LocalDateTime paidAt;
-
-    @Column(name = "is_delivered")
-    private boolean isDelivered = false;
-
-    @Column(name = "delivered_at")
-    private LocalDateTime deliveredAt;
+    @Embedded
+    private PaymentInfo paymentInfo;
 
     @Embedded
-    private Address address;
+    private DeliveryInfo deliveryInfo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<OrderItem> orderItems = new HashSet<>();
+    @Embedded
+    private OrderItems orderItems;
 
-    public Order(OrderStatus orderStatus, User user) {
+    private Order(OrderStatus orderStatus, User user) {
         this.orderStatus = orderStatus;
         this.user = user;
+        this.orderItems = new OrderItems();
+        this.deliveryInfo = new DeliveryInfo();
+        this.paymentInfo = new PaymentInfo();
     }
 
-    public Order(String paymentMethod, Address address, Float shipping) {
-        this.paymentMethod = paymentMethod;
-        this.address = address;
-        this.shipping = shipping;
+    public Order(String paymentMethod, Address address, BigDecimal shipping) {
+        this.deliveryInfo = new DeliveryInfo(address);
+        this.paymentInfo = new PaymentInfo(shipping, paymentMethod);
+        this.orderItems = new OrderItems();
     }
 
-    public Order(OrderStatus orderStatus, Float shipping, String paymentMethod,
-        Address address, User user) {
+    public Order(Integer id, OrderStatus orderStatus, PaymentInfo paymentInfo, DeliveryInfo deliveryInfo, User user) {
+        this.id = id;
         this.orderStatus = orderStatus;
-        this.shipping = shipping;
-        this.paymentMethod = paymentMethod;
-        this.address = address;
+        this.paymentInfo = paymentInfo;
+        this.deliveryInfo = deliveryInfo;
         this.user = user;
+        this.orderItems = new OrderItems();
     }
-
-    public Order(OrderStatus orderStatus, Float shipping, boolean isPaid,
-        String paymentMethod, Address address, User user) {
-        this.orderStatus = orderStatus;
-        this.shipping = shipping;
-        this.isPaid = isPaid;
-        this.paymentMethod = paymentMethod;
-        this.address = address;
-        this.user = user;
-    }
-
-    @Transient
-    public Float getTotalAmount() {
-        Float totalAmount = 0f;
-        for (OrderItem orderItem : this.orderItems) {
-            totalAmount += orderItem.getProduct().getPrice().floatValue() * orderItem.getQty();
-        }
-        return totalAmount;
-    }
-
-    //연관관계메서드
-    public void addOrderItem(OrderItem orderItem) {
-        orderItems.add(orderItem);
-    }
-
 
     public static Order createCart(User user) {
         return new Order(OrderStatus.CART, user);
     }
 
-    public Order createOrder(){
-        this.orderStatus = OrderStatus.ORDER;
-        this.isPaid = true;
-        return this;
+    public void addOrderItem(OrderItem orderItem) {
+        orderItems.addOrderItem(orderItem);
     }
 
     public void cancel() {
-        if (isDelivered) {
-            throw new OrderAlreadyDeliveredException("Order Already Completed. All the items has been delivered.");
-        }
+        deliveryInfo.checkAlreadyDelivered();
         this.orderStatus = OrderStatus.CANCEL;
-        orderItems.forEach(orderItem -> {
-            orderItem.cancel();
-        });
+        orderItems.cancelOrder();
     }
 
     public void deliver() {
-        if (!isPaid) {
-            throw new OrderNotPaidException("Order must be paid.");
-        }
-        this.isDelivered=true;
-        this.deliveredAt=LocalDateTime.now();
+        paymentInfo.checkOrderPaid();
+        deliveryInfo.deliver();
     }
 
-    public void pay(Order order){
-        orderItems.forEach(orderItem -> orderItem.payOrder());
-        this.address = order.getAddress();
-        this.shipping = order.shipping;
-        this.paymentMethod = order.getPaymentMethod();
-        this.isPaid = true;
-        this.paidAt = LocalDateTime.now();
+    public void pay(Order order) {
+        orderItems.payOrder();
+        this.deliveryInfo.changeAddress(order.getDeliveryInfo());
         this.orderStatus = OrderStatus.ORDER;
+        paymentInfo.pay(order.getShipping(), order.getPaymentMethod());
     }
+
+    public BigDecimal getShipping() {
+        return paymentInfo.getShipping();
+    }
+
+    public String getPaymentMethod() {
+        return paymentInfo.getPaymentMethod();
+    }
+
+    public boolean isPaid() {
+        return paymentInfo.isPaid();
+    }
+
+    public LocalDateTime getPaidAt() {
+        return paymentInfo.getPaidAt();
+    }
+
+    public Set<OrderItem> getOrderItems() {
+        return orderItems.getOrderItems();
+    }
+
+    public boolean isDelivered() {
+        return deliveryInfo.isDelivered();
+    }
+
+    public LocalDateTime getDeliveredAt() {
+        return deliveryInfo.getDeliveredAt();
+    }
+
+    public Address getAddress() {
+        return deliveryInfo.getAddress();
+    }
+
+    @Transient
+    public BigDecimal getTotalAmount() {
+        return orderItems.getTotalAmount();
+    }
+
 
 }

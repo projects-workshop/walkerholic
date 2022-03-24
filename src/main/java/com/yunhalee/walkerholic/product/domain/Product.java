@@ -47,6 +47,15 @@ public class Product extends BaseTimeEntity {
         this.reviewInfo = new ReviewInfo();
     }
 
+    public Product(Integer id, String name, String description, String brand, Category category, Integer stock, Float price, User user, ProductImage... productImages) {
+        this.id = id;
+        this.productInfo = ProductInfo.of(name, description, brand, category, stock, price);
+        this.productImages = new ProductImages();
+        this.user = user;
+        this.reviewInfo = new ReviewInfo();
+        this.productImages = ProductImages.of(productImages);
+    }
+
     public static Product of(String name, String description, String brand, Category category, Integer stock, Float price, User user) {
         return new Product(name, description, brand, category, stock, price, user);
     }
@@ -87,27 +96,27 @@ public class Product extends BaseTimeEntity {
         this.productImages.deleteProductImage(deletedImages);
     }
 
-    public String getName(){
+    public String getName() {
         return productInfo.getName();
     }
 
-    public String getDescription(){
+    public String getDescription() {
         return productInfo.getDescription();
     }
 
-    public String getBrand(){
+    public String getBrand() {
         return productInfo.getBrand();
     }
 
-    public Category getCategory(){
+    public Category getCategory() {
         return productInfo.getCategory();
     }
 
-    public Integer getStock(){
+    public Integer getStock() {
         return productInfo.getStock();
     }
 
-    public BigDecimal getPrice(){
+    public BigDecimal getPrice() {
         return productInfo.getPrice();
     }
 
@@ -125,7 +134,6 @@ public class Product extends BaseTimeEntity {
     public List<ProductImage> getProductImages() {
         return this.productImages.getProductImages();
     }
-
 
 
 }

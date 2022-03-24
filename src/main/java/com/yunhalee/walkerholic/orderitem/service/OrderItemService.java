@@ -36,8 +36,7 @@ public class OrderItemService {
         Order order = orderRepository.findById(id)
             .orElseThrow(() -> new OrderNotFoundException("Order not found with id : " + id));
         Product product = productService.findProductById(request.getProductId());
-        OrderItem orderItem = OrderItem.of(request.getQty(), product, order);
-        orderItemRepository.save(orderItem);
+        OrderItem orderItem = orderItemRepository.save(OrderItem.of(request.getQty(), product, order));
         return OrderItemResponse.of(orderItem);
     }
 
@@ -65,8 +64,7 @@ public class OrderItemService {
 
     public OrderItem findOrderItemById(Integer id) {
         return orderItemRepository.findById(id)
-            .orElseThrow(
-                () -> new OrderItemNotFoundException("OrderItem not found with id : " + id));
+            .orElseThrow(() -> new OrderItemNotFoundException("OrderItem not found with id : " + id));
     }
 
     public OrderItemResponses orderItemResponses(Set<OrderItem> orderItems) {

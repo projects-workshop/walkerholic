@@ -7,14 +7,9 @@ import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.OrderResponses;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.service.OrderService;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
-import com.yunhalee.walkerholic.useractivity.dto.AddressDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,24 +17,30 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("/orders")
-    public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest request) {
-        return ResponseEntity.ok(orderService.createOrder(request));
+    @PostMapping("/users/{id}/orders")
+    public ResponseEntity<OrderResponse> createOrder(@PathVariable("id") Integer id, @RequestBody OrderRequest request) {
+        return ResponseEntity.ok(orderService.createOrder(id, request));
     }
 
-    @PostMapping("/users/{id}/orders")
+    @PostMapping("/users/{id}/orders/cart")
     public ResponseEntity createCart(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(orderService.createCart(id));
     }
 
-    @PutMapping("/orders/{id}/cancel")
-    public ResponseEntity<SimpleOrderResponse> cancelOrder(@PathVariable("id") Integer id) {
-        return ResponseEntity.ok(orderService.cancelOrder(id));
+    @PutMapping("/orders/{id}/pay")
+    public ResponseEntity payOrder(@PathVariable("id") Integer id, @RequestBody PayOrderRequest request) {
+        orderService.payOrder(id, request);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/orders/{id}/deliver")
     public ResponseEntity<SimpleOrderResponse> deliverOrder(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(orderService.deliverOrder(id));
+    }
+
+    @PutMapping("/orders/{id}/cancel")
+    public ResponseEntity<SimpleOrderResponse> cancelOrder(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(orderService.cancelOrder(id));
     }
 
     @GetMapping("/orders/{id}")
@@ -63,15 +64,8 @@ public class OrderController {
     }
 
     @GetMapping("/users/{id}/orders")
-    public ResponseEntity<OrderResponses> getOrderListByUser(@RequestParam("page") Integer page,
-        @PathVariable("id") Integer id) {
+    public ResponseEntity<OrderResponses> getOrderListByUser(@RequestParam("page") Integer page, @PathVariable("id") Integer id) {
         return ResponseEntity.ok(orderService.getOrderListByUser(page, id));
-    }
-
-    @PutMapping("/orders/{id}/pay")
-    public ResponseEntity payOrder(@PathVariable("id") Integer id, @RequestBody PayOrderRequest request) {
-        orderService.payOrder(id, request);
-        return ResponseEntity.ok().build();
     }
 
 
