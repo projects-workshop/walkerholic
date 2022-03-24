@@ -29,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class OrderService {
 
+    public static final int ORDER_LIST_PER_PAGE = 10;
+
     private OrderRepository orderRepository;
     private UserService userService;
     private OrderItemService orderItemService;
@@ -40,8 +42,6 @@ public class OrderService {
         this.orderItemService = orderItemService;
         this.mailService = mailService;
     }
-
-    public static final int ORDER_LIST_PER_PAGE = 10;
 
     public OrderResponse createOrder(Integer id, OrderRequest request) {
         User user = userService.findUserById(id);

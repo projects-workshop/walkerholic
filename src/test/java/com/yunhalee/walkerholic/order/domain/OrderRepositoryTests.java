@@ -1,35 +1,38 @@
 package com.yunhalee.walkerholic.order.domain;
 
-import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
-import com.yunhalee.walkerholic.order.domain.OrderStatus;
+import com.yunhalee.walkerholic.product.domain.Category;
+import com.yunhalee.walkerholic.product.domain.Product;
+import com.yunhalee.walkerholic.product.domain.ProductRepository;
+import com.yunhalee.walkerholic.productImage.domain.ProductImage;
+import com.yunhalee.walkerholic.productImage.domain.ProductImageRepository;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItemRepository;
-import com.yunhalee.walkerholic.order.domain.OrderRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import com.yunhalee.walkerholic.user.domain.UserTest;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Rollback(false)
-@SpringBootTest
-@ExtendWith(SpringExtension.class)
-@Transactional
+
+@RunWith(SpringRunner.class)
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class OrderRepositoryTests {
+
+    public static final int ORDER_LIST_PER_PAGE = 10;
 
     @Autowired
     OrderRepository orderRepository;
@@ -40,143 +43,108 @@ public class OrderRepositoryTests {
     @Autowired
     OrderItemRepository orderItemRepository;
 
-    public static final int ORDER_LIST_PER_PAGE = 10;
-//
-//    @Test
-//    public void createOrder() {
-//        //given
-//        User user = userRepository.findById(1).get();
-//        OrderItem orderItem = orderItemRepository.findById(1).get();
-//        Float shipping = 5.00f;
-//        String paymentMethod = "test";
-//        Set<OrderItem> orderItems = new HashSet<>();
-//        orderItems.add(orderItem);
-//
-//        Order order = new Order();
-//        order.setUser(user);
-//        order.setOrderItems(orderItems);
-//        order.setOrderStatus(OrderStatus.ORDER);
-//        order.setShipping(shipping);
-//        order.setPaymentMethod(paymentMethod);
-//
-//        //when
-//        Order order1 = orderRepository.save(order);
-//
-//        //then
-//        assertThat(order1.getId()).isNotNull();
-//        assertThat(order1.getUser().getId()).isEqualTo(user.getId());
-//        assertThat(order1.getOrderItems().size()).isEqualTo(1);
-//        assertThat(order1.getShipping()).isEqualTo(shipping);
-//        assertThat(order1.getPaymentMethod()).isEqualTo(paymentMethod);
-//    }
-//
-//    @Test
-//    public void updateOrder() {
-//        //given
-//        Integer orderId = 1;
-//        Order order = orderRepository.findById(orderId).get();
-//        Float originalShipping = order.getShipping();
-//        order.setShipping(originalShipping + 1f);
-//
-//        //when
-//        Order order1 = orderRepository.save(order);
-//
-//        //then
-//        assertThat(order1.getShipping()).isEqualTo(originalShipping + 1f);
-//    }
-//
-//    @Test
-//    public void getByOrderId() {
-//        //given
-//        Integer orderId = 1;
-//
-//        //when
-//        Order order = orderRepository.findById(orderId).get();
-//
-//        //then
-//        assertThat(order.getId()).isEqualTo(orderId);
-//    }
-//
-//
-//    @Test
-//    public void getBySellerId() {
-//        //given
-//        Integer sellerId = 1;
-//        Integer page = 1;
-//
-//        //when
-//        Pageable pageable = PageRequest.of(page - 1, ORDER_LIST_PER_PAGE);
-//        Page<Order> orderPage = orderRepository.findByUserId(pageable, sellerId, OrderStatus.CART);
-//        List<Order> orders = orderPage.getContent();
-//
-//        //then
-//        for (Order order : orders) {
-//            List<Integer> orderItemSellerIds = order.getOrderItems().stream()
-//                .map(orderItem -> orderItem.getProduct().getUser().getId())
-//                .collect(Collectors.toList());
-//            assertThat(orderItemSellerIds).contains(sellerId);
-//        }
-//
-//    }
-//
-//    @Test
-//    public void getByUserId() {
-//        //given
-//        Integer userId = 1;
-//        Integer page = 1;
-//
-//        //when
-//        Pageable pageable = PageRequest.of(page - 1, ORDER_LIST_PER_PAGE);
-//        Page<Order> orderPage = orderRepository.findByUserId(pageable, userId, OrderStatus.CART);
-//        List<Order> orders = orderPage.getContent();
-//
-//        //then
-//        for (Order order : orders) {
-//            assertThat(userId).isEqualTo(order.getUser().getId());
-//        }
-//
-//    }
-//
-//    @Test
-//    public void getCartByUserId() {
-//        //given
-//        Integer userId = 1;
-//
-//        //when
-//        Order order = orderRepository.findCartItemsByUserId(OrderStatus.CART, userId);
-//
-//        //then
-//        assertThat(order.getOrderStatus()).isEqualTo(OrderStatus.CART);
-//        assertThat(order.getUser().getId()).isEqualTo(userId);
-//    }
-//
-//    @Test
-//    public void getOrders() {
-//        //given
-//        Integer page = 1;
-//
-//        //when
-//        Pageable pageable = PageRequest.of(page - 1, ORDER_LIST_PER_PAGE);
-//        Page<Order> orderPage = orderRepository.findAll(pageable, OrderStatus.CART);
-//        List<Order> orders = orderPage.getContent();
-//
-//        //then
-//        assertThat(orders.size()).isNotEqualTo(0);
-//    }
-//
-//    @Test
-//    public void cancelOrder() {
-//        //given
-//        Integer orderId = 3;
-//        Order order = orderRepository.findById(orderId).get();
-//        for (OrderItem orderItem : order.getOrderItems()) {
-//            orderItemRepository.deleteById(orderItem.getId());
-//        }
-//
-//        //when
-//        orderRepository.deleteById(orderId);
-//
-//        //then
-//        assertThat(orderRepository.findById(orderId)).isNull();
-//    }
+    @Autowired
+    ProductRepository productRepository;
+
+    @Autowired
+    ProductImageRepository productImageRepository;
+
+
+    private User user;
+    private User seller;
+    private Order firstOrder;
+    private Order secondOrder;
+    private Order thirdOrder;
+    private Order fourthOrder;
+    private Order fifthOrder;
+    private Product product;
+
+    @Before
+    public void setUp() {
+        user = userRepository.save(UserTest.USER);
+        seller = userRepository.save(UserTest.SELLER);
+        product = productRepository.save(Product.of("first", "firstProduct", "test", Category.TUMBLER, 2, 2.00f, seller));
+        ProductImage productImage = productImageRepository.save(ProductImage.of("first", "firstProduct", product));
+        product.addProductImage(productImage);
+        firstOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAID_PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, user);
+        secondOrder = save(OrderStatus.CART, PaymentInfoTest.NOT_PAID_PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, user);
+        thirdOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAID_PAYMENT_INFO, DeliveryInfoTest.DELIVERED_DELIVERY_INFO, user);
+        fourthOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAID_PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, seller);
+        fifthOrder = save(OrderStatus.CANCEL, PaymentInfoTest.PAID_PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, seller);
+    }
+
+    private Order save(OrderStatus orderStatus, PaymentInfo paymentInfo, DeliveryInfo deliveryInfo, User user) {
+        Order order = new Order(orderStatus, paymentInfo, deliveryInfo, user);
+        orderRepository.save(order);
+        OrderItem orderItem = new OrderItem(10, product, order);
+        orderItemRepository.save(orderItem);
+        order.addOrderItem(orderItem);
+        return order;
+    }
+
+
+    @Test
+    public void find_by_order_id() {
+        //given
+
+        //when
+        Order order = orderRepository.findByOrderId(firstOrder.getId());
+
+        //then
+        assertThat(order.getId()).isEqualTo(firstOrder.getId());
+    }
+
+    @Test
+    public void find_cart_by_userId() {
+        //given
+
+        //when
+        Optional<Order> order = orderRepository.findCartItemsByUserId(OrderStatus.CART, user.getId());
+
+        //then
+        assertThat(order.get().getId()).isEqualTo(secondOrder.getId());
+    }
+
+    @Test
+    public void find_by_seller_id() {
+        //given
+        Pageable pageable = PageRequest.of(0, ORDER_LIST_PER_PAGE);
+
+        //when
+        Page<Order> orderPage = orderRepository.findBySellerId(pageable, seller.getId(), OrderStatus.CART);
+        List<Order> orders = orderPage.getContent();
+
+        //then
+        assertThat(orders.equals(Arrays.asList(firstOrder, thirdOrder, fourthOrder, fifthOrder))).isTrue();
+    }
+
+
+    @Test
+    public void find_by_user_id() {
+        //given
+
+        //when
+        Pageable pageable = PageRequest.of(0, ORDER_LIST_PER_PAGE);
+        Page<Order> orderPage = orderRepository.findByUserId(pageable, user.getId(), OrderStatus.CART);
+        List<Order> orders = orderPage.getContent();
+
+        //then
+        assertThat(orders.equals(Arrays.asList(firstOrder, thirdOrder))).isTrue();
+    }
+
+    @Test
+    public void find_all_orders() {
+        //given
+
+        //when
+        Pageable pageable = PageRequest.of(0, ORDER_LIST_PER_PAGE);
+        Page<Order> orderPage = orderRepository.findAllOrders(pageable, OrderStatus.CART);
+        List<Order> orders = orderPage.getContent();
+
+        //then
+        orders.forEach(order -> assertThat(order.getOrderStatus()).isNotEqualTo(OrderStatus.CART));
+
+    }
+
+
 }

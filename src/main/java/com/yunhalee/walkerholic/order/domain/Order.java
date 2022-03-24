@@ -62,6 +62,14 @@ public class Order extends BaseTimeEntity {
         this.orderItems = new OrderItems();
     }
 
+    public Order(OrderStatus orderStatus, PaymentInfo paymentInfo, DeliveryInfo deliveryInfo, User user) {
+        this.orderStatus = orderStatus;
+        this.paymentInfo = paymentInfo;
+        this.deliveryInfo = deliveryInfo;
+        this.user = user;
+        this.orderItems = new OrderItems();
+    }
+
     public static Order createCart(User user) {
         return new Order(OrderStatus.CART, user);
     }
