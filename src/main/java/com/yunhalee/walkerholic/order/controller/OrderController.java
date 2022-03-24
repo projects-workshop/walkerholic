@@ -27,18 +27,18 @@ public class OrderController {
         return ResponseEntity.ok(orderService.createCart(id));
     }
 
-    @PutMapping("/orders/{id}/pay")
+    @PutMapping("/orders/{id}/payment")
     public ResponseEntity payOrder(@PathVariable("id") Integer id, @RequestBody PayOrderRequest request) {
         orderService.payOrder(id, request);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/orders/{id}/deliver")
+    @PutMapping("/orders/{id}/delivery")
     public ResponseEntity<SimpleOrderResponse> deliverOrder(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(orderService.deliverOrder(id));
     }
 
-    @PutMapping("/orders/{id}/cancel")
+    @PutMapping("/orders/{id}/cancellation")
     public ResponseEntity<SimpleOrderResponse> cancelOrder(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(orderService.cancelOrder(id));
     }
