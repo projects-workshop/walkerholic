@@ -34,9 +34,15 @@ class NotificationServiceTests extends MockBeans {
 
 
     @Test
-    public void createOrderMailNotification() {
+    public void send_create_order_Notification() {
         notificationService.sendCreateOrderNotification(order, user);
         verify(mailNotificationSender).sendCreateOrderNotification(any(), any());
+    }
+
+    @Test
+    public void send_cancel_order_Notification() {
+        notificationService.sendCancelOrderNotification(order, user);
+        verify(mailNotificationSender).sendCancelOrderNotification(any(), any());
     }
 
 }

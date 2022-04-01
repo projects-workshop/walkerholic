@@ -33,7 +33,7 @@ public class NotificationService {
     @Async
     public void sendCancelOrderNotification(Order order, User user) {
         setNotificationSender(user.getNotificationType());
-        notificationSender.sendCreateOrderNotification(order, user);
+        notificationSender.sendCancelOrderNotification(order, user);
     }
 
     private void setNotificationSender(NotificationType notificationType) {
