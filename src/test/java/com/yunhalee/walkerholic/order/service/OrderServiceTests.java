@@ -24,7 +24,6 @@ import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponses;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.product.domain.Product;
-import com.yunhalee.walkerholic.product.domain.ProductTest;
 import com.yunhalee.walkerholic.productImage.domain.ProductImageTest;
 import com.yunhalee.walkerholic.user.domain.UserTest;
 import java.math.BigDecimal;
@@ -58,7 +57,7 @@ class OrderServiceTests extends MockBeans {
         orderRepository,
         userService,
         orderItemService,
-        mailService
+        notificationService
     );
 
     private OrderItem orderItem;
@@ -105,6 +104,7 @@ class OrderServiceTests extends MockBeans {
     @Test
     public void createOrder() {
         //given
+        cart.addOrderItem(orderItem);
         OrderRequest request = new OrderRequest(
             SHIPPING,
             PAYMENT_METHOD,
@@ -118,7 +118,7 @@ class OrderServiceTests extends MockBeans {
         orderService.createOrder(UserTest.USER.getId(), request);
 
         //then
-        verify(mailService).sendCreateOrderMail(any(), any());
+        verify(notificationService).sendCreateOrderNotification(any(), any());
         checkPay(cart, ADDRESS, SHIPPING, PAYMENT_METHOD);
     }
 
@@ -148,7 +148,7 @@ class OrderServiceTests extends MockBeans {
         orderService.payOrder(cart.getId(), request);
 
         //then
-        verify(mailService).sendCreateOrderMail(any(), any());
+        verify(notificationService).sendCreateOrderNotification(any(), any());
         assertThat(product.getStock()).isEqualTo(12);
         checkPay(cart, ADDRESS, SHIPPING, PAYMENT_METHOD);
     }
@@ -195,7 +195,7 @@ class OrderServiceTests extends MockBeans {
         SimpleOrderResponse response = orderService.cancelOrder(order.getId());
 
         //then
-        verify(mailService).sendCancelOrderMail(any(), any());
+        verify(notificationService).sendCancelOrderNotification(any(), any());
         assertThat(product.getStock()).isEqualTo(52);
         assertThat(response.getOrderStatus()).isEqualTo(OrderStatus.CANCEL.name());
 

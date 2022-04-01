@@ -3,9 +3,7 @@ package com.yunhalee.walkerholic.user.domain;
 import com.yunhalee.walkerholic.follow.domain.Follow;
 import com.yunhalee.walkerholic.likepost.domain.LikePost;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
-import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.post.domain.Post;
-import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.security.oauth.domain.ProviderType;
 import java.util.Arrays;
 import java.util.Objects;
@@ -64,6 +62,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private ProviderType providerType;
 
+    @Column(name = "notification_type")
+    @Enumerated(EnumType.STRING)
+    private NotificationType notificationType;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Post> posts = new HashSet<>();
 
@@ -102,7 +104,6 @@ public class User {
         return score;
     }
 
-    //    비지니스 로직
     public void updateLevel(UserActivity userActivity) {
         addScore(userActivity);
         changeLevel();

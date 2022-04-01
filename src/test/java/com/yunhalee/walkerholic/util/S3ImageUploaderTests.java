@@ -1,6 +1,5 @@
 package com.yunhalee.walkerholic.util;
 
-import com.yunhalee.walkerholic.activity.dto.ActivityRequest;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;

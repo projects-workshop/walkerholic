@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.order.service;
 
-import com.yunhalee.walkerholic.common.service.MailService;
+import com.yunhalee.walkerholic.common.service.NotificationService;
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.order.dto.CartResponse;
 import com.yunhalee.walkerholic.order.dto.OrderRequest;
@@ -34,13 +34,13 @@ public class OrderService {
     private OrderRepository orderRepository;
     private UserService userService;
     private OrderItemService orderItemService;
-    private MailService mailService;
+    private NotificationService notificationService;
 
-    public OrderService(OrderRepository orderRepository, UserService userService, OrderItemService orderItemService, MailService mailService) {
+    public OrderService(OrderRepository orderRepository, UserService userService, OrderItemService orderItemService, NotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.orderItemService = orderItemService;
-        this.mailService = mailService;
+        this.notificationService = notificationService;
     }
 
     public OrderResponse createOrder(Integer id, OrderRequest request) {
@@ -48,7 +48,7 @@ public class OrderService {
         Order order = orderRepository.save(Order.createCart(user));
         OrderItemResponses orderItems = orderItemService.createOrderItems(order, request.getOrderItems());
         order.pay(request.toOrder());
-        mailService.sendCreateOrderMail(order, user);
+        notificationService.sendCreateOrderNotification(order, user);
         return OrderResponse.of(order,
             UserIconResponse.of(user),
             orderItems);
@@ -63,7 +63,7 @@ public class OrderService {
     public void payOrder(Integer id, PayOrderRequest request) {
         Order order = findOrderById(id);
         order.pay(request.toOrder());
-        mailService.sendCreateOrderMail(order, order.getUser());
+        notificationService.sendCreateOrderNotification(order, order.getUser());
     }
 
     public SimpleOrderResponse deliverOrder(Integer id) {
@@ -77,7 +77,7 @@ public class OrderService {
         Order order = findOrderById(id);
         User user = order.getUser();
         order.cancel();
-        mailService.sendCancelOrderMail(order, user);
+        notificationService.sendCancelOrderNotification(order, user);
         return SimpleOrderResponse.of(order, UserIconResponse.of(user));
     }
 

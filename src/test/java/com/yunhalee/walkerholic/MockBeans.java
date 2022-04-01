@@ -2,8 +2,10 @@ package com.yunhalee.walkerholic;
 
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import com.yunhalee.walkerholic.activity.service.ActivityService;
-import com.yunhalee.walkerholic.common.service.MailService;
+import com.yunhalee.walkerholic.common.service.NotificationService;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
+import com.yunhalee.walkerholic.common.service.notificationSender.MailNotificationSender;
+import com.yunhalee.walkerholic.common.service.notificationSender.SlackNotificationSender;
 import com.yunhalee.walkerholic.follow.domain.FollowRepository;
 import com.yunhalee.walkerholic.follow.service.FollowService;
 import com.yunhalee.walkerholic.likepost.domain.LikePostRepository;
@@ -96,7 +98,13 @@ public class MockBeans {
     protected OrderItemService orderItemService;
 
     @MockBean
-    protected MailService mailService;
+    protected NotificationService notificationService;
+
+    @MockBean
+    protected MailNotificationSender mailNotificationSender;
+
+    @MockBean
+    protected SlackNotificationSender slackNotificationSender;
 
     @MockBean
     protected OrderRepository orderRepository;

@@ -1,16 +1,18 @@
-package com.yunhalee.walkerholic.common.service;
+package com.yunhalee.walkerholic.common.service.notificationSender;
 
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.user.domain.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
-@Service
-public class MailService {
+@Component
+public class MailNotificationSender implements NotificationSender {
 
+    @Autowired
     private JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")
@@ -19,11 +21,8 @@ public class MailService {
     @Value("${base-url}")
     private String baseUrl;
 
-    public MailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
-    }
-
-    public void sendCreateOrderMail(Order order, User user) {
+    @Override
+    public void sendCreateOrderNotification(Order order, User user) {
         sendMail(user.getEmail(),
             user.getFullname() + " : Created Order " + order.getId(),
             "Hello" + user.getFirstname() + "! Your order has been made successfully. " +
@@ -33,7 +32,8 @@ public class MailService {
                 "\n\nFor more Details visit " + baseUrl + "/order/" + order.getId());
     }
 
-    public void sendCancelOrderMail(Order order, User user) {
+    @Override
+    public void sendCancelOrderNotification(Order order, User user) {
         sendMail(user.getEmail(),
             user.getFullname() + " : Cancel Order " + order.getId(),
             "Hello" + user.getFirstname() + "! Your order has been canceled successfully. " +
@@ -43,7 +43,6 @@ public class MailService {
                 "\n\nFor more Details visit " + baseUrl + "/order/" + order.getId());
     }
 
-
     private void sendMail(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
@@ -52,6 +51,4 @@ public class MailService {
         message.setText(text);
         mailSender.send(message);
     }
-
-
 }
