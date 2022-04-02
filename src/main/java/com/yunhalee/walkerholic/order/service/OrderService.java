@@ -2,7 +2,7 @@ package com.yunhalee.walkerholic.order.service;
 
 import com.yunhalee.walkerholic.common.service.NotificationService;
 import com.yunhalee.walkerholic.order.domain.Order;
-import com.yunhalee.walkerholic.order.dto.CartResponse;
+import com.yunhalee.walkerholic.cart.dto.CartResponse;
 import com.yunhalee.walkerholic.order.dto.OrderRequest;
 import com.yunhalee.walkerholic.order.dto.PayOrderRequest;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
@@ -54,12 +54,6 @@ public class OrderService {
             orderItems);
     }
 
-    public Integer createCart(Integer id) {
-        User user = userService.findUserById(id);
-        Order order = orderRepository.save(Order.createCart(user));
-        return order.getId();
-    }
-
     public void payOrder(Integer id, PayOrderRequest request) {
         Order order = findOrderById(id);
         order.pay(request.toOrder());
@@ -86,18 +80,6 @@ public class OrderService {
         Order order = orderRepository.findByOrderId(id);
         return orderResponse(order);
     }
-
-    @Transactional(readOnly = true)
-    public CartResponse getCart(Integer id) {
-        Optional<Order> order = orderRepository.findCartItemsByUserId(OrderStatus.CART, id);
-        if (order.isPresent()) {
-            Order cart = order.get();
-            return new CartResponse(cart,
-                orderItemService.orderItemResponses(cart.getOrderItems()));
-        }
-        return new CartResponse();
-    }
-
 
     @Transactional(readOnly = true)
     public OrderResponses getOrderList(Integer page) {

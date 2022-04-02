@@ -1,30 +1,27 @@
 package com.yunhalee.walkerholic.order.controller;
 
-import com.yunhalee.walkerholic.order.dto.CartResponse;
+import com.yunhalee.walkerholic.cart.dto.CartResponse;
 import com.yunhalee.walkerholic.order.dto.OrderRequest;
 import com.yunhalee.walkerholic.order.dto.PayOrderRequest;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.OrderResponses;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.service.OrderService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
 
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
+
     @PostMapping("/users/{id}/orders")
     public ResponseEntity<OrderResponse> createOrder(@PathVariable("id") Integer id, @RequestBody OrderRequest request) {
         return ResponseEntity.ok(orderService.createOrder(id, request));
-    }
-
-    @PostMapping("/users/{id}/orders/cart")
-    public ResponseEntity createCart(@PathVariable("id") Integer id) {
-        return ResponseEntity.ok(orderService.createCart(id));
     }
 
     @PutMapping("/orders/{id}/payment")
@@ -46,11 +43,6 @@ public class OrderController {
     @GetMapping("/orders/{id}")
     public OrderResponse getOrder(@PathVariable("id") Integer id) {
         return orderService.getOrder(id);
-    }
-
-    @GetMapping("/users/{id}/orders/cart")
-    public CartResponse getCart(@PathVariable("id") Integer id) {
-        return orderService.getCart(id);
     }
 
     @GetMapping("/orders")
