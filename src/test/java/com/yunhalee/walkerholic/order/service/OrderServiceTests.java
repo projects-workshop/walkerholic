@@ -9,13 +9,10 @@ import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.order.domain.OrderStatus;
 import com.yunhalee.walkerholic.order.domain.PaymentInfoTest;
 import com.yunhalee.walkerholic.order.dto.AddressResponse;
-import com.yunhalee.walkerholic.cart.dto.CartResponse;
 import com.yunhalee.walkerholic.order.dto.OrderRequest;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.OrderResponses;
-import com.yunhalee.walkerholic.order.dto.PayOrderRequest;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
-import com.yunhalee.walkerholic.order.exception.NothingToPayException;
 import com.yunhalee.walkerholic.order.exception.OrderAlreadyDeliveredException;
 import com.yunhalee.walkerholic.order.exception.OrderNotPaidException;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
@@ -106,6 +103,7 @@ class OrderServiceTests extends MockBeans {
         //given
         cart.addOrderItem(orderItem);
         OrderRequest request = new OrderRequest(
+            UserTest.USER.getId(),
             SHIPPING,
             PAYMENT_METHOD,
             new AddressResponse(ADDRESS),
@@ -115,7 +113,7 @@ class OrderServiceTests extends MockBeans {
         when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
         when(orderRepository.save(any())).thenReturn(cart);
         when(orderItemService.createOrderItems(any(), any())).thenReturn(OrderItemResponses.of(Arrays.asList(OrderItemResponse.of(orderItem))));
-        orderService.createOrder(UserTest.USER.getId(), request);
+        orderService.createOrder(request);
 
         //then
         verify(notificationService).sendCreateOrderNotification(any(), any());
@@ -134,37 +132,37 @@ class OrderServiceTests extends MockBeans {
 //    }
 
 
-    @Test
-    public void pay_order() {
-        //given
-        cart.addOrderItem(orderItem);
-        PayOrderRequest request = new PayOrderRequest(
-            PAYMENT_METHOD,
-            SHIPPING,
-            new AddressResponse(ADDRESS));
+//    @Test
+//    public void pay_order() {
+//        //given
+//        cart.addOrderItem(orderItem);
+//        PayOrderRequest request = new PayOrderRequest(
+//            PAYMENT_METHOD,
+//            SHIPPING,
+//            new AddressResponse(ADDRESS));
+//
+//        //when
+//        when(orderRepository.findById(anyInt())).thenReturn(Optional.of(cart));
+//        orderService.payOrder(cart.getId(), request);
+//
+//        //then
+//        verify(notificationService).sendCreateOrderNotification(any(), any());
+//        assertThat(product.getStock()).isEqualTo(12);
+//        checkPay(cart, ADDRESS, SHIPPING, PAYMENT_METHOD);
+//    }
 
-        //when
-        when(orderRepository.findById(anyInt())).thenReturn(Optional.of(cart));
-        orderService.payOrder(cart.getId(), request);
-
-        //then
-        verify(notificationService).sendCreateOrderNotification(any(), any());
-        assertThat(product.getStock()).isEqualTo(12);
-        checkPay(cart, ADDRESS, SHIPPING, PAYMENT_METHOD);
-    }
-
-    @Test
-    public void pay_without_items_is_invalid() {
-        PayOrderRequest request = new PayOrderRequest(
-            PAYMENT_METHOD,
-            SHIPPING,
-            new AddressResponse(ADDRESS));
-
-        when(orderRepository.findById(anyInt())).thenReturn(Optional.of(cart));
-        assertThatThrownBy(() -> orderService.payOrder(cart.getId(), request))
-            .isInstanceOf(NothingToPayException.class)
-            .hasMessage(NOTHING_TO_PAY_EXCEPTION);
-    }
+//    @Test
+//    public void pay_without_items_is_invalid() {
+//        PayOrderRequest request = new PayOrderRequest(
+//            PAYMENT_METHOD,
+//            SHIPPING,
+//            new AddressResponse(ADDRESS));
+//
+//        when(orderRepository.findById(anyInt())).thenReturn(Optional.of(cart));
+//        assertThatThrownBy(() -> orderService.payOrder(cart.getId(), request))
+//            .isInstanceOf(NothingToPayException.class)
+//            .hasMessage(NOTHING_TO_PAY_EXCEPTION);
+//    }
 
     @Test
     public void deliver_order() {
@@ -249,7 +247,7 @@ class OrderServiceTests extends MockBeans {
     @Test
     public void find_orders() {
         //when
-        when(orderRepository.findAllOrders(PageRequest.of(0, 10), OrderStatus.CART)).thenReturn(new PageImpl<>(Arrays.asList(order)));
+        when(orderRepository.findAllOrders(PageRequest.of(0, 10))).thenReturn(new PageImpl<>(Arrays.asList(order)));
         OrderResponses responses = orderService.getOrderList(1);
 
         //then
@@ -261,7 +259,6 @@ class OrderServiceTests extends MockBeans {
     private void isEqual(Order order, OrderResponse response) {
         assertThat(response.getId()).isEqualTo(order.getId());
         assertThat(response.getOrderStatus()).isEqualTo(order.getOrderStatus().name());
-        assertThat(response.isPaid()).isEqualTo(order.isPaid());
         assertThat(response.getPaymentMethod()).isEqualTo(order.getPaymentMethod());
         assertThat(response.getPaidAt()).isEqualTo(order.getPaidAt());
         assertThat(response.isDelivered()).isEqualTo(order.isDelivered());

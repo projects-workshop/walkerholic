@@ -13,7 +13,6 @@ public class OrderResponse {
 
     private Integer id;
     private String orderStatus;
-    private boolean isPaid;
     private String paymentMethod;
     private LocalDateTime paidAt;
     private boolean isDelivered;
@@ -27,7 +26,6 @@ public class OrderResponse {
     private OrderResponse(Order order, UserIconResponse user, OrderItemResponses orderItems) {
         this.id = order.getId();
         this.orderStatus = order.getOrderStatus().name();
-        this.isPaid = order.isPaid();
         this.paymentMethod = order.getPaymentMethod();
         this.paidAt = order.getPaidAt();
         this.isDelivered = order.isDelivered();

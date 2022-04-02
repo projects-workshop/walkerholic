@@ -1,22 +1,19 @@
 package com.yunhalee.walkerholic.order.service;
 
+import com.yunhalee.walkerholic.cart.domain.Cart;
+import com.yunhalee.walkerholic.cart.service.CartService;
 import com.yunhalee.walkerholic.common.service.NotificationService;
 import com.yunhalee.walkerholic.order.domain.Order;
-import com.yunhalee.walkerholic.cart.dto.CartResponse;
 import com.yunhalee.walkerholic.order.dto.OrderRequest;
-import com.yunhalee.walkerholic.order.dto.PayOrderRequest;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.OrderResponses;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.exception.OrderNotFoundException;
-import com.yunhalee.walkerholic.order.domain.OrderStatus;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponses;
 import com.yunhalee.walkerholic.orderitem.service.OrderItemService;
 import com.yunhalee.walkerholic.order.domain.OrderRepository;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.dto.UserIconResponse;
 import com.yunhalee.walkerholic.user.service.UserService;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,42 +31,40 @@ public class OrderService {
     private OrderRepository orderRepository;
     private UserService userService;
     private OrderItemService orderItemService;
+    private CartService cartService;
     private NotificationService notificationService;
 
-    public OrderService(OrderRepository orderRepository, UserService userService, OrderItemService orderItemService, NotificationService notificationService) {
+    public OrderService(OrderRepository orderRepository, UserService userService,
+        OrderItemService orderItemService, CartService cartService,
+        NotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.orderItemService = orderItemService;
+        this.cartService = cartService;
         this.notificationService = notificationService;
     }
 
-    public OrderResponse createOrder(Integer id, OrderRequest request) {
-        User user = userService.findUserById(id);
-        Order order = orderRepository.save(Order.createCart(user));
-        OrderItemResponses orderItems = orderItemService.createOrderItems(order, request.getOrderItems());
-        order.pay(request.toOrder());
+
+    public OrderResponse createOrder(OrderRequest request) {
+        Cart cart = cartService.findCartByUserId(request.getUserId());
+        User user = userService.findUserById(request.getUserId());
+        Order order = orderRepository.save(request.toOrder(cart.getCartItems()));
         notificationService.sendCreateOrderNotification(order, user);
         return OrderResponse.of(order,
             UserIconResponse.of(user),
-            orderItems);
-    }
-
-    public void payOrder(Integer id, PayOrderRequest request) {
-        Order order = findOrderById(id);
-        order.pay(request.toOrder());
-        notificationService.sendCreateOrderNotification(order, order.getUser());
+            orderItemService.orderItemResponses(order.getOrderItems()));
     }
 
     public SimpleOrderResponse deliverOrder(Integer id) {
         Order order = findOrderById(id);
-        User user = order.getUser();
+        User user = userService.findUserById(order.getUserId());
         order.deliver();
         return SimpleOrderResponse.of(order, UserIconResponse.of(user));
     }
 
     public SimpleOrderResponse cancelOrder(Integer id) {
         Order order = findOrderById(id);
-        User user = order.getUser();
+        User user = userService.findUserById(order.getUserId());
         order.cancel();
         notificationService.sendCancelOrderNotification(order, user);
         return SimpleOrderResponse.of(order, UserIconResponse.of(user));
@@ -84,21 +79,21 @@ public class OrderService {
     @Transactional(readOnly = true)
     public OrderResponses getOrderList(Integer page) {
         Pageable pageable = PageRequest.of(page - 1, ORDER_LIST_PER_PAGE);
-        Page<Order> orderPage = orderRepository.findAllOrders(pageable, OrderStatus.CART);
+        Page<Order> orderPage = orderRepository.findAllOrders(pageable);
         return orderResponses(orderPage);
     }
 
     @Transactional(readOnly = true)
-    public OrderResponses getOrderListBySeller(Integer page, Integer id) {
-        Pageable pageable = PageRequest.of(page - 1, ORDER_LIST_PER_PAGE);
-        Page<Order> orderPage = orderRepository.findBySellerId(pageable, id, OrderStatus.CART);
+    public OrderResponses getOrderListBySeller(Integer page, Integer sellerId) {
+        Pageable pageable = PageRequest.of(page -1, ORDER_LIST_PER_PAGE);
+        Page<Order> orderPage = orderRepository.findBySellerId(pageable, sellerId);
         return orderResponses(orderPage);
     }
 
     @Transactional(readOnly = true)
-    public OrderResponses getOrderListByUser(Integer page, Integer id) {
+    public OrderResponses getOrderListByUser(Integer page, Integer userId) {
         Pageable pageable = PageRequest.of(page - 1, ORDER_LIST_PER_PAGE);
-        Page<Order> orderPage = orderRepository.findByUserId(pageable, id, OrderStatus.CART);
+        Page<Order> orderPage = orderRepository.findByUserId(pageable, userId);
         return orderResponses(orderPage);
     }
 
@@ -110,14 +105,16 @@ public class OrderService {
 
     private OrderResponse orderResponse(Order order) {
         return OrderResponse.of(order,
-            UserIconResponse.of(order.getUser()),
+            UserIconResponse.of(userService.findUserById(order.getUserId())),
             orderItemService.orderItemResponses(order.getOrderItems()));
     }
 
     private OrderResponses orderResponses(Page<Order> orderPage) {
         return OrderResponses.of(
             orderPage.getContent().stream()
-                .map(order -> SimpleOrderResponse.of(order, UserIconResponse.of(order.getUser())))
+                .map(order -> SimpleOrderResponse
+                    .of(order, UserIconResponse
+                        .of(userService.findUserById(order.getUserId()))))
                 .collect(Collectors.toList()),
             orderPage.getTotalElements(),
             orderPage.getTotalPages());

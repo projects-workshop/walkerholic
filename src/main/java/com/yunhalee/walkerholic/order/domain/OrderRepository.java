@@ -16,16 +16,16 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
     @Query(value = "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.deliveryInfo LEFT JOIN FETCH o.paymentInfo LEFT JOIN FETCH o.orderItems r LEFT JOIN FETCH r.orderItems i LEFT JOIN FETCH i.product p LEFT JOIN FETCH p.productImages m LEFT JOIN FETCH o.user u WHERE u.id=:id AND o.orderStatus=:orderStatus")
     Optional<Order> findCartItemsByUserId(OrderStatus orderStatus, Integer id);
 
-    @Query(value = "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.deliveryInfo LEFT JOIN FETCH o.paymentInfo LEFT JOIN FETCH o.orderItems r LEFT JOIN FETCH r.orderItems i LEFT JOIN FETCH i.product p LEFT JOIN FETCH p.user u LEFT JOIN FETCH o.user s WHERE u.id=:id AND o.orderStatus!=:orderStatus ORDER BY o.createdAt",
+    @Query(value = "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.deliveryInfo LEFT JOIN FETCH o.paymentInfo LEFT JOIN FETCH o.orderItems r LEFT JOIN FETCH r.orderItems i LEFT JOIN FETCH i.product p LEFT JOIN FETCH p.user u LEFT JOIN FETCH o.user s WHERE u.id=:id ORDER BY o.createdAt",
         countQuery = "SELECT count(DISTINCT o) FROM Order o")
-    Page<Order> findBySellerId(Pageable pageable, Integer id, OrderStatus orderStatus);
+    Page<Order> findBySellerId(Pageable pageable, Integer id);
 
-    @Query(value = "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.deliveryInfo LEFT JOIN FETCH o.paymentInfo LEFT JOIN FETCH o.orderItems r LEFT JOIN FETCH r.orderItems i LEFT JOIN FETCH i.product p LEFT JOIN FETCH p.user u LEFT JOIN FETCH o.user s WHERE s.id=:id AND o.orderStatus!=:orderStatus ORDER BY o.createdAt",
+    @Query(value = "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.deliveryInfo LEFT JOIN FETCH o.paymentInfo LEFT JOIN FETCH o.orderItems r LEFT JOIN FETCH r.orderItems i LEFT JOIN FETCH i.product p LEFT JOIN FETCH p.user u LEFT JOIN FETCH o.user s WHERE s.id=:id ORDER BY o.createdAt",
         countQuery = "SELECT count(DISTINCT o) FROM Order o")
-    Page<Order> findByUserId(Pageable pageable, Integer id, OrderStatus orderStatus);
+    Page<Order> findByUserId(Pageable pageable, Integer id);
 
-    @Query(value = "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.deliveryInfo LEFT JOIN FETCH o.paymentInfo LEFT JOIN FETCH o.orderItems r LEFT JOIN FETCH r.orderItems i LEFT JOIN FETCH i.product p LEFT JOIN FETCH p.user u LEFT JOIN FETCH o.user WHERE o.orderStatus!=:orderStatus ORDER BY o.createdAt",
+    @Query(value = "SELECT DISTINCT o FROM Order o LEFT JOIN FETCH o.deliveryInfo LEFT JOIN FETCH o.paymentInfo LEFT JOIN FETCH o.orderItems r LEFT JOIN FETCH r.orderItems i LEFT JOIN FETCH i.product p LEFT JOIN FETCH p.user u LEFT JOIN FETCH o.user ORDER BY o.createdAt",
         countQuery = "SELECT count(DISTINCT o) FROM Order o")
-    Page<Order> findAllOrders(Pageable pageable, OrderStatus orderStatus);
+    Page<Order> findAllOrders(Pageable pageable);
 
 }

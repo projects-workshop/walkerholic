@@ -51,7 +51,7 @@ public class CartService {
         return new CartResponse();
     }
 
-    private Cart findCartByUserId(Integer userId) {
+    public Cart findCartByUserId(Integer userId) {
         return cartRepository.findByUserId(userId)
             .orElseThrow(() -> new CartNotFoundException("Cart not found with user id : " + userId));
     }

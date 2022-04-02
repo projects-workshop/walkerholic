@@ -111,7 +111,7 @@ public class OrderRepositoryTests {
         Pageable pageable = PageRequest.of(0, ORDER_LIST_PER_PAGE);
 
         //when
-        Page<Order> orderPage = orderRepository.findBySellerId(pageable, seller.getId(), OrderStatus.CART);
+        Page<Order> orderPage = orderRepository.findBySellerId(pageable, seller.getId());
         List<Order> orders = orderPage.getContent();
 
         //then
@@ -125,7 +125,7 @@ public class OrderRepositoryTests {
 
         //when
         Pageable pageable = PageRequest.of(0, ORDER_LIST_PER_PAGE);
-        Page<Order> orderPage = orderRepository.findByUserId(pageable, user.getId(), OrderStatus.CART);
+        Page<Order> orderPage = orderRepository.findByUserId(pageable, user.getId());
         List<Order> orders = orderPage.getContent();
 
         //then
@@ -138,7 +138,7 @@ public class OrderRepositoryTests {
 
         //when
         Pageable pageable = PageRequest.of(0, ORDER_LIST_PER_PAGE);
-        Page<Order> orderPage = orderRepository.findAllOrders(pageable, OrderStatus.CART);
+        Page<Order> orderPage = orderRepository.findAllOrders(pageable);
         List<Order> orders = orderPage.getContent();
 
         //then

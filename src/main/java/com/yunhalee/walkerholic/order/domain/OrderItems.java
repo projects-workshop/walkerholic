@@ -26,6 +26,11 @@ public class OrderItems {
         this.orderItems = new HashSet<>(Arrays.asList(orderItems));
     }
 
+    public OrderItems(Set<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+        payOrder();
+    }
+
     public void addOrderItem(OrderItem orderItem) {
         this.orderItems.add(orderItem);
     }

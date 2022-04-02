@@ -1,8 +1,7 @@
 package com.yunhalee.walkerholic.order.controller;
 
-import com.yunhalee.walkerholic.cart.dto.CartResponse;
+import com.yunhalee.walkerholic.common.dto.PageSortRequest;
 import com.yunhalee.walkerholic.order.dto.OrderRequest;
-import com.yunhalee.walkerholic.order.dto.PayOrderRequest;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.OrderResponses;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
@@ -19,15 +18,9 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PostMapping("/users/{id}/orders")
-    public ResponseEntity<OrderResponse> createOrder(@PathVariable("id") Integer id, @RequestBody OrderRequest request) {
-        return ResponseEntity.ok(orderService.createOrder(id, request));
-    }
-
-    @PutMapping("/orders/{id}/payment")
-    public ResponseEntity payOrder(@PathVariable("id") Integer id, @RequestBody PayOrderRequest request) {
-        orderService.payOrder(id, request);
-        return ResponseEntity.ok().build();
+    @PostMapping("/orders")
+    public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest request) {
+        return ResponseEntity.ok(orderService.createOrder(request));
     }
 
     @PutMapping("/orders/{id}/delivery")
@@ -50,14 +43,14 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrderList(page));
     }
 
-    @GetMapping("/users/{id}/orders/seller")
-    public ResponseEntity<OrderResponses> getOrderListBySeller(@RequestParam("page") Integer page, @PathVariable("id") Integer id) {
-        return ResponseEntity.ok(orderService.getOrderListBySeller(page, id));
+    @GetMapping("/orders")
+    public ResponseEntity<OrderResponses> getOrderListBySeller(@RequestParam("page") Integer page, @RequestParam("sellerId") Integer sellerId) {
+        return ResponseEntity.ok(orderService.getOrderListBySeller(page, sellerId));
     }
 
-    @GetMapping("/users/{id}/orders")
-    public ResponseEntity<OrderResponses> getOrderListByUser(@RequestParam("page") Integer page, @PathVariable("id") Integer id) {
-        return ResponseEntity.ok(orderService.getOrderListByUser(page, id));
+    @GetMapping("/orders")
+    public ResponseEntity<OrderResponses> getOrderListByUser(@RequestParam("page") Integer page, @RequestParam("userId") Integer userId) {
+        return ResponseEntity.ok(orderService.getOrderListByUser(page, userId));
     }
 
 

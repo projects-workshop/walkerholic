@@ -16,7 +16,6 @@ public class SimpleOrderResponse {
 
     private Integer id;
     private String orderStatus;
-    private boolean isPaid;
     private LocalDateTime paidAt;
     private boolean isDelivered;
     private LocalDateTime deliveredAt;
@@ -27,7 +26,6 @@ public class SimpleOrderResponse {
     private SimpleOrderResponse(Order order, UserIconResponse user) {
         this.id = order.getId();
         this.orderStatus = order.getOrderStatus().name();
-        this.isPaid = order.isPaid();
         this.paidAt = order.getPaidAt();
         this.isDelivered = order.isDelivered();
         this.deliveredAt = order.getDeliveredAt();
