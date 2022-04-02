@@ -23,7 +23,7 @@ class NotificationServiceTests extends MockBeans {
     @InjectMocks
     NotificationService notificationService = new NotificationService(
         mailNotificationSender,
-        slackNotificationSender);
+        SMSNotificationSender);
 
     @BeforeEach
     public void setUp() {

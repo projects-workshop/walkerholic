@@ -2,26 +2,23 @@ package com.yunhalee.walkerholic.common.service;
 
 import com.yunhalee.walkerholic.common.service.notificationSender.MailNotificationSender;
 import com.yunhalee.walkerholic.common.service.notificationSender.NotificationSender;
-import com.yunhalee.walkerholic.common.service.notificationSender.SlackNotificationSender;
+import com.yunhalee.walkerholic.common.service.notificationSender.SMSNotificationSender;
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.user.domain.NotificationType;
 import com.yunhalee.walkerholic.user.domain.User;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 
+@Component
 public class NotificationService {
 
     private NotificationSender notificationSender;
     private MailNotificationSender mailNotificationSender;
-    private SlackNotificationSender slackNotificationSender;
+    private SMSNotificationSender SMSNotificationSender;
 
-    public NotificationService() {
-        this.mailNotificationSender = new MailNotificationSender();
-        this.slackNotificationSender = new SlackNotificationSender();
-    }
-
-    public NotificationService(MailNotificationSender mailNotificationSender, SlackNotificationSender slackNotificationSender) {
+    public NotificationService(MailNotificationSender mailNotificationSender, SMSNotificationSender SMSNotificationSender) {
         this.mailNotificationSender = mailNotificationSender;
-        this.slackNotificationSender = slackNotificationSender;
+        this.SMSNotificationSender = SMSNotificationSender;
     }
 
     @Async
@@ -38,7 +35,7 @@ public class NotificationService {
 
     private void setNotificationSender(NotificationType notificationType) {
         if (notificationType == NotificationType.SLACK) {
-            this.notificationSender = slackNotificationSender;
+            this.notificationSender = SMSNotificationSender;
             return;
         }
         this.notificationSender = mailNotificationSender;
