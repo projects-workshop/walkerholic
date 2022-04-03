@@ -15,7 +15,7 @@ public class OrderItemTest {
     public static final OrderItem SECOND_ORDER_ITEM = new OrderItem(
         2,
         3,
-        ProductTest.SECOND_PRODUCT,
+        ProductTest.THIRD_PRODUCT,
         OrderTest.ORDER);
 
 }

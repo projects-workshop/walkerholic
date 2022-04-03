@@ -87,7 +87,7 @@ class OrderServiceTests extends MockBeans {
             product,
             order);
         cart = new Cart(1, UserTest.USER.getId());
-        cart.addCartItem(CartItemTest.CART_ITEM);
+        cart.addCartItem(CartItemTest.FIRST_CART_ITEM);
         order.addOrderItem(orderItem);
     }
 
@@ -183,7 +183,8 @@ class OrderServiceTests extends MockBeans {
         // when
         when(orderRepository.findByOrderId(anyInt())).thenReturn(order);
         when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
-        when(orderItemService.orderItemResponses(any())).thenReturn(OrderItemResponses.of(Arrays.asList(OrderItemResponse.of(orderItem))));
+        when(orderItemService.orderItemResponses(any()))
+            .thenReturn(OrderItemResponses.of(Arrays.asList(OrderItemResponse.of(orderItem))));
         OrderResponse response = orderService.getOrder(order.getId());
 
         // then
@@ -199,12 +200,13 @@ class OrderServiceTests extends MockBeans {
         assertThat(response.isDelivered()).isEqualTo(order.isDelivered());
         assertThat(response.getDeliveredAt()).isEqualTo(order.getDeliveredAt());
         assertThat(response.getUser().getId()).isEqualTo(order.getUserId());
-        assertThat(response.getOrderItems().getOrderItems().size()).isEqualTo(order.getOrderItems().size());
+        assertThat(response.getOrderItems().getOrderItems().size())
+            .isEqualTo(order.getOrderItems().size());
         assertThat(response.getTotal()).isEqualTo(order.getTotalAmount());
         assertThat(response.getShipping()).isEqualTo(order.getShipping());
     }
 
-    private void isEqual(OrderItemResponse orderItemResponse, OrderItem orderItem){
+    private void isEqual(OrderItemResponse orderItemResponse, OrderItem orderItem) {
         assertThat(orderItemResponse.getId()).isEqualTo(orderItem.getId());
         assertThat(orderItemResponse.getProductId()).isEqualTo(orderItem.getProduct().getId());
     }

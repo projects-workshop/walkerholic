@@ -1,20 +1,28 @@
 package com.yunhalee.walkerholic.orderitem.service;
 
 import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.cartItem.domain.CartItem;
+import com.yunhalee.walkerholic.cartItem.domain.CartItemTest;
+import com.yunhalee.walkerholic.order.domain.DeliveryInfoTest;
 import com.yunhalee.walkerholic.order.domain.Order;
-import com.yunhalee.walkerholic.order.domain.OrderTest;
+import com.yunhalee.walkerholic.order.domain.OrderItems;
+import com.yunhalee.walkerholic.order.domain.OrderStatus;
+import com.yunhalee.walkerholic.order.domain.PaymentInfoTest;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponses;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.product.domain.ProductTest;
 import com.yunhalee.walkerholic.productImage.domain.ProductImageTest;
+import com.yunhalee.walkerholic.user.domain.UserTest;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
@@ -34,82 +42,57 @@ class OrderItemServiceTests extends MockBeans {
 
 
     @BeforeEach
-    public void setUp(){
-        order = OrderTest.ORDER;
-        product = ProductTest.FIRST_PRODUCT;
+    public void setUp() {
+        order = Order.builder()
+            .id(1)
+            .orderStatus(OrderStatus.ORDER)
+            .paymentInfo(PaymentInfoTest.PAYMENT_INFO)
+            .deliveryInfo(DeliveryInfoTest.DELIVERED_DELIVERY_INFO)
+            .userId(UserTest.USER.getId())
+            .orderItems(new OrderItems()).build();
+        product = ProductTest.SECOND_PRODUCT;
         product.addProductImage(ProductImageTest.PRODUCT_IMAGE);
         orderItem = new OrderItem(
             1,
-            3,
+            20,
             product,
             order);
     }
 
-//    @Test
-//    public void createOrderItem(){
-//        //given
-//        OrderItemRequest request = new OrderItemRequest(orderItem.getQty(), product.getId(), order.getId());
-//
-//        //when
-//        when(orderRepository.findById(anyInt())).thenReturn(Optional.of(order));
-//        when(productService.findProductById(anyInt())).thenReturn(product);
-//        when(orderItemRepository.save(any())).thenReturn(orderItem);
-//        OrderItemResponse response = orderItemService.create(1, request);
-//
-//        //then
-//        assertThat(response.getId()).isEqualTo(orderItem.getId());
-//        assertThat(response.getQty()).isEqualTo(orderItem.getQty());
-//        assertThat(response.getProductId()).isEqualTo(product.getId());
-//        assertThat(order.getOrderItems().size()).isEqualTo(1);
-//    }
-////
-//
-//
-//    @Test
-//    public void updateOrderItem() {
-//        //given
-//        Integer qty = 200;
-//
-//        //when
-//        when(orderItemRepository.findById(anyInt())).thenReturn(Optional.of(orderItem));
-//        OrderItemResponse response = orderItemService.update(orderItem.getId(), qty);
-//
-//        //then
-//        assertThat(response.getQty()).isEqualTo(qty);
-//    }
-//
-//    @Test
-//    public void deleteOrderItem() {
-//        //given
-//
-//        //when
-//        when(orderItemRepository.findById(anyInt())).thenReturn(Optional.of(orderItem));
-//        orderItemService.deleteOrderItem(orderItem.getId());
-//
-//        //then
-//        verify(orderItemRepository).delete(any());
-//    }
-//
-//    @Test
-//    public void createOrderItems(){
-//        //given
-//        OrderItemRequest request = new OrderItemRequest(orderItem.getQty(), product.getId());
-//
-//        //when
-//        when(productService.findProductById(anyInt())).thenReturn(product);
-//        when(orderItemRepository.save(any())).thenReturn(orderItem);
-//        OrderItemResponses responses = orderItemService.createOrderItems(order, Arrays.asList(request, request));
-//
-//        //then
-//        assertThat(responses.getOrderItems().size()).isEqualTo(2);
-//        isEqual(responses.getOrderItems().get(0),responses.getOrderItems().get(1));
-//
-//    }
-//
-//    private void isEqual(OrderItemResponse firstItem, OrderItemResponse secondItem){
-//        assertThat(firstItem.getId()).isEqualTo(secondItem.getId());
-//        assertThat(firstItem.getQty()).isEqualTo(secondItem.getQty());
-//        assertThat(firstItem.getStock()).isEqualTo(secondItem.getStock());
-//        assertThat(firstItem.getProductId()).isEqualTo(secondItem.getProductId());
-//    }
+    @Test
+    public void create_order_items_from_cart_items() {
+        //given
+        Set<CartItem> cartItems = new HashSet<>(Arrays.asList(CartItemTest.FIRST_CART_ITEM));
+
+        //when
+        when(orderItemRepository.save(any())).thenReturn(orderItem);
+        Set<OrderItem> orderItems = orderItemService.createOrderItems(cartItems, order);
+
+        //then
+        assertThat(order.getOrderItems().size()).isEqualTo(1);
+        isEqual(new ArrayList<>(orderItems), new ArrayList<>(Arrays.asList(CartItemTest.FIRST_CART_ITEM)));
+    }
+
+
+    @Test
+    public void deleteOrderItem() {
+        //given
+
+        //when
+        when(orderItemRepository.findById(anyInt())).thenReturn(Optional.of(orderItem));
+        orderItemService.deleteOrderItem(orderItem.getId());
+
+        //then
+        verify(orderItemRepository).delete(any());
+    }
+
+    private void isEqual(List<OrderItem> orderItems, List<CartItem> cartItems) {
+        assertThat(orderItems.size()).isEqualTo(cartItems.size());
+        for (int i = 0; i < orderItems.size(); i++) {
+            assertThat(orderItems.get(i).getProduct().getId()).isEqualTo(cartItems.get(i).getProduct().getId());
+            assertThat(orderItems.get(i).getQty()).isEqualTo(cartItems.get(i).getQty());
+            assertThat(orderItems.get(i).getAmount()).isEqualTo(cartItems.get(i).getAmount());
+        }
+    }
+
 }
