@@ -22,9 +22,7 @@ public class CartItemService {
     private ProductService productService;
     private CartItemRepository cartItemRepository;
 
-    public CartItemService(CartRepository cartRepository,
-        ProductService productService,
-        CartItemRepository cartItemRepository) {
+    public CartItemService(CartRepository cartRepository, ProductService productService, CartItemRepository cartItemRepository) {
         this.cartRepository = cartRepository;
         this.productService = productService;
         this.cartItemRepository = cartItemRepository;
@@ -44,8 +42,8 @@ public class CartItemService {
         return CartItemResponse.of(cartItem);
     }
 
-    public void deleteAllByCartId(Integer cartId){
-        cartItemRepository.deleteAllByCartId(cartId);
+    public void emptyCart(Cart cart){
+        cartItemRepository.deleteAllByCart(cart);
     }
 
     public void deleteCartItem(Integer id) {

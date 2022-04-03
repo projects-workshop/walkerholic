@@ -32,6 +32,12 @@ public class Cart extends BaseTimeEntity {
         this.cartItems = new CartItems();
     }
 
+    public Cart(Integer id, Integer userId) {
+        this.id = id;
+        this.userId = userId;
+        this.cartItems = new CartItems();
+    }
+
     public static Cart of(Integer userId) {
         return new Cart(userId);
     }
@@ -46,6 +52,10 @@ public class Cart extends BaseTimeEntity {
 
     public Set<CartItem> getCartItems() {
         return cartItems.getCartItems();
+    }
+
+    public boolean isEmpty() {
+        return cartItems.isEmpty();
     }
 
 }

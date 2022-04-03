@@ -31,6 +31,7 @@ public class OrderItem {
     @JoinColumn(name = "order_id")
     private Order order;
 
+
     public OrderItem(Integer qty, Product product, Order order) {
         this.qty = qty;
         this.product = product;

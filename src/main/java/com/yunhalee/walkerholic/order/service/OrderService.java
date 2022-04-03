@@ -8,6 +8,7 @@ import com.yunhalee.walkerholic.order.dto.OrderRequest;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.OrderResponses;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
+import com.yunhalee.walkerholic.order.exception.NothingToPayException;
 import com.yunhalee.walkerholic.order.exception.OrderNotFoundException;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.orderitem.service.OrderItemService;
@@ -49,6 +50,7 @@ public class OrderService {
 
     public OrderResponse createOrder(OrderRequest request) {
         Cart cart = cartService.findCartByUserId(request.getUserId());
+        checkCart(cart);
         User user = userService.findUserById(request.getUserId());
         Order order = orderRepository.save(request.toOrder());
         Set<OrderItem> orderItems = orderItemService.createOrderItems(cart.getCartItems(), order);
@@ -57,6 +59,12 @@ public class OrderService {
         return OrderResponse.of(order,
             UserIconResponse.of(user),
             orderItemService.orderItemResponses(orderItems));
+    }
+
+    private void checkCart(Cart cart){
+        if (cart.isEmpty()){
+            throw new NothingToPayException("Nothing to pay. Please add items.");
+        }
     }
 
     public SimpleOrderResponse deliverOrder(Integer id) {

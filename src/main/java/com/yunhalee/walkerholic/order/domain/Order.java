@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.*;
+import lombok.NonNull;
 
 @Entity
 @Table(name = "orders")
@@ -39,7 +40,7 @@ public class Order extends BaseTimeEntity {
     private OrderItems orderItems;
 
     @Builder
-    public Order(Integer id, OrderStatus orderStatus, PaymentInfo paymentInfo, DeliveryInfo deliveryInfo, Integer userId, OrderItems orderItems) {
+    public Order(Integer id, @NonNull OrderStatus orderStatus, @NonNull PaymentInfo paymentInfo, @NonNull DeliveryInfo deliveryInfo, @NonNull Integer userId, @NonNull OrderItems orderItems) {
         this.id = id;
         this.orderStatus = orderStatus;
         this.paymentInfo = paymentInfo;

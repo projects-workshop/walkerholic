@@ -3,6 +3,7 @@ package com.yunhalee.walkerholic.cartItem.domain;
 import com.yunhalee.walkerholic.cart.domain.Cart;
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.product.domain.Product;
+import com.yunhalee.walkerholic.product.exception.NotEnoughStockException;
 import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,7 +43,7 @@ public class CartItem {
     private Cart cart;
 
     @Builder
-    public CartItem(Integer id, @NonNull Integer qty, @NonNull Product product, Cart cart) {
+    public CartItem(Integer id, @NonNull Integer qty, Product product, Cart cart) {
         this.id = id;
         this.qty = qty;
         this.product = product;
@@ -59,6 +60,9 @@ public class CartItem {
     }
 
     public void changeQty(Integer qty) {
+        if(!this.product.isEnoughStock(qty)){
+            throw new NotEnoughStockException("Stock is not enough.");
+        }
         this.qty = qty;
     }
 

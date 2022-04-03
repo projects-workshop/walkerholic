@@ -17,19 +17,16 @@ public class CartService {
 
     private CartItemService cartItemService;
 
-    public CartService(CartRepository cartRepository,
-        CartItemService cartItemService) {
+    public CartService(CartRepository cartRepository, CartItemService cartItemService) {
         this.cartRepository = cartRepository;
         this.cartItemService = cartItemService;
     }
-
 
     public Integer createCart(Integer userId) {
         checkCartExist(userId);
         Cart cart = cartRepository.save(Cart.of(userId));
         return cart.getId();
     }
-
 
     private void checkCartExist(Integer userId) {
         if (cartRepository.existsByUserId(userId)) {
@@ -38,10 +35,9 @@ public class CartService {
     }
 
     public void emptyCart(Cart cart) {
-        cartItemService.deleteAllByCartId(cart.getId());
+        cartItemService.emptyCart(cart);
+        cart.emptyCart();
     }
-
-
 
     @Transactional(readOnly = true)
     public CartResponse getCart(Integer userId) {
@@ -55,7 +51,8 @@ public class CartService {
 
     public Cart findCartByUserId(Integer userId) {
         return cartRepository.findByUserId(userId)
-            .orElseThrow(() -> new CartNotFoundException("Cart not found with user id : " + userId));
+            .orElseThrow(
+                () -> new CartNotFoundException("Cart not found with user id : " + userId));
     }
 
 

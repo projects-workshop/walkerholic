@@ -4,16 +4,6 @@ import com.yunhalee.walkerholic.user.domain.UserTest;
 
 public class OrderTest {
 
-//    public static final Order CART = Order.builder()
-//        .id(1)
-//        .orderStatus(OrderStatus.ORDER)
-//    new Order(
-//        1,
-//        OrderStatus.CART,
-//        PaymentInfoTest.PAID_PAYMENT_INFO,
-//        DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO,
-//        UserTest.USER);
-
     public static final Order ORDER =Order.builder()
         .id(2)
         .orderStatus(OrderStatus.ORDER)

@@ -6,6 +6,7 @@ import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.OrderResponses;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.service.OrderService;
+import java.net.URI;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +20,9 @@ public class OrderController {
     }
 
     @PostMapping("/orders")
-    public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest request) {
-        return ResponseEntity.ok(orderService.createOrder(request));
+    public ResponseEntity createOrder(@RequestBody OrderRequest request) {
+        OrderResponse response = orderService.createOrder(request);
+        return ResponseEntity.created(URI.create("/orders"+response.getId())).body(response);
     }
 
     @PutMapping("/orders/{id}/delivery")
@@ -38,17 +40,17 @@ public class OrderController {
         return orderService.getOrder(id);
     }
 
-    @GetMapping("/orders")
+    @GetMapping(value = "/orders", params = "page")
     public ResponseEntity<OrderResponses> getOrderList(@RequestParam("page") Integer page) {
         return ResponseEntity.ok(orderService.getOrderList(page));
     }
 
-    @GetMapping("/orders")
+    @GetMapping(value = "/orders", params = {"page", "sellerId"})
     public ResponseEntity<OrderResponses> getOrderListBySeller(@RequestParam("page") Integer page, @RequestParam("sellerId") Integer sellerId) {
         return ResponseEntity.ok(orderService.getOrderListBySeller(page, sellerId));
     }
 
-    @GetMapping("/orders")
+    @GetMapping(value = "/orders", params = {"page", "userId"})
     public ResponseEntity<OrderResponses> getOrderListByUser(@RequestParam("page") Integer page, @RequestParam("userId") Integer userId) {
         return ResponseEntity.ok(orderService.getOrderListByUser(page, userId));
     }

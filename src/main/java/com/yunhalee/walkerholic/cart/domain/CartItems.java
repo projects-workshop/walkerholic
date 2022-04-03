@@ -1,7 +1,6 @@
 package com.yunhalee.walkerholic.cart.domain;
 
 import com.yunhalee.walkerholic.cartItem.domain.CartItem;
-import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,4 +44,7 @@ public class CartItems {
         this.cartItems.clear();
     }
 
+    public boolean isEmpty() {
+        return cartItems.size() == 0;
+    }
 }

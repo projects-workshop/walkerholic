@@ -60,10 +60,13 @@ public class ProductInfo {
     }
 
     public void removeStock(Integer qty) {
-        Integer restStock = this.stock - qty;
-        if (restStock < 0) {
+        if (!isEnoughStock(qty)) {
             throw new NotEnoughStockException("Stock is not enough.");
         }
-        this.stock = restStock;
+        this.stock = this.stock - qty;
+    }
+
+    public boolean isEnoughStock(Integer qty){
+        return this.stock >= qty;
     }
 }

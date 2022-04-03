@@ -5,12 +5,16 @@ import com.yunhalee.walkerholic.user.domain.UserTest;
 
 public class ProductTest {
 
-    public static final Product FIRST_PRODUCT = new Product("firstProduct",
+    public static final Product FIRST_PRODUCT = new Product(1,
+        "firstProduct",
+        "testDescription",
         "testBrand",
         Category.TUMBLER,
         3,
         2.0f,
-        "testDescription");
+        UserTest.SELLER,
+        ProductImageTest.PRODUCT_IMAGE
+        );
     public static final Product SECOND_PRODUCT = new Product(
         2,
         "secondProduct",
@@ -22,12 +26,15 @@ public class ProductTest {
         UserTest.SELLER,
         ProductImageTest.PRODUCT_IMAGE);
 
-    public static final Product THIRD_PRODUCT = new Product(
+    public static final Product THIRD_PRODUCT = new Product(3,
+        "testDescription",
         "thirdProduct",
         "testBrand",
         Category.CLOTHES,
         5,
         28.0f,
-        "testDescription");
+        UserTest.SELLER,
+        ProductImageTest.PRODUCT_SECOND_IMAGE
+        );
 
 }

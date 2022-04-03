@@ -135,5 +135,9 @@ public class Product extends BaseTimeEntity {
         return this.productImages.getProductImages();
     }
 
+    public boolean isEnoughStock(Integer qty) {
+        return this.productInfo.isEnoughStock(qty);
+    }
+
 
 }
