@@ -5,6 +5,7 @@ import com.yunhalee.walkerholic.activity.service.ActivityService;
 import com.yunhalee.walkerholic.cart.domain.CartRepository;
 import com.yunhalee.walkerholic.cart.service.CartService;
 import com.yunhalee.walkerholic.cartItem.domain.CartItemRepository;
+import com.yunhalee.walkerholic.cartItem.service.CartItemService;
 import com.yunhalee.walkerholic.common.service.NotificationService;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import com.yunhalee.walkerholic.common.service.notificationSender.MailNotificationSender;
@@ -123,4 +124,7 @@ public class MockBeans {
 
     @MockBean
     protected CartItemRepository cartItemRepository;
+
+    @MockBean
+    protected CartItemService cartItemService;
 }
