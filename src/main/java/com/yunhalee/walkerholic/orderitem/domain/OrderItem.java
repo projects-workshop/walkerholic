@@ -37,10 +37,11 @@ public class OrderItem {
         this.order = order;
     }
 
-    public OrderItem(Integer id, Integer qty, Product product) {
+    public OrderItem(Integer id, Integer qty, Product product, Order order) {
         this.id = id;
         this.qty = qty;
         this.product = product;
+        this.order = order;
     }
 
     public static OrderItem of(Integer qty, Product product, Order order) {

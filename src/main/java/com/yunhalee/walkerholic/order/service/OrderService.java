@@ -52,6 +52,7 @@ public class OrderService {
         User user = userService.findUserById(request.getUserId());
         Order order = orderRepository.save(request.toOrder());
         Set<OrderItem> orderItems = orderItemService.createOrderItems(cart.getCartItems(), order);
+        cartService.emptyCart(cart);
         notificationService.sendCreateOrderNotification(order, user);
         return OrderResponse.of(order,
             UserIconResponse.of(user),

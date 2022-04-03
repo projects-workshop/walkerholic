@@ -6,7 +6,6 @@ import com.yunhalee.walkerholic.cart.exception.CartAlreadyExist;
 import com.yunhalee.walkerholic.cart.exception.CartNotFoundException;
 import com.yunhalee.walkerholic.cart.dto.CartResponse;
 import com.yunhalee.walkerholic.cartItem.service.CartItemService;
-import com.yunhalee.walkerholic.orderitem.service.OrderItemService;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +37,7 @@ public class CartService {
         }
     }
 
-    public void emptyCart(Integer userId) {
-        Cart cart = findCartByUserId(userId);
+    public void emptyCart(Cart cart) {
         cartItemService.deleteAllByCartId(cart.getId());
     }
 

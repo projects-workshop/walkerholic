@@ -45,7 +45,7 @@ public class CartItemService {
     }
 
     public void deleteAllByCartId(Integer cartId){
-
+        cartItemRepository.deleteAllByCartId(cartId);
     }
 
     public void deleteCartItem(Integer id) {

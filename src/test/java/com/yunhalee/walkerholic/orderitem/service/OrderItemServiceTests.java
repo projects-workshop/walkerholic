@@ -23,30 +23,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class OrderItemServiceTests extends MockBeans {
 
-//    @InjectMocks
-//    OrderItemService orderItemService = new OrderItemService(
-//        orderItemRepository,
-//        productService,
-//        orderRepository
-//    );
-//
-//    private OrderItem orderItem;
-//    private Product product;
-//    private Order order;
-//
-//
-//    @BeforeEach
-//    public void setUp(){
-//        order = OrderTest.CART;
-//        product = ProductTest.FIRST_PRODUCT;
-//        product.addProductImage(ProductImageTest.PRODUCT_IMAGE);
-//        orderItem = new OrderItem(
-//            1,
-//            3,
-//            product,
-//            order);
-//    }
-//
+    @InjectMocks
+    OrderItemService orderItemService = new OrderItemService(
+        orderItemRepository
+    );
+
+    private OrderItem orderItem;
+    private Product product;
+    private Order order;
+
+
+    @BeforeEach
+    public void setUp(){
+        order = OrderTest.ORDER;
+        product = ProductTest.FIRST_PRODUCT;
+        product.addProductImage(ProductImageTest.PRODUCT_IMAGE);
+        orderItem = new OrderItem(
+            1,
+            3,
+            product,
+            order);
+    }
+
 //    @Test
 //    public void createOrderItem(){
 //        //given
@@ -64,7 +62,7 @@ class OrderItemServiceTests extends MockBeans {
 //        assertThat(response.getProductId()).isEqualTo(product.getId());
 //        assertThat(order.getOrderItems().size()).isEqualTo(1);
 //    }
-//
+////
 //
 //
 //    @Test
