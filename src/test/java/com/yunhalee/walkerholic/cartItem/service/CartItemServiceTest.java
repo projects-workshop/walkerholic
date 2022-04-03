@@ -25,8 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CartItemServiceTest extends MockBeans {
 
-    private static final String NOT_ENOUGH_STOCK_EXCEPTION = "Stock is not enough.";
-
     @InjectMocks
     CartItemService cartItemService = new CartItemService(
         cartRepository,
@@ -81,17 +79,6 @@ class CartItemServiceTest extends MockBeans {
 
         //then
         assertThat(response.getQty()).isEqualTo(qty);
-    }
-
-    @Test
-    public void update_qty_more_then_product_stock_is_invalid(){
-        Integer qty = 200;
-
-        when(cartItemRepository.findById(anyInt())).thenReturn(Optional.of(cartItem));
-        assertThatThrownBy(()->cartItemService.update(cartItem.getId(), qty))
-            .isInstanceOf(NotEnoughStockException.class)
-            .hasMessage(NOT_ENOUGH_STOCK_EXCEPTION);
-
     }
 
     @Test

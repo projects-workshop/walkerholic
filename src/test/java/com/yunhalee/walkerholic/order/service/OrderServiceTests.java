@@ -16,7 +16,6 @@ import com.yunhalee.walkerholic.order.dto.OrderRequest;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.exception.NothingToPayException;
-import com.yunhalee.walkerholic.order.exception.OrderAlreadyDeliveredException;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
@@ -45,7 +44,6 @@ class OrderServiceTests extends MockBeans {
     private static final String PAYMENT_METHOD = "testPaymentMethod";
 
     private static final String NOTHING_TO_PAY_EXCEPTION = "Nothing to pay. Please add items.";
-    private static final String ORDER_ALREADY_DELIVERED_EXCEPTION = "Order Already Completed. All the items has been delivered.";
 
     @InjectMocks
     OrderService orderService = new OrderService(
@@ -157,34 +155,11 @@ class OrderServiceTests extends MockBeans {
     }
 
     @Test
-    public void cancel_with_already_delivered_order_is_invalid() {
-        // given
-        Order deliveredOrder = new Order(
-            1,
-            OrderStatus.ORDER,
-            PaymentInfoTest.PAYMENT_INFO,
-            DeliveryInfoTest.DELIVERED_DELIVERY_INFO,
-            UserTest.USER.getId(),
-            new OrderItems()
-        );
-        deliveredOrder.addOrderItem(orderItem);
-
-        // when
-        when(orderRepository.findById(anyInt())).thenReturn(Optional.of(deliveredOrder));
-        assertThatThrownBy(() -> orderService.cancelOrder(deliveredOrder.getId()))
-            .isInstanceOf(OrderAlreadyDeliveredException.class)
-            .hasMessage(ORDER_ALREADY_DELIVERED_EXCEPTION);
-
-    }
-
-
-    @Test
     public void find_order() {
         // when
         when(orderRepository.findByOrderId(anyInt())).thenReturn(order);
         when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
-        when(orderItemService.orderItemResponses(any()))
-            .thenReturn(OrderItemResponses.of(Arrays.asList(OrderItemResponse.of(orderItem))));
+        when(orderItemService.orderItemResponses(any())).thenReturn(OrderItemResponses.of(Arrays.asList(OrderItemResponse.of(orderItem))));
         OrderResponse response = orderService.getOrder(order.getId());
 
         // then
@@ -200,8 +175,7 @@ class OrderServiceTests extends MockBeans {
         assertThat(response.isDelivered()).isEqualTo(order.isDelivered());
         assertThat(response.getDeliveredAt()).isEqualTo(order.getDeliveredAt());
         assertThat(response.getUser().getId()).isEqualTo(order.getUserId());
-        assertThat(response.getOrderItems().getOrderItems().size())
-            .isEqualTo(order.getOrderItems().size());
+        assertThat(response.getOrderItems().getOrderItems().size()).isEqualTo(order.getOrderItems().size());
         assertThat(response.getTotal()).isEqualTo(order.getTotalAmount());
         assertThat(response.getShipping()).isEqualTo(order.getShipping());
     }
