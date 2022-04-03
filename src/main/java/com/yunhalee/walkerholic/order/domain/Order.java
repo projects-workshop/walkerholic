@@ -48,13 +48,13 @@ public class Order extends BaseTimeEntity {
         this.orderItems = orderItems;
     }
 
-    public static Order of(Integer userId, BigDecimal shipping, String paymentMethod, Address address, Set<OrderItem> orderItems){
+    public static Order of(Integer userId, BigDecimal shipping, String paymentMethod, Address address){
         return Order.builder()
             .userId(userId)
             .orderStatus(OrderStatus.ORDER)
             .deliveryInfo(DeliveryInfo.builder().isDelivered(false).address(address).build())
             .paymentInfo(new PaymentInfo(shipping, paymentMethod))
-            .orderItems(new OrderItems(orderItems))
+            .orderItems(new OrderItems())
             .build();
     }
 

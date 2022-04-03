@@ -10,9 +10,9 @@ import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItemRepository;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.user.domain.UserTest;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,15 +66,20 @@ public class OrderRepositoryTests {
         product = productRepository.save(Product.of("first", "firstProduct", "test", Category.TUMBLER, 2, 2.00f, seller));
         ProductImage productImage = productImageRepository.save(ProductImage.of("first", "firstProduct", product));
         product.addProductImage(productImage);
-        firstOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAID_PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, user);
-        secondOrder = save(OrderStatus.CART, PaymentInfoTest.NOT_PAID_PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, user);
-        thirdOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAID_PAYMENT_INFO, DeliveryInfoTest.DELIVERED_DELIVERY_INFO, user);
-        fourthOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAID_PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, seller);
-        fifthOrder = save(OrderStatus.CANCEL, PaymentInfoTest.PAID_PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, seller);
+        firstOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, user.getId());
+        secondOrder = save(OrderStatus.CANCEL, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, user.getId());
+        thirdOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.DELIVERED_DELIVERY_INFO, user.getId());
+        fourthOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, seller.getId());
+        fifthOrder = save(OrderStatus.CANCEL, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, seller.getId());
     }
 
-    private Order save(OrderStatus orderStatus, PaymentInfo paymentInfo, DeliveryInfo deliveryInfo, User user) {
-        Order order = new Order(orderStatus, paymentInfo, deliveryInfo, user);
+    private Order save(OrderStatus orderStatus, PaymentInfo paymentInfo, DeliveryInfo deliveryInfo, Integer userId) {
+        Order order = Order.builder()
+            .orderStatus(orderStatus)
+            .paymentInfo(paymentInfo)
+            .deliveryInfo(deliveryInfo)
+            .userId(userId)
+            .orderItems(new OrderItems()).build();
         orderRepository.save(order);
         OrderItem orderItem = new OrderItem(10, product, order);
         orderItemRepository.save(orderItem);
@@ -95,17 +100,6 @@ public class OrderRepositoryTests {
     }
 
     @Test
-    public void find_cart_by_userId() {
-        //given
-
-        //when
-        Optional<Order> order = orderRepository.findCartItemsByUserId(OrderStatus.CART, user.getId());
-
-        //then
-        assertThat(order.get().getId()).isEqualTo(secondOrder.getId());
-    }
-
-    @Test
     public void find_by_seller_id() {
         //given
         Pageable pageable = PageRequest.of(0, ORDER_LIST_PER_PAGE);
@@ -115,7 +109,7 @@ public class OrderRepositoryTests {
         List<Order> orders = orderPage.getContent();
 
         //then
-        assertThat(orders.equals(Arrays.asList(firstOrder, thirdOrder, fourthOrder, fifthOrder))).isTrue();
+        assertThat(orders.equals(Arrays.asList(firstOrder, secondOrder, thirdOrder, fourthOrder, fifthOrder))).isTrue();
     }
 
 
@@ -129,7 +123,7 @@ public class OrderRepositoryTests {
         List<Order> orders = orderPage.getContent();
 
         //then
-        assertThat(orders.equals(Arrays.asList(firstOrder, thirdOrder))).isTrue();
+        assertThat(orders.equals(Arrays.asList(firstOrder, secondOrder, thirdOrder))).isTrue();
     }
 
     @Test
@@ -142,8 +136,11 @@ public class OrderRepositoryTests {
         List<Order> orders = orderPage.getContent();
 
         //then
-        orders.forEach(order -> assertThat(order.getOrderStatus()).isNotEqualTo(OrderStatus.CART));
-
+        LocalDateTime createdAt = orders.get(0).getCreatedAt();
+        for (Order order : orders) {
+            assertThat(createdAt.isBefore(order.getCreatedAt()) || createdAt.isEqual(order.getCreatedAt())).isTrue();
+            createdAt = order.getCreatedAt();
+        }
     }
 
 

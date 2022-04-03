@@ -1,12 +1,12 @@
 package com.yunhalee.walkerholic.cart.domain;
 
+import com.yunhalee.walkerholic.cartItem.domain.CartItem;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -15,34 +15,34 @@ import javax.persistence.Transient;
 @Embeddable
 public class CartItems {
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<OrderItem> orderItems = new HashSet<>();
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CartItem> cartItems = new HashSet<>();
 
     public CartItems() {
-        this.orderItems = new HashSet<>();
+        this.cartItems = new HashSet<>();
     }
 
-    public CartItems(OrderItem... orderItems) {
-        this.orderItems = new HashSet<>(Arrays.asList(orderItems));
+    public CartItems(CartItem... cartItems) {
+        this.cartItems = new HashSet<>(Arrays.asList(cartItems));
     }
 
-    public void addOrderItem(OrderItem orderItem) {
-        this.orderItems.add(orderItem);
+    public void addCartItem(CartItem cartItem) {
+        this.cartItems.add(cartItem);
     }
 
     @Transient
     public BigDecimal getTotalAmount() {
-        return orderItems.stream()
-            .map(OrderItem::getAmount)
+        return cartItems.stream()
+            .map(CartItem::getAmount)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public Set<OrderItem> getOrderItems() {
-        return Collections.unmodifiableSet(orderItems);
+    public Set<CartItem> getCartItems() {
+        return Collections.unmodifiableSet(cartItems);
     }
 
-    public void emptyOrderItems() {
-        this.orderItems.clear();
+    public void emptyCart() {
+        this.cartItems.clear();
     }
 
 }

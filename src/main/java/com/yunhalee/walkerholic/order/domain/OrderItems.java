@@ -1,6 +1,5 @@
 package com.yunhalee.walkerholic.order.domain;
 
-import com.yunhalee.walkerholic.order.exception.NothingToPayException;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -28,7 +27,6 @@ public class OrderItems {
 
     public OrderItems(Set<OrderItem> orderItems) {
         this.orderItems = orderItems;
-        payOrder();
     }
 
     public void addOrderItem(OrderItem orderItem) {
@@ -39,13 +37,6 @@ public class OrderItems {
         orderItems.forEach(orderItem -> {
             orderItem.cancel();
         });
-    }
-
-    public void payOrder() {
-        if (orderItems.size() == 0) {
-            throw new NothingToPayException("Nothing to pay. Please add items.");
-        }
-        orderItems.forEach(orderItem -> orderItem.payOrder());
     }
 
     @Transient

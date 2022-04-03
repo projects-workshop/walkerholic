@@ -1,9 +1,7 @@
 package com.yunhalee.walkerholic.cart.domain;
 
+import com.yunhalee.walkerholic.cartItem.domain.CartItem;
 import com.yunhalee.walkerholic.common.domain.BaseTimeEntity;
-import com.yunhalee.walkerholic.order.domain.OrderItems;
-import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
-import java.util.Collections;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -38,12 +36,16 @@ public class Cart extends BaseTimeEntity {
         return new Cart(userId);
     }
 
-    public void addCartItem(OrderItem orderItem) {
-        cartItems.addOrderItem(orderItem);
+    public void addCartItem(CartItem cartItem) {
+        cartItems.addCartItem(cartItem);
     }
 
-    public Set<OrderItem> getCartItems() {
-        return cartItems.getOrderItems();
+    public void emptyCart() {
+        cartItems.emptyCart();
+    }
+
+    public Set<CartItem> getCartItems() {
+        return cartItems.getCartItems();
     }
 
 }

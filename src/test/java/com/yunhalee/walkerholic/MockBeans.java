@@ -2,6 +2,7 @@ package com.yunhalee.walkerholic;
 
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import com.yunhalee.walkerholic.activity.service.ActivityService;
+import com.yunhalee.walkerholic.cart.service.CartService;
 import com.yunhalee.walkerholic.common.service.NotificationService;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import com.yunhalee.walkerholic.common.service.notificationSender.MailNotificationSender;
@@ -111,4 +112,7 @@ public class MockBeans {
 
     @MockBean
     protected OrderItemRepository orderItemRepository;
+
+    @MockBean
+    protected CartService cartService;
 }

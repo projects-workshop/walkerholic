@@ -9,11 +9,13 @@ import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.OrderResponses;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.exception.OrderNotFoundException;
+import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.orderitem.service.OrderItemService;
 import com.yunhalee.walkerholic.order.domain.OrderRepository;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.dto.UserIconResponse;
 import com.yunhalee.walkerholic.user.service.UserService;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,11 +50,12 @@ public class OrderService {
     public OrderResponse createOrder(OrderRequest request) {
         Cart cart = cartService.findCartByUserId(request.getUserId());
         User user = userService.findUserById(request.getUserId());
-        Order order = orderRepository.save(request.toOrder(cart.getCartItems()));
+        Order order = orderRepository.save(request.toOrder());
+        Set<OrderItem> orderItems = orderItemService.createOrderItems(cart.getCartItems(), order);
         notificationService.sendCreateOrderNotification(order, user);
         return OrderResponse.of(order,
             UserIconResponse.of(user),
-            orderItemService.orderItemResponses(order.getOrderItems()));
+            orderItemService.orderItemResponses(orderItems));
     }
 
     public SimpleOrderResponse deliverOrder(Integer id) {

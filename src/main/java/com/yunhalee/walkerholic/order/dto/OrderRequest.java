@@ -32,7 +32,7 @@ public class OrderRequest {
         this.orderItems = orderItems;
     }
 
-    public Order toOrder(Set<OrderItem> orderItems) {
+    public Order toOrder() {
         return Order.of(userId,
             BigDecimal.valueOf(shipping),
             paymentMethod,
@@ -41,8 +41,6 @@ public class OrderRequest {
                     .country(address.getCountry())
                     .city(address.getCity())
                     .zipcode(address.getZipcode())
-                    .address(address.getAddress()).build(),
-            orderItems
-            );
+                    .address(address.getAddress()).build());
     }
 }

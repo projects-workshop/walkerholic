@@ -7,10 +7,12 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Embeddable
 @Getter
+@NoArgsConstructor
 public class PaymentInfo {
 
     private BigDecimal shipping;

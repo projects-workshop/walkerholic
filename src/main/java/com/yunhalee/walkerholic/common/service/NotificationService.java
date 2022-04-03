@@ -34,7 +34,7 @@ public class NotificationService {
     }
 
     private void setNotificationSender(NotificationType notificationType) {
-        if (notificationType == NotificationType.SLACK) {
+        if (notificationType == NotificationType.SMS) {
             this.notificationSender = SMSNotificationSender;
             return;
         }

@@ -1,5 +1,6 @@
 package com.yunhalee.walkerholic.orderitem.service;
 
+import com.yunhalee.walkerholic.cartItem.domain.CartItem;
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.order.domain.OrderRepository;
 import com.yunhalee.walkerholic.order.exception.OrderNotFoundException;
@@ -23,27 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderItemService {
 
     private OrderItemRepository orderItemRepository;
-    private ProductService productService;
-    private OrderRepository orderRepository;
 
-    public OrderItemService(OrderItemRepository orderItemRepository, ProductService productService, OrderRepository orderRepository) {
+    public OrderItemService(OrderItemRepository orderItemRepository) {
         this.orderItemRepository = orderItemRepository;
-        this.productService = productService;
-        this.orderRepository = orderRepository;
-    }
-
-    public OrderItemResponse create(Integer id, OrderItemRequest request) {
-        Order order = orderRepository.findById(id)
-            .orElseThrow(() -> new OrderNotFoundException("Order not found with id : " + id));
-        Product product = productService.findProductById(request.getProductId());
-        OrderItem orderItem = orderItemRepository.save(OrderItem.of(request.getQty(), product, order));
-        return OrderItemResponse.of(orderItem);
-    }
-
-    public OrderItemResponse update(Integer id, Integer qty) {
-        OrderItem orderItem = findOrderItemById(id);
-        orderItem.changeQty(qty);
-        return OrderItemResponse.of(orderItem);
     }
 
     public void deleteOrderItem(Integer id) {
@@ -51,15 +34,10 @@ public class OrderItemService {
         orderItemRepository.delete(orderItem);
     }
 
-    public OrderItemResponses createOrderItems(Order order, List<OrderItemRequest> requests) {
-        List<OrderItemResponse> orderItemResponses = requests.stream()
-            .map(request -> {
-                Product product = productService.findProductById(request.getProductId());
-                OrderItem orderItem = OrderItem.of(request.getQty(), product, order);
-                return OrderItemResponse.of(orderItemRepository.save(orderItem));
-            })
-            .collect(Collectors.toList());
-        return OrderItemResponses.of(orderItemResponses);
+    public Set<OrderItem> createOrderItems(Set<CartItem> cartItems, Order order) {
+        return cartItems.stream()
+            .map(cartItem -> orderItemRepository.save(OrderItem.of(cartItem.getQty(), cartItem.getProduct(), order)))
+            .collect(Collectors.toSet());
     }
 
     public OrderItem findOrderItemById(Integer id) {

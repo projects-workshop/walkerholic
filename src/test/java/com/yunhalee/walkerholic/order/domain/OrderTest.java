@@ -1,28 +1,30 @@
 package com.yunhalee.walkerholic.order.domain;
 
-import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.domain.UserTest;
 
 public class OrderTest {
 
-    public static final Order CART = new Order(
-        1,
-        OrderStatus.CART,
-        PaymentInfoTest.NOT_PAID_PAYMENT_INFO,
-        DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO,
-        UserTest.USER);
+//    public static final Order CART = Order.builder()
+//        .id(1)
+//        .orderStatus(OrderStatus.ORDER)
+//    new Order(
+//        1,
+//        OrderStatus.CART,
+//        PaymentInfoTest.PAID_PAYMENT_INFO,
+//        DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO,
+//        UserTest.USER);
 
-    public static final Order ORDER = new Order(
-        2,
-        OrderStatus.ORDER,
-        PaymentInfoTest.PAID_PAYMENT_INFO,
-        DeliveryInfoTest.DELIVERED_DELIVERY_INFO,
-        UserTest.USER);
+    public static final Order ORDER =Order.builder()
+        .id(2)
+        .orderStatus(OrderStatus.ORDER)
+        .paymentInfo(PaymentInfoTest.PAYMENT_INFO)
+        .deliveryInfo(DeliveryInfoTest.DELIVERED_DELIVERY_INFO)
+        .userId(UserTest.USER.getId()).build();
 
-    public static final Order CANCEL = new Order(
-        3,
-        OrderStatus.CANCEL,
-        PaymentInfoTest.PAID_PAYMENT_INFO,
-        DeliveryInfoTest.DELIVERED_DELIVERY_INFO,
-        UserTest.USER);
+    public static final Order CANCEL = Order.builder()
+        .id(3)
+        .orderStatus(OrderStatus.CANCEL)
+        .paymentInfo(PaymentInfoTest.PAYMENT_INFO)
+        .deliveryInfo(DeliveryInfoTest.DELIVERED_DELIVERY_INFO)
+        .userId(UserTest.USER.getId()).build();
 }

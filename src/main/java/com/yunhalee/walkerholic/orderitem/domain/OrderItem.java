@@ -27,9 +27,14 @@ public class OrderItem {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    public OrderItem(Integer qty, Product product) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Order order;
+
+    public OrderItem(Integer qty, Product product, Order order) {
         this.qty = qty;
         this.product = product;
+        this.order = order;
     }
 
     public OrderItem(Integer id, Integer qty, Product product) {
@@ -39,8 +44,9 @@ public class OrderItem {
     }
 
     public static OrderItem of(Integer qty, Product product, Order order) {
-        OrderItem orderItem = new OrderItem(qty, product);
+        OrderItem orderItem = new OrderItem(qty, product, order);
         order.addOrderItem(orderItem);
+        orderItem.removeStock();
         return orderItem;
     }
 
@@ -52,7 +58,7 @@ public class OrderItem {
         this.product.addStock(qty);
     }
 
-    public void payOrder() {
+    public void removeStock() {
         this.product.removeStock(qty);
     }
 
