@@ -71,7 +71,6 @@ public class CartItemRepositoryTest {
     public void delete_all_cart_items_by_cart_id() {
         //given
         addSecondCartItem();
-        System.out.println(cart.getCartItems().size());
 
         //when
         cartItemRepository.deleteAllByCart(cart);

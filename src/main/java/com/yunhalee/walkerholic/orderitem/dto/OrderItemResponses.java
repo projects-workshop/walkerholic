@@ -17,7 +17,7 @@ public class OrderItemResponses {
         this.orderItems = orderItems;
     }
 
-    public static OrderItemResponses of(List<OrderItemResponse> orderItems){
+    public static OrderItemResponses of(List<OrderItemResponse> orderItems) {
         return new OrderItemResponses(orderItems);
     }
 }

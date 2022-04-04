@@ -37,9 +37,7 @@ public class OrderService {
     private CartService cartService;
     private NotificationService notificationService;
 
-    public OrderService(OrderRepository orderRepository, UserService userService,
-        OrderItemService orderItemService, CartService cartService,
-        NotificationService notificationService) {
+    public OrderService(OrderRepository orderRepository, UserService userService, OrderItemService orderItemService, CartService cartService, NotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.orderItemService = orderItemService;
@@ -61,8 +59,8 @@ public class OrderService {
             orderItemService.orderItemResponses(orderItems));
     }
 
-    private void checkCart(Cart cart){
-        if (cart.isEmpty()){
+    private void checkCart(Cart cart) {
+        if (cart.isEmpty()) {
             throw new NothingToPayException("Nothing to pay. Please add items.");
         }
     }
@@ -97,7 +95,7 @@ public class OrderService {
 
     @Transactional(readOnly = true)
     public OrderResponses getOrderListBySeller(Integer page, Integer sellerId) {
-        Pageable pageable = PageRequest.of(page -1, ORDER_LIST_PER_PAGE);
+        Pageable pageable = PageRequest.of(page - 1, ORDER_LIST_PER_PAGE);
         Page<Order> orderPage = orderRepository.findBySellerId(pageable, sellerId);
         return orderResponses(orderPage);
     }

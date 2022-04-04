@@ -16,6 +16,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
@@ -38,7 +39,7 @@ class CartItemServiceTest extends MockBeans {
 
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         cart = CartTest.CART;
         product = ProductTest.FIRST_PRODUCT;
         product.addProductImage(ProductImageTest.PRODUCT_IMAGE);
@@ -50,7 +51,7 @@ class CartItemServiceTest extends MockBeans {
     }
 
     @Test
-    public void create_cart_item(){
+    public void create_cart_item() {
         //given
         CartItemRequest request = new CartItemRequest(cartItem.getQty(), product.getId(), cart.getId());
 

@@ -1,8 +1,6 @@
 package com.yunhalee.walkerholic.cartItem.dto;
 
 import com.yunhalee.walkerholic.cartItem.domain.CartItem;
-import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
 import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +31,7 @@ public class CartItemResponse {
         this.productImageUrl = cartItem.getProductImageUrl();
     }
 
-    public static CartItemResponse of(CartItem cartItem){
+    public static CartItemResponse of(CartItem cartItem) {
         return new CartItemResponse(cartItem);
     }
 }

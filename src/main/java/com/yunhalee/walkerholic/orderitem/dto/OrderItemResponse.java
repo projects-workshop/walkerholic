@@ -23,16 +23,16 @@ public class OrderItemResponse {
     private OrderItemResponse(OrderItem orderItem) {
         this.id = orderItem.getId();
         this.qty = orderItem.getQty();
-        this.stock = orderItem.getProduct().getStock();
-        this.productId = orderItem.getProduct().getId();
-        this.productName = orderItem.getProduct().getName();
-        this.productPrice = orderItem.getProduct().getPrice();
-        this.productDescription = orderItem.getProduct().getDescription();
-        this.productBrand = orderItem.getProduct().getBrand();
-        this.productImageUrl = orderItem.getProduct().getMainImageUrl();
+        this.stock = orderItem.getProductStock();
+        this.productId = orderItem.getProductId();
+        this.productName = orderItem.getProductName();
+        this.productPrice = orderItem.getProductPrice();
+        this.productDescription = orderItem.getProductDescription();
+        this.productBrand = orderItem.getProductBrand();
+        this.productImageUrl = orderItem.getProductImageUrl();
     }
 
-    public static OrderItemResponse of(OrderItem orderItem){
+    public static OrderItemResponse of(OrderItem orderItem) {
         return new OrderItemResponse(orderItem);
     }
 }

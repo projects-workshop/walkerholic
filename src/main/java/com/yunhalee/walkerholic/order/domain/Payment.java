@@ -13,7 +13,7 @@ import lombok.NonNull;
 @Embeddable
 @Getter
 @NoArgsConstructor
-public class PaymentInfo {
+public class Payment {
 
     private BigDecimal shipping;
 
@@ -23,7 +23,7 @@ public class PaymentInfo {
     @Column(name = "paid_at")
     private LocalDateTime paidAt;
 
-    public PaymentInfo(BigDecimal shipping, String paymentMethod) {
+    public Payment(BigDecimal shipping, String paymentMethod) {
         this.shipping = shipping;
         this.paymentMethod = paymentMethod;
         this.paidAt = LocalDateTime.now();

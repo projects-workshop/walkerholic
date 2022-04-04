@@ -68,5 +68,33 @@ public class OrderItem {
         return product.getPrice().multiply(BigDecimal.valueOf(qty));
     }
 
+    public Integer getProductStock() {
+        return this.product.getStock();
+    }
+
+    public Integer getProductId() {
+        return this.product.getId();
+    }
+
+    public String getProductName() {
+        return this.product.getName();
+    }
+
+    public BigDecimal getProductPrice() {
+        return this.product.getPrice();
+    }
+
+    public String getProductDescription() {
+        return this.product.getDescription();
+    }
+
+    public String getProductBrand() {
+        return this.product.getBrand();
+    }
+
+    public String getProductImageUrl() {
+        return this.product.getMainImageUrl();
+    }
+
 
 }

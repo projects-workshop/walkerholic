@@ -34,9 +34,8 @@ public class OrderItems {
     }
 
     public void cancelOrder() {
-        orderItems.forEach(orderItem -> {
-            orderItem.cancel();
-        });
+        orderItems.stream()
+            .forEach(orderItem -> orderItem.cancel());
     }
 
     @Transient

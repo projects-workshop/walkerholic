@@ -66,18 +66,18 @@ public class OrderRepositoryTests {
         product = productRepository.save(Product.of("first", "firstProduct", "test", Category.TUMBLER, 2, 2.00f, seller));
         ProductImage productImage = productImageRepository.save(ProductImage.of("first", "firstProduct", product));
         product.addProductImage(productImage);
-        firstOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, user.getId());
-        secondOrder = save(OrderStatus.CANCEL, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, user.getId());
-        thirdOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.DELIVERED_DELIVERY_INFO, user.getId());
-        fourthOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, seller.getId());
-        fifthOrder = save(OrderStatus.CANCEL, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO, seller.getId());
+        firstOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY, user.getId());
+        secondOrder = save(OrderStatus.CANCEL, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY, user.getId());
+        thirdOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.DELIVERED_DELIVERY, user.getId());
+        fourthOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY, seller.getId());
+        fifthOrder = save(OrderStatus.CANCEL, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY, seller.getId());
     }
 
-    private Order save(OrderStatus orderStatus, PaymentInfo paymentInfo, DeliveryInfo deliveryInfo, Integer userId) {
+    private Order save(OrderStatus orderStatus, Payment payment, Delivery deliveryInfo, Integer userId) {
         Order order = Order.builder()
             .orderStatus(orderStatus)
-            .paymentInfo(paymentInfo)
-            .deliveryInfo(deliveryInfo)
+            .payment(payment)
+            .delivery(deliveryInfo)
             .userId(userId)
             .orderItems(new OrderItems()).build();
         orderRepository.save(order);
@@ -109,7 +109,9 @@ public class OrderRepositoryTests {
         List<Order> orders = orderPage.getContent();
 
         //then
-        assertThat(orders.equals(Arrays.asList(firstOrder, secondOrder, thirdOrder, fourthOrder, fifthOrder))).isTrue();
+        assertThat(orders
+            .equals(Arrays.asList(firstOrder, secondOrder, thirdOrder, fourthOrder, fifthOrder)))
+            .isTrue();
     }
 
 

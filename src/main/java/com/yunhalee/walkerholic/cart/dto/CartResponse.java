@@ -19,7 +19,7 @@ public class CartResponse {
         this.cartItems = cartItems;
     }
 
-    public static CartResponse of(Cart cart, CartItemResponses cartItems){
+    public static CartResponse of(Cart cart, CartItemResponses cartItems) {
         return new CartResponse(cart, cartItems);
     }
 

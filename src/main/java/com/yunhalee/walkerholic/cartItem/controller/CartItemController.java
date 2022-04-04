@@ -25,7 +25,7 @@ public class CartItemController {
     }
 
     @PostMapping("cart-items")
-    public ResponseEntity<CartItemResponse> createCartItem(@RequestBody CartItemRequest request){
+    public ResponseEntity<CartItemResponse> createCartItem(@RequestBody CartItemRequest request) {
         return ResponseEntity.ok(cartItemService.create(request));
     }
 

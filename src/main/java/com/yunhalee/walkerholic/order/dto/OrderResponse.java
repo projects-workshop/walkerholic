@@ -7,8 +7,10 @@ import java.math.BigDecimal;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class OrderResponse {
 
     private Integer id;

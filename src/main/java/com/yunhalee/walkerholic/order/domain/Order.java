@@ -2,7 +2,6 @@ package com.yunhalee.walkerholic.order.domain;
 
 import com.yunhalee.walkerholic.common.domain.BaseTimeEntity;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
-import com.yunhalee.walkerholic.user.domain.User;
 import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,10 +28,10 @@ public class Order extends BaseTimeEntity {
     private OrderStatus orderStatus;
 
     @Embedded
-    private PaymentInfo paymentInfo;
+    private Payment payment;
 
     @Embedded
-    private DeliveryInfo deliveryInfo;
+    private Delivery delivery;
 
     private Integer userId;
 
@@ -40,21 +39,21 @@ public class Order extends BaseTimeEntity {
     private OrderItems orderItems;
 
     @Builder
-    public Order(Integer id, @NonNull OrderStatus orderStatus, @NonNull PaymentInfo paymentInfo, @NonNull DeliveryInfo deliveryInfo, @NonNull Integer userId, @NonNull OrderItems orderItems) {
+    public Order(Integer id, @NonNull OrderStatus orderStatus, @NonNull Payment payment, @NonNull Delivery delivery, @NonNull Integer userId, @NonNull OrderItems orderItems) {
         this.id = id;
         this.orderStatus = orderStatus;
-        this.paymentInfo = paymentInfo;
-        this.deliveryInfo = deliveryInfo;
+        this.payment = payment;
+        this.delivery = delivery;
         this.userId = userId;
         this.orderItems = orderItems;
     }
 
-    public static Order of(Integer userId, BigDecimal shipping, String paymentMethod, Address address){
+    public static Order of(Integer userId, BigDecimal shipping, String paymentMethod, Address address) {
         return Order.builder()
             .userId(userId)
             .orderStatus(OrderStatus.ORDER)
-            .deliveryInfo(DeliveryInfo.builder().isDelivered(false).address(address).build())
-            .paymentInfo(new PaymentInfo(shipping, paymentMethod))
+            .delivery(Delivery.builder().isDelivered(false).address(address).build())
+            .payment(new Payment(shipping, paymentMethod))
             .orderItems(new OrderItems())
             .build();
     }
@@ -64,25 +63,25 @@ public class Order extends BaseTimeEntity {
     }
 
     public void cancel() {
-        deliveryInfo.checkAlreadyDelivered();
+        delivery.checkAlreadyDelivered();
         this.orderStatus = OrderStatus.CANCEL;
         orderItems.cancelOrder();
     }
 
     public void deliver() {
-        deliveryInfo.deliver();
+        delivery.deliver();
     }
 
     public BigDecimal getShipping() {
-        return paymentInfo.getShipping();
+        return payment.getShipping();
     }
 
     public String getPaymentMethod() {
-        return paymentInfo.getPaymentMethod();
+        return payment.getPaymentMethod();
     }
 
     public LocalDateTime getPaidAt() {
-        return paymentInfo.getPaidAt();
+        return payment.getPaidAt();
     }
 
     public Set<OrderItem> getOrderItems() {
@@ -90,15 +89,15 @@ public class Order extends BaseTimeEntity {
     }
 
     public boolean isDelivered() {
-        return deliveryInfo.isDelivered();
+        return delivery.isDelivered();
     }
 
     public LocalDateTime getDeliveredAt() {
-        return deliveryInfo.getDeliveredAt();
+        return delivery.getDeliveredAt();
     }
 
     public Address getAddress() {
-        return deliveryInfo.getAddress();
+        return delivery.getAddress();
     }
 
     @Transient

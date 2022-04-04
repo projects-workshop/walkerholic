@@ -42,7 +42,7 @@ public class CartItemService {
         return CartItemResponse.of(cartItem);
     }
 
-    public void emptyCart(Cart cart){
+    public void emptyCart(Cart cart) {
         cartItemRepository.deleteAllByCart(cart);
     }
 
@@ -63,7 +63,6 @@ public class CartItemService {
                 .map(CartItemResponse::of)
                 .collect(Collectors.toList()));
     }
-
 
 
 }

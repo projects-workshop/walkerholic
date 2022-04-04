@@ -22,7 +22,7 @@ public class OrderController {
     @PostMapping("/orders")
     public ResponseEntity createOrder(@RequestBody OrderRequest request) {
         OrderResponse response = orderService.createOrder(request);
-        return ResponseEntity.created(URI.create("/orders"+response.getId())).body(response);
+        return ResponseEntity.created(URI.create("/orders" + response.getId())).body(response);
     }
 
     @PutMapping("/orders/{id}/delivery")

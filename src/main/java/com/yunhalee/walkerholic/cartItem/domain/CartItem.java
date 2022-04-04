@@ -1,7 +1,6 @@
 package com.yunhalee.walkerholic.cartItem.domain;
 
 import com.yunhalee.walkerholic.cart.domain.Cart;
-import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.product.exception.NotEnoughStockException;
 import java.math.BigDecimal;
@@ -51,7 +50,7 @@ public class CartItem {
     }
 
     public static CartItem of(Integer qty, Product product, Cart cart) {
-        CartItem cartItem= CartItem.builder()
+        CartItem cartItem = CartItem.builder()
             .qty(qty)
             .product(product)
             .cart(cart).build();
@@ -60,7 +59,7 @@ public class CartItem {
     }
 
     public void changeQty(Integer qty) {
-        if(!this.product.isEnoughStock(qty)){
+        if (!this.product.isEnoughStock(qty)) {
             throw new NotEnoughStockException("Stock is not enough.");
         }
         this.qty = qty;
@@ -78,7 +77,7 @@ public class CartItem {
         return this.product.getId();
     }
 
-    public String getProductName(){
+    public String getProductName() {
         return this.product.getName();
     }
 
@@ -86,15 +85,15 @@ public class CartItem {
         return this.product.getPrice();
     }
 
-    public String getProductDescription(){
+    public String getProductDescription() {
         return this.product.getDescription();
     }
 
-    public String getProductBrand(){
+    public String getProductBrand() {
         return this.product.getBrand();
     }
 
-    public String getProductImageUrl(){
+    public String getProductImageUrl() {
         return this.product.getMainImageUrl();
     }
 

@@ -11,7 +11,7 @@ import lombok.NonNull;
 
 @Embeddable
 @Getter
-public class DeliveryInfo {
+public class Delivery {
 
     @Column(name = "is_delivered")
     private boolean isDelivered = false;
@@ -22,16 +22,16 @@ public class DeliveryInfo {
     @Embedded
     private Address address;
 
-    public DeliveryInfo() {
+    public Delivery() {
         this.isDelivered = false;
     }
 
-    public DeliveryInfo(Address address) {
+    public Delivery(Address address) {
         this.address = address;
     }
 
     @Builder
-    public DeliveryInfo(boolean isDelivered, LocalDateTime deliveredAt, @NonNull Address address) {
+    public Delivery(boolean isDelivered, LocalDateTime deliveredAt, @NonNull Address address) {
         this.isDelivered = isDelivered;
         this.deliveredAt = deliveredAt;
         this.address = address;
@@ -42,7 +42,7 @@ public class DeliveryInfo {
         this.deliveredAt = LocalDateTime.now();
     }
 
-    public void changeAddress(DeliveryInfo deliveryInfo) {
+    public void changeAddress(Delivery deliveryInfo) {
         this.address = deliveryInfo.getAddress();
     }
 

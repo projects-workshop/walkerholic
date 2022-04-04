@@ -75,8 +75,8 @@ class OrderServiceTests extends MockBeans {
         order = Order.builder()
             .id(1)
             .orderStatus(OrderStatus.ORDER)
-            .paymentInfo(PaymentInfoTest.PAYMENT_INFO)
-            .deliveryInfo(DeliveryInfoTest.NOT_DELIVERED_DELIVERY_INFO)
+            .payment(PaymentInfoTest.PAYMENT_INFO)
+            .delivery(DeliveryInfoTest.NOT_DELIVERED_DELIVERY)
             .userId(UserTest.USER.getId())
             .orderItems(new OrderItems()).build();
         orderItem = new OrderItem(

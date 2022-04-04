@@ -17,7 +17,7 @@ public class CartItemResponses {
         this.cartItems = cartItems;
     }
 
-    public static CartItemResponses of(List<CartItemResponse> cartItems){
+    public static CartItemResponses of(List<CartItemResponse> cartItems) {
         return new CartItemResponses(cartItems);
     }
 
