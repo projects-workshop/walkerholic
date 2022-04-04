@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
-@RequestMapping("/follows")
 public class FollowController {
 
     private final FollowService followService;
@@ -45,7 +44,6 @@ public class FollowController {
 
     @GetMapping("/follows/{id}")
     public ResponseEntity<FollowsResponse> getFollows(@PathVariable("id") String id) {
-        System.out.println(id);
         Integer userId = Integer.parseInt(id);
         return ResponseEntity.ok(followService.getFollows(userId));
     }

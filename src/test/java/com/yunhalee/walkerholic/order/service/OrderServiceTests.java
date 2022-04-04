@@ -5,7 +5,6 @@ import com.yunhalee.walkerholic.MockBeans;
 import com.yunhalee.walkerholic.cart.domain.Cart;
 import com.yunhalee.walkerholic.cartItem.domain.CartItemTest;
 import com.yunhalee.walkerholic.common.dto.ItemResponse;
-import com.yunhalee.walkerholic.common.dto.ItemResponses;
 import com.yunhalee.walkerholic.order.domain.Address;
 import com.yunhalee.walkerholic.order.domain.AddressTest;
 import com.yunhalee.walkerholic.order.domain.DeliveryInfoTest;
@@ -104,12 +103,12 @@ class OrderServiceTests extends MockBeans {
         when(cartService.findCartByUserId(anyInt())).thenReturn(cart);
         when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
         when(orderRepository.save(any())).thenReturn(order);
-        when(orderItemService.orderItemResponses(any())).thenReturn(ItemResponses.of(Arrays.asList(ItemResponse.of(orderItem))));
+        when(orderItemService.orderItemResponses(any())).thenReturn(Arrays.asList(ItemResponse.of(orderItem)));
         OrderResponse orderResponse = orderService.createOrder(request);
 
         //then
         verify(notificationService).sendCreateOrderNotification(any(), any());
-        isEqual(orderResponse.getOrderItems().getItems().get(0), orderItem);
+        isEqual(orderResponse.getItems().get(0), orderItem);
     }
 
     @Test
@@ -159,7 +158,7 @@ class OrderServiceTests extends MockBeans {
         // when
         when(orderRepository.findByOrderId(anyInt())).thenReturn(order);
         when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
-        when(orderItemService.orderItemResponses(any())).thenReturn(ItemResponses.of(Arrays.asList(ItemResponse.of(orderItem))));
+        when(orderItemService.orderItemResponses(any())).thenReturn(Arrays.asList(ItemResponse.of(orderItem)));
         OrderResponse response = orderService.getOrder(order.getId());
 
         // then
@@ -175,7 +174,7 @@ class OrderServiceTests extends MockBeans {
         assertThat(response.isDelivered()).isEqualTo(order.isDelivered());
         assertThat(response.getDeliveredAt()).isEqualTo(order.getDeliveredAt());
         assertThat(response.getUser().getId()).isEqualTo(order.getUserId());
-        assertThat(response.getOrderItems().getItems().size()).isEqualTo(order.getOrderItems().size());
+        assertThat(response.getItems().size()).isEqualTo(order.getOrderItems().size());
         assertThat(response.getTotal()).isEqualTo(order.getTotalAmount());
         assertThat(response.getShipping()).isEqualTo(order.getShipping());
     }

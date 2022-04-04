@@ -1,9 +1,10 @@
 package com.yunhalee.walkerholic.order.dto;
 
-import com.yunhalee.walkerholic.common.dto.ItemResponses;
+import com.yunhalee.walkerholic.common.dto.ItemResponse;
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.user.dto.UserIconResponse;
 import java.math.BigDecimal;
+import java.util.List;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -21,11 +22,11 @@ public class OrderResponse {
     private LocalDateTime deliveredAt;
     private AddressResponse address;
     private UserIconResponse user;
-    private ItemResponses orderItems;
+    private List<ItemResponse> items;
     private BigDecimal total;
     private BigDecimal shipping;
 
-    private OrderResponse(Order order, UserIconResponse user, ItemResponses orderItems) {
+    private OrderResponse(Order order, UserIconResponse user, List<ItemResponse> items) {
         this.id = order.getId();
         this.orderStatus = order.getOrderStatus().name();
         this.paymentMethod = order.getPaymentMethod();
@@ -34,12 +35,12 @@ public class OrderResponse {
         this.deliveredAt = order.getDeliveredAt();
         this.address = new AddressResponse(order.getAddress());
         this.user = user;
-        this.orderItems = orderItems;
+        this.items = items;
         this.total = order.getTotalAmount();
         this.shipping = order.getShipping();
     }
 
-    public static OrderResponse of(Order order, UserIconResponse user, ItemResponses orderItems) {
-        return new OrderResponse(order, user, orderItems);
+    public static OrderResponse of(Order order, UserIconResponse user, List<ItemResponse> items) {
+        return new OrderResponse(order, user, items);
     }
 }

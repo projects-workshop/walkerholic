@@ -22,9 +22,8 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    public ResponseEntity<SimpleProductResponse> createProduct(@RequestPart("productRequest") ProductRequest productRequest, @RequestPart(value = "multipartFile") List<MultipartFile> multipartFiles) {
-        return new ResponseEntity<>(productService.createProduct(productRequest, multipartFiles),
-            HttpStatus.CREATED);
+    public ResponseEntity<SimpleProductResponse> createProduct(@RequestPart(value = "productRequest") ProductRequest productRequest, @RequestPart(value = "multipartFile") List<MultipartFile> multipartFiles) {
+        return new ResponseEntity<>(productService.createProduct(productRequest, multipartFiles), HttpStatus.CREATED);
     }
 
     @PutMapping("/products/{id}")
@@ -46,8 +45,7 @@ public class ProductController {
 
     @GetMapping("/users/{id}/products")
     public ResponseEntity<ProductResponses> getProductsBySeller(@PathVariable("id") Integer id, @RequestParam("page") Integer page, @RequestParam("sort") String sort, @RequestParam("category") String category, @RequestParam("keyword") String keyword) {
-        return ResponseEntity
-            .ok(productService.getProductsBySeller(id, page, sort, category, keyword));
+        return ResponseEntity.ok(productService.getProductsBySeller(id, page, sort, category, keyword));
     }
 
     @DeleteMapping("/products/{id}")

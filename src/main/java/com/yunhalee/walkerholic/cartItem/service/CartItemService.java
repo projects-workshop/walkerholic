@@ -6,16 +6,18 @@ import com.yunhalee.walkerholic.cartItem.domain.CartItem;
 import com.yunhalee.walkerholic.cartItem.domain.CartItemRepository;
 import com.yunhalee.walkerholic.cartItem.dto.CartItemRequest;
 import com.yunhalee.walkerholic.common.dto.ItemResponse;
-import com.yunhalee.walkerholic.common.dto.ItemResponses;
 import com.yunhalee.walkerholic.cartItem.exception.CartItemNotFoundException;
 import com.yunhalee.walkerholic.order.exception.OrderNotFoundException;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.product.service.ProductService;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class CartItemService {
 
     private CartRepository cartRepository;
@@ -57,11 +59,10 @@ public class CartItemService {
     }
 
 
-    public ItemResponses cartItemResponses(Set<CartItem> cartItems) {
-        return ItemResponses.of(
-            cartItems.stream()
-                .map(ItemResponse::of)
-                .collect(Collectors.toList()));
+    public List<ItemResponse> cartItemResponses(Set<CartItem> cartItems) {
+        return cartItems.stream()
+            .map(ItemResponse::of)
+            .collect(Collectors.toList());
     }
 
 

@@ -9,7 +9,6 @@ import com.yunhalee.walkerholic.cart.exception.CartAlreadyExist;
 import com.yunhalee.walkerholic.cartItem.domain.CartItem;
 import com.yunhalee.walkerholic.cartItem.domain.CartItemTest;
 import com.yunhalee.walkerholic.common.dto.ItemResponse;
-import com.yunhalee.walkerholic.common.dto.ItemResponses;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.domain.UserTest;
 import java.util.Arrays;
@@ -80,13 +79,12 @@ class CartServiceTest extends MockBeans {
 
         // when
         when(cartRepository.findByUserId(any())).thenReturn(Optional.of(cart));
-        when(cartItemService.cartItemResponses(any())).thenReturn(ItemResponses.of(Arrays.asList(
-            ItemResponse.of(cartItem))));
+        when(cartItemService.cartItemResponses(any())).thenReturn(Arrays.asList(ItemResponse.of(cartItem)));
         CartResponse cartResponse = cartService.getCart(user.getId());
 
         // then
         assertThat(cartResponse.getId()).isEqualTo(cart.getId());
-        assertThat(cartResponse.getCartItems().getItems().size()).isEqualTo(1);
+        assertThat(cartResponse.getItems().size()).isEqualTo(1);
     }
 
 

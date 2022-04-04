@@ -90,16 +90,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .formLogin()
             .disable()
             .authorizeRequests()
-            .antMatchers("/authenticate", "/signin", "/signup", "/user/check_email",
+            .antMatchers("/**","/authenticate", "/signin", "/signup", "/user/check_email",
                 "/user/register", "/activities", "/activity/**", "/posts",
                 "/posts/search", "/categories", "/levels", "/user/forgotPassword/**",
-                "/product/**", "/products/**", "/user/search/**", "/posts/search/**")
+                "/product/**", "/products/**", "/user/search/**", "/posts/search/**", "/users/**")
             .permitAll()
             .antMatchers("/activity/save", "/deleteActivity/**", "/orderlist/**", "/productlist/**",
                 "/userlist/**", "/user/delete/**").hasAnyAuthority("ADMIN")
-            .antMatchers("/orderlistBySeller/**", "/order/deliver/**", "/productlistBySeller/**",
+            .antMatchers("/orderlistBySeller/**", "/order/deliver/**", "/users/**/**",
                 "/product/save").hasAnyAuthority("ADMIN", "SELLER")
-            .antMatchers("/userActivities/**", "/userActivity/**", "/follow/**", "/unfollow/**",
+            .antMatchers("/userActivities/**", "/userActivity/**", "/follows/**", "/unfollow/**",
                 "/cartItems/**", "/createCart/**", "/addToCart/**", "/updateQty/**",
                 "/deleteOrderItem/**", "/orderlistByUser/**", "/payOrder", "/payOrder/**",
                 "/getOrder/**", "/order/cancel/**").hasAnyAuthority("ADMIN", "SELLER", "USER")

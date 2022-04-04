@@ -18,12 +18,12 @@ public class CartController {
     }
 
     @PostMapping("carts")
-    public ResponseEntity createCart(@RequestParam("id") Integer userId) {
+    public ResponseEntity createCart(@RequestParam("userId") Integer userId) {
         return ResponseEntity.ok(cartService.createCart(userId));
     }
 
     @GetMapping("carts")
-    public ResponseEntity<CartResponse> getCart(@RequestParam("id") Integer userId) {
+    public ResponseEntity<CartResponse> getCart(@RequestParam("userId") Integer userId) {
         return ResponseEntity.ok(cartService.getCart(userId));
     }
 
