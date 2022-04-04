@@ -11,16 +11,15 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
 public class SimpleOrderResponse {
 
-    private Integer id;
-    private String orderStatus;
-    private LocalDateTime paidAt;
-    private boolean isDelivered;
-    private LocalDateTime deliveredAt;
-    private UserIconResponse user;
-    private BigDecimal totalAmount;
+    private final Integer id;
+    private final String orderStatus;
+    private final LocalDateTime paidAt;
+    private final boolean isDelivered;
+    private final LocalDateTime deliveredAt;
+    private final UserIconResponse user;
+    private final BigDecimal totalAmount;
 
 
     private SimpleOrderResponse(Order order, UserIconResponse user) {

@@ -7,12 +7,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public class CartResponse {
 
-    private Integer id;
+    private final Integer id;
 
-    private List<ItemResponse> items;
+    private final List<ItemResponse> items;
 
     public CartResponse(Cart cart, List<ItemResponse> items) {
         this.id = cart.getId();

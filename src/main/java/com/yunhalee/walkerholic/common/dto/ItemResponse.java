@@ -6,18 +6,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public class ItemResponse {
 
-    private Integer id;
-    private Integer qty;
-    private Integer stock;
-    private Integer productId;
-    private String productName;
-    private BigDecimal productPrice;
-    private String productDescription;
-    private String productBrand;
-    private String productImageUrl;
+    private final Integer id;
+    private final Integer qty;
+    private final Integer stock;
+    private final Integer productId;
+    private final String productName;
+    private final BigDecimal productPrice;
+    private final String productDescription;
+    private final String productBrand;
+    private final String productImageUrl;
 
     private ItemResponse(Item item) {
         this.id = item.getId();

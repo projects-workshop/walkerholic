@@ -8,24 +8,22 @@ import java.util.List;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public class OrderResponse {
 
-    private Integer id;
-    private String orderStatus;
-    private String paymentMethod;
-    private String transactionId;
-    private LocalDateTime paidAt;
-    private boolean isDelivered;
-    private LocalDateTime deliveredAt;
-    private AddressResponse address;
-    private UserIconResponse user;
-    private List<ItemResponse> items;
-    private BigDecimal total;
-    private BigDecimal shipping;
+    private final Integer id;
+    private final String orderStatus;
+    private final String paymentMethod;
+    private final String transactionId;
+    private final LocalDateTime paidAt;
+    private final boolean isDelivered;
+    private final LocalDateTime deliveredAt;
+    private final AddressResponse address;
+    private final UserIconResponse user;
+    private final List<ItemResponse> items;
+    private final BigDecimal total;
+    private final BigDecimal shipping;
 
     private OrderResponse(Order order, UserIconResponse user, List<ItemResponse> items) {
         this.id = order.getId();

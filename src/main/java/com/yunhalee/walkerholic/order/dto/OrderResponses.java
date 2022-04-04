@@ -5,12 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public class OrderResponses {
 
-    private List<SimpleOrderResponse> orders;
-    private Long totalElement;
-    private Integer totalPage;
+    private final List<SimpleOrderResponse> orders;
+    private final Long totalElement;
+    private final Integer totalPage;
 
     private OrderResponses(List<SimpleOrderResponse> orders, Long totalElement, Integer totalPage) {
         this.orders = orders;
