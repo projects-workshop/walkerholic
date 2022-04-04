@@ -21,28 +21,33 @@ public class ProductImageService {
     private ProductRepository productRepository;
     private S3ImageUploader s3ImageUploader;
 
-    public ProductImageService(ProductImageRepository productImageRepository,
-        ProductRepository productRepository, S3ImageUploader s3ImageUploader) {
+    public ProductImageService(ProductImageRepository productImageRepository, ProductRepository productRepository, S3ImageUploader s3ImageUploader) {
         this.productImageRepository = productImageRepository;
         this.productRepository = productRepository;
         this.s3ImageUploader = s3ImageUploader;
     }
 
-    public SimpleProductImageResponses createImages(Integer id, List<MultipartFile> multipartFiles) {
-        Product product = findProductById(id);
+    public SimpleProductImageResponses createImages(Integer id, List<MultipartFile> multipartFiles) { Product product = findProductById(id);
         return SimpleProductImageResponses.of(uploadImages(product, multipartFiles));
     }
 
-    public List<String> uploadImages(Product product, List<MultipartFile> multipartFiles) { List<String> imageUrls = new ArrayList<>();
-        multipartFiles.forEach(multipartFile -> {
-            String uploadDir = "productUploads/" + product.getId();
-            String imageUrl = s3ImageUploader.uploadImage(uploadDir, multipartFile);
-            String fileName = s3ImageUploader.getFileName(imageUrl, uploadDir);
-            ProductImage productImage = productImageRepository.save(ProductImage.of(fileName, imageUrl, product));
-            product.addProductImage(productImage);
-            imageUrls.add(productImage.getFilePath());
-        });
+    public List<String> uploadImages(Product product, List<MultipartFile> multipartFiles) {
+        List<String> imageUrls = new ArrayList<>();
+        multipartFiles.forEach(multipartFile -> imageUrls.add(uploadImage(product, multipartFile)));
         return imageUrls;
+    }
+
+    private String uploadImage(Product product, MultipartFile multipartFile) {
+        String uploadDir = "productUploads/" + product.getId();
+        String imageUrl = s3ImageUploader.uploadImage(uploadDir, multipartFile);
+        String fileName = s3ImageUploader.getFileName(imageUrl, uploadDir);
+        return saveProductImage(product, ProductImage.of(fileName, imageUrl, product));
+    }
+
+    private String saveProductImage(Product product, ProductImage productImage) {
+        ProductImage image = productImageRepository.save(productImage);
+        product.addProductImage(productImage);
+        return image.getFilePath();
     }
 
     public void deleteImages(Integer id, List<String> deletedImages) {

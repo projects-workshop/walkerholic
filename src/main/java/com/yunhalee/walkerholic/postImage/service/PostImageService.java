@@ -37,15 +37,21 @@ public class PostImageService {
 
     public List<PostImage> uploadImages(Post post, List<MultipartFile> multipartFiles) {
         List<PostImage> postImages = new ArrayList<>();
-        multipartFiles.forEach(multipartFile -> {
-            String uploadDir = "postUploads/" + post.getId();
-            String imageUrl = s3ImageUploader.uploadImage(uploadDir, multipartFile);
-            String fileName = s3ImageUploader.getFileName(imageUrl, uploadDir);
-            PostImage postImage = postImageRepository.save(PostImage.of(fileName, imageUrl, post));
-            post.addPostImage(postImage);
-            postImages.add(postImage);
-        });
+        multipartFiles.forEach(multipartFile -> postImages.add(uploadImage(post, multipartFile)));
         return postImages;
+    }
+
+    private PostImage uploadImage(Post post, MultipartFile multipartFile) {
+        String uploadDir = "postUploads/" + post.getId();
+        String imageUrl = s3ImageUploader.uploadImage(uploadDir, multipartFile);
+        String fileName = s3ImageUploader.getFileName(imageUrl, uploadDir);
+        return createPostImage(post, PostImage.of(fileName, imageUrl, post));
+    }
+
+    private PostImage createPostImage(Post post, PostImage postImage) {
+        PostImage image = postImageRepository.save(postImage);
+        post.addPostImage(image);
+        return image;
     }
 
     public void deleteImages(Integer id, List<String> deletedImages) {
