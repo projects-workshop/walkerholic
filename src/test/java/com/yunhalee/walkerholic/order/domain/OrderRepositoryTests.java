@@ -109,9 +109,7 @@ public class OrderRepositoryTests {
         List<Order> orders = orderPage.getContent();
 
         //then
-        assertThat(orders
-            .equals(Arrays.asList(firstOrder, secondOrder, thirdOrder, fourthOrder, fifthOrder)))
-            .isTrue();
+        assertThat(orders.equals(Arrays.asList(firstOrder, secondOrder, thirdOrder, fourthOrder, fifthOrder))).isTrue();
     }
 
 
@@ -145,5 +143,12 @@ public class OrderRepositoryTests {
         }
     }
 
+    @Test
+    public void find_existence_by_created_at_between_from_to() {
+        LocalDateTime from = LocalDateTime.now().minusSeconds(30);
+        LocalDateTime to = LocalDateTime.now();
+
+        assertThat(orderRepository.existsByCreatedAtBetweenAndUserId(from, to, user.getId())).isTrue();
+    }
 
 }

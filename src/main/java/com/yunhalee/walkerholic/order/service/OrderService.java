@@ -1,7 +1,9 @@
 package com.yunhalee.walkerholic.order.service;
 
 import com.yunhalee.walkerholic.cart.domain.Cart;
+import com.yunhalee.walkerholic.cart.domain.CartItems;
 import com.yunhalee.walkerholic.cart.service.CartService;
+import com.yunhalee.walkerholic.cartItem.domain.CartItem;
 import com.yunhalee.walkerholic.common.service.NotificationService;
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.order.dto.OrderRequest;
@@ -9,6 +11,7 @@ import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.OrderResponses;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.exception.NothingToPayException;
+import com.yunhalee.walkerholic.order.exception.OrderDuplicated;
 import com.yunhalee.walkerholic.order.exception.OrderNotFoundException;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.orderitem.service.OrderItemService;
@@ -16,11 +19,14 @@ import com.yunhalee.walkerholic.order.domain.OrderRepository;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.dto.UserIconResponse;
 import com.yunhalee.walkerholic.user.service.UserService;
+import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +43,11 @@ public class OrderService {
     private CartService cartService;
     private NotificationService notificationService;
 
-    public OrderService(OrderRepository orderRepository, UserService userService, OrderItemService orderItemService, CartService cartService, NotificationService notificationService) {
+    public OrderService(OrderRepository orderRepository,
+        UserService userService,
+        OrderItemService orderItemService,
+        CartService cartService,
+        NotificationService notificationService) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.orderItemService = orderItemService;
@@ -45,24 +55,47 @@ public class OrderService {
         this.notificationService = notificationService;
     }
 
-
     public OrderResponse createOrder(OrderRequest request) {
         Cart cart = cartService.findCartByUserId(request.getUserId());
-        checkCart(cart);
+        checkOrderValidity(cart, request.getUserId());
         User user = userService.findUserById(request.getUserId());
         Order order = orderRepository.save(request.toOrder());
-        Set<OrderItem> orderItems = orderItemService.createOrderItems(cart.getCartItems(), order);
-        cartService.emptyCart(cart);
+        Set<OrderItem> orderItems = saveOrderItems(cart, order);
         notificationService.sendCreateOrderNotification(order, user);
         return OrderResponse.of(order,
             UserIconResponse.of(user),
             orderItemService.orderItemResponses(orderItems));
     }
 
-    private void checkCart(Cart cart) {
+    private void checkOrderValidity(Cart cart, Integer userId) {
+        checkOrderDuplicated(userId);
+        checkCartEmpty(cart);
+    }
+
+    private void checkOrderDuplicated(Integer userId) {
+        if (isDuplicated(userId)) {
+            throw new OrderDuplicated("Order is duplicated. Please try a few seconds later.");
+        }
+    }
+
+    private boolean isDuplicated(Integer userId) {
+        return orderRepository.existsByCreatedAtBetweenAndUserId(
+            LocalDateTime.now().minusSeconds(2),
+            LocalDateTime.now(),
+            userId);
+    }
+
+    private void checkCartEmpty(Cart cart) {
         if (cart.isEmpty()) {
             throw new NothingToPayException("Nothing to pay. Please add items.");
         }
+    }
+
+
+    private Set<OrderItem> saveOrderItems(Cart cart, Order order) {
+        Set<OrderItem> orderItems = orderItemService.createOrderItems(cart.getCartItems(), order);
+        cartService.emptyCart(cart);
+        return orderItems;
     }
 
     public SimpleOrderResponse deliverOrder(Integer id) {

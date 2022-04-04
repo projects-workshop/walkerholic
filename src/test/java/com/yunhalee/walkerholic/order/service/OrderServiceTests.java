@@ -17,6 +17,7 @@ import com.yunhalee.walkerholic.order.dto.OrderRequest;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.exception.NothingToPayException;
+import com.yunhalee.walkerholic.order.exception.OrderDuplicated;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.product.domain.Product;
@@ -27,7 +28,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,6 +43,7 @@ class OrderServiceTests extends MockBeans {
     private static final String TRANSACTION_ID = "testTransactionId";
 
     private static final String NOTHING_TO_PAY_EXCEPTION = "Nothing to pay. Please add items.";
+    private static final String ORDER_DUPLICATED_EXCEPTION = "Order is duplicated. Please try a few seconds later.";
 
     @InjectMocks
     OrderService orderService = new OrderService(
@@ -50,8 +51,7 @@ class OrderServiceTests extends MockBeans {
         userService,
         orderItemService,
         cartService,
-        notificationService
-    );
+        notificationService);
 
     private OrderItem orderItem;
     private Product product;
@@ -103,6 +103,7 @@ class OrderServiceTests extends MockBeans {
         when(cartService.findCartByUserId(anyInt())).thenReturn(cart);
         when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
         when(orderRepository.save(any())).thenReturn(order);
+        when(orderRepository.existsByCreatedAtBetweenAndUserId(any(), any(), anyInt())).thenReturn(false);
         when(orderItemService.orderItemResponses(any())).thenReturn(Arrays.asList(ItemResponse.of(orderItem)));
         OrderResponse orderResponse = orderService.createOrder(request);
 
@@ -110,6 +111,24 @@ class OrderServiceTests extends MockBeans {
         verify(notificationService).sendCreateOrderNotification(any(), any());
         isEqual(orderResponse.getItems().get(0), orderItem);
     }
+
+
+    @Test
+    public void create_duplicated_order_is_invalid() {
+        OrderRequest request = new OrderRequest(
+            UserTest.SELLER.getId(),
+            SHIPPING,
+            PAYMENT_METHOD,
+            TRANSACTION_ID,
+            new AddressResponse(ADDRESS));
+
+        when(cartService.findCartByUserId(anyInt())).thenReturn(cart);
+        when(orderRepository.existsByCreatedAtBetweenAndUserId(any(), any(), anyInt())).thenReturn(true);
+        assertThatThrownBy(() -> orderService.createOrder(request))
+            .isInstanceOf(OrderDuplicated.class)
+            .hasMessage(ORDER_DUPLICATED_EXCEPTION);
+    }
+
 
     @Test
     public void create_order_with_empty_cart_is_invalid() {
