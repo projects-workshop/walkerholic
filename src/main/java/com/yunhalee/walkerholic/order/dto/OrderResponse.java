@@ -1,7 +1,7 @@
 package com.yunhalee.walkerholic.order.dto;
 
+import com.yunhalee.walkerholic.common.dto.ItemResponses;
 import com.yunhalee.walkerholic.order.domain.Order;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponses;
 import com.yunhalee.walkerholic.user.dto.UserIconResponse;
 import java.math.BigDecimal;
 import lombok.Getter;
@@ -21,11 +21,11 @@ public class OrderResponse {
     private LocalDateTime deliveredAt;
     private AddressResponse address;
     private UserIconResponse user;
-    private OrderItemResponses orderItems;
+    private ItemResponses orderItems;
     private BigDecimal total;
     private BigDecimal shipping;
 
-    private OrderResponse(Order order, UserIconResponse user, OrderItemResponses orderItems) {
+    private OrderResponse(Order order, UserIconResponse user, ItemResponses orderItems) {
         this.id = order.getId();
         this.orderStatus = order.getOrderStatus().name();
         this.paymentMethod = order.getPaymentMethod();
@@ -39,7 +39,7 @@ public class OrderResponse {
         this.shipping = order.getShipping();
     }
 
-    public static OrderResponse of(Order order, UserIconResponse user, OrderItemResponses orderItems) {
+    public static OrderResponse of(Order order, UserIconResponse user, ItemResponses orderItems) {
         return new OrderResponse(order, user, orderItems);
     }
 }

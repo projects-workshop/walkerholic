@@ -4,6 +4,8 @@ package com.yunhalee.walkerholic.order.service;
 import com.yunhalee.walkerholic.MockBeans;
 import com.yunhalee.walkerholic.cart.domain.Cart;
 import com.yunhalee.walkerholic.cartItem.domain.CartItemTest;
+import com.yunhalee.walkerholic.common.dto.ItemResponse;
+import com.yunhalee.walkerholic.common.dto.ItemResponses;
 import com.yunhalee.walkerholic.order.domain.Address;
 import com.yunhalee.walkerholic.order.domain.AddressTest;
 import com.yunhalee.walkerholic.order.domain.DeliveryInfoTest;
@@ -18,8 +20,6 @@ import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.exception.NothingToPayException;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponses;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.productImage.domain.ProductImageTest;
@@ -104,12 +104,12 @@ class OrderServiceTests extends MockBeans {
         when(cartService.findCartByUserId(anyInt())).thenReturn(cart);
         when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
         when(orderRepository.save(any())).thenReturn(order);
-        when(orderItemService.orderItemResponses(any())).thenReturn(OrderItemResponses.of(Arrays.asList(OrderItemResponse.of(orderItem))));
+        when(orderItemService.orderItemResponses(any())).thenReturn(ItemResponses.of(Arrays.asList(ItemResponse.of(orderItem))));
         OrderResponse orderResponse = orderService.createOrder(request);
 
         //then
         verify(notificationService).sendCreateOrderNotification(any(), any());
-        isEqual(orderResponse.getOrderItems().getOrderItems().get(0), orderItem);
+        isEqual(orderResponse.getOrderItems().getItems().get(0), orderItem);
     }
 
     @Test
@@ -159,7 +159,7 @@ class OrderServiceTests extends MockBeans {
         // when
         when(orderRepository.findByOrderId(anyInt())).thenReturn(order);
         when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
-        when(orderItemService.orderItemResponses(any())).thenReturn(OrderItemResponses.of(Arrays.asList(OrderItemResponse.of(orderItem))));
+        when(orderItemService.orderItemResponses(any())).thenReturn(ItemResponses.of(Arrays.asList(ItemResponse.of(orderItem))));
         OrderResponse response = orderService.getOrder(order.getId());
 
         // then
@@ -175,12 +175,12 @@ class OrderServiceTests extends MockBeans {
         assertThat(response.isDelivered()).isEqualTo(order.isDelivered());
         assertThat(response.getDeliveredAt()).isEqualTo(order.getDeliveredAt());
         assertThat(response.getUser().getId()).isEqualTo(order.getUserId());
-        assertThat(response.getOrderItems().getOrderItems().size()).isEqualTo(order.getOrderItems().size());
+        assertThat(response.getOrderItems().getItems().size()).isEqualTo(order.getOrderItems().size());
         assertThat(response.getTotal()).isEqualTo(order.getTotalAmount());
         assertThat(response.getShipping()).isEqualTo(order.getShipping());
     }
 
-    private void isEqual(OrderItemResponse orderItemResponse, OrderItem orderItem) {
+    private void isEqual(ItemResponse orderItemResponse, OrderItem orderItem) {
         assertThat(orderItemResponse.getId()).isEqualTo(orderItem.getId());
         assertThat(orderItemResponse.getProductId()).isEqualTo(orderItem.getProduct().getId());
     }

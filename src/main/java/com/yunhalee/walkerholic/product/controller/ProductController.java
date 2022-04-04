@@ -1,6 +1,5 @@
 package com.yunhalee.walkerholic.product.controller;
 
-import com.yunhalee.walkerholic.common.dto.PageSortRequest;
 import com.yunhalee.walkerholic.product.dto.ProductRequest;
 import com.yunhalee.walkerholic.product.dto.ProductResponse;
 import com.yunhalee.walkerholic.product.dto.ProductResponses;
@@ -23,14 +22,14 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    public ResponseEntity<SimpleProductResponse> createProduct(
-        @RequestPart("productRequest") ProductRequest productRequest,
-        @RequestPart(value = "multipartFile") List<MultipartFile> multipartFiles) {
-        return new ResponseEntity<>(productService.createProduct(productRequest, multipartFiles), HttpStatus.CREATED);
+    public ResponseEntity<SimpleProductResponse> createProduct(@RequestPart("productRequest") ProductRequest productRequest, @RequestPart(value = "multipartFile") List<MultipartFile> multipartFiles) {
+        return new ResponseEntity<>(productService.createProduct(productRequest, multipartFiles),
+            HttpStatus.CREATED);
     }
 
     @PutMapping("/products/{id}")
-    public ResponseEntity<SimpleProductResponse> updateProduct(@PathVariable("id") Integer id, @RequestBody ProductRequest productRequest) {
+    public ResponseEntity<SimpleProductResponse> updateProduct(@PathVariable("id") Integer id,
+        @RequestBody ProductRequest productRequest) {
         return ResponseEntity.ok(productService.updateProduct(id, productRequest));
     }
 
@@ -40,14 +39,15 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public ResponseEntity<ProductResponses> getProducts(@RequestParam("pageRequest") PageSortRequest request, @RequestParam("category") String category, @RequestParam("keyword") String keyword) {
-        return ResponseEntity.ok(productService.getProducts(request, category, keyword));
+    public ResponseEntity<ProductResponses> getProducts(@RequestParam("page") Integer page, @RequestParam("sort") String sort, @RequestParam("category") String category, @RequestParam("keyword") String keyword) {
+        return ResponseEntity.ok(productService.getProducts(page, sort, category, keyword));
     }
 
 
     @GetMapping("/users/{id}/products")
-    public ResponseEntity<ProductResponses> getProductsBySeller(@PathVariable("id") Integer id, @RequestParam("pageRequest") PageSortRequest request, @RequestParam("category") String category, @RequestParam("keyword") String keyword) {
-        return ResponseEntity.ok(productService.getProductsBySeller(id, request, category, keyword));
+    public ResponseEntity<ProductResponses> getProductsBySeller(@PathVariable("id") Integer id, @RequestParam("page") Integer page, @RequestParam("sort") String sort, @RequestParam("category") String category, @RequestParam("keyword") String keyword) {
+        return ResponseEntity
+            .ok(productService.getProductsBySeller(id, page, sort, category, keyword));
     }
 
     @DeleteMapping("/products/{id}")

@@ -1,16 +1,13 @@
 package com.yunhalee.walkerholic.cartItem.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import com.yunhalee.walkerholic.MockBeans;
 import com.yunhalee.walkerholic.cart.domain.Cart;
 import com.yunhalee.walkerholic.cart.domain.CartTest;
 import com.yunhalee.walkerholic.cartItem.domain.CartItem;
 import com.yunhalee.walkerholic.cartItem.dto.CartItemRequest;
-import com.yunhalee.walkerholic.cartItem.dto.CartItemResponse;
+import com.yunhalee.walkerholic.common.dto.ItemResponse;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.product.domain.ProductTest;
-import com.yunhalee.walkerholic.product.exception.NotEnoughStockException;
 import com.yunhalee.walkerholic.productImage.domain.ProductImageTest;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +56,7 @@ class CartItemServiceTest extends MockBeans {
         when(cartRepository.findById(anyInt())).thenReturn(Optional.of(cart));
         when(productService.findProductById(anyInt())).thenReturn(product);
         when(cartItemRepository.save(any())).thenReturn(cartItem);
-        CartItemResponse response = cartItemService.create(request);
+        ItemResponse response = cartItemService.create(request);
 
         //then
         assertThat(response.getId()).isEqualTo(cartItem.getId());
@@ -76,7 +73,7 @@ class CartItemServiceTest extends MockBeans {
 
         //when
         when(cartItemRepository.findById(anyInt())).thenReturn(Optional.of(cartItem));
-        CartItemResponse response = cartItemService.update(cartItem.getId(), qty);
+        ItemResponse response = cartItemService.update(cartItem.getId(), qty);
 
         //then
         assertThat(response.getQty()).isEqualTo(qty);

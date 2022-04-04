@@ -5,8 +5,8 @@ import com.yunhalee.walkerholic.cart.domain.CartRepository;
 import com.yunhalee.walkerholic.cartItem.domain.CartItem;
 import com.yunhalee.walkerholic.cartItem.domain.CartItemRepository;
 import com.yunhalee.walkerholic.cartItem.dto.CartItemRequest;
-import com.yunhalee.walkerholic.cartItem.dto.CartItemResponse;
-import com.yunhalee.walkerholic.cartItem.dto.CartItemResponses;
+import com.yunhalee.walkerholic.common.dto.ItemResponse;
+import com.yunhalee.walkerholic.common.dto.ItemResponses;
 import com.yunhalee.walkerholic.cartItem.exception.CartItemNotFoundException;
 import com.yunhalee.walkerholic.order.exception.OrderNotFoundException;
 import com.yunhalee.walkerholic.product.domain.Product;
@@ -28,18 +28,18 @@ public class CartItemService {
         this.cartItemRepository = cartItemRepository;
     }
 
-    public CartItemResponse create(CartItemRequest request) {
+    public ItemResponse create(CartItemRequest request) {
         Cart cart = cartRepository.findById(request.getCartId())
             .orElseThrow(() -> new OrderNotFoundException("Cart not found with id : " + request.getCartId()));
         Product product = productService.findProductById(request.getProductId());
         CartItem cartItem = cartItemRepository.save(CartItem.of(request.getQty(), product, cart));
-        return CartItemResponse.of(cartItem);
+        return ItemResponse.of(cartItem);
     }
 
-    public CartItemResponse update(Integer id, Integer qty) {
+    public ItemResponse update(Integer id, Integer qty) {
         CartItem cartItem = findCartItemById(id);
         cartItem.changeQty(qty);
-        return CartItemResponse.of(cartItem);
+        return ItemResponse.of(cartItem);
     }
 
     public void emptyCart(Cart cart) {
@@ -57,10 +57,10 @@ public class CartItemService {
     }
 
 
-    public CartItemResponses cartItemResponses(Set<CartItem> cartItems) {
-        return CartItemResponses.of(
+    public ItemResponses cartItemResponses(Set<CartItem> cartItems) {
+        return ItemResponses.of(
             cartItems.stream()
-                .map(CartItemResponse::of)
+                .map(ItemResponse::of)
                 .collect(Collectors.toList()));
     }
 

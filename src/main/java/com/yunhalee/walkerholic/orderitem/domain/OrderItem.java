@@ -1,11 +1,10 @@
 package com.yunhalee.walkerholic.orderitem.domain;
 
+import com.yunhalee.walkerholic.common.domain.Item;
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.product.domain.Product;
-import java.math.BigDecimal;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -13,19 +12,7 @@ import javax.persistence.*;
 @Table(name = "order_item")
 @Getter
 @NoArgsConstructor
-public class OrderItem {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_item_id")
-    private Integer id;
-
-    @Column(nullable = false)
-    private Integer qty;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private Product product;
+public class OrderItem extends Item {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
@@ -63,38 +50,5 @@ public class OrderItem {
     public void removeStock() {
         this.product.removeStock(qty);
     }
-
-    public BigDecimal getAmount() {
-        return product.getPrice().multiply(BigDecimal.valueOf(qty));
-    }
-
-    public Integer getProductStock() {
-        return this.product.getStock();
-    }
-
-    public Integer getProductId() {
-        return this.product.getId();
-    }
-
-    public String getProductName() {
-        return this.product.getName();
-    }
-
-    public BigDecimal getProductPrice() {
-        return this.product.getPrice();
-    }
-
-    public String getProductDescription() {
-        return this.product.getDescription();
-    }
-
-    public String getProductBrand() {
-        return this.product.getBrand();
-    }
-
-    public String getProductImageUrl() {
-        return this.product.getMainImageUrl();
-    }
-
 
 }

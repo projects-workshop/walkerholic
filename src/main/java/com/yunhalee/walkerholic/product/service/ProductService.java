@@ -76,8 +76,8 @@ public class ProductService {
             reviewResponses(reviews));
     }
 
-    public ProductResponses getProducts(PageSortRequest request, String category, String keyword) {
-        Pageable pageable = pageable(request.getPage(), request.getSort());
+    public ProductResponses getProducts(Integer page, String sort, String category, String keyword) {
+        Pageable pageable = pageable(page, sort);
         if (EnumUtils.isValidEnum(Category.class, category)) {
             Page<Product> productPage = productRepository.findAllByCategory(pageable, Category.valueOf(category), keyword);
             return productResponses(productPage);
@@ -86,10 +86,10 @@ public class ProductService {
         return productResponses(productPage);
     }
 
-    public ProductResponses getProductsBySeller(Integer id, PageSortRequest request,
+    public ProductResponses getProductsBySeller(Integer id, Integer page, String sort,
         String category, String keyword) {
         User seller = userService.findUserById(id);
-        Pageable pageable = pageable(request.getPage(), request.getSort());
+        Pageable pageable = pageable(page, sort);
         if (EnumUtils.isValidEnum(Category.class, category)) {
             Page<Product> productPage = productRepository.findAllBySellerAndCategory(pageable, id, Category.valueOf(category), keyword);
             return productResponses(productPage, seller);

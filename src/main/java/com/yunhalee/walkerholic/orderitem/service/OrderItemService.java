@@ -1,21 +1,14 @@
 package com.yunhalee.walkerholic.orderitem.service;
 
 import com.yunhalee.walkerholic.cartItem.domain.CartItem;
+import com.yunhalee.walkerholic.common.dto.ItemResponse;
+import com.yunhalee.walkerholic.common.dto.ItemResponses;
 import com.yunhalee.walkerholic.order.domain.Order;
-import com.yunhalee.walkerholic.order.domain.OrderRepository;
-import com.yunhalee.walkerholic.order.exception.OrderNotFoundException;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItemRepository;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponse;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemResponses;
 import com.yunhalee.walkerholic.orderitem.exception.OrderItemNotFoundException;
-import com.yunhalee.walkerholic.product.domain.Product;
-import com.yunhalee.walkerholic.product.service.ProductService;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,10 +38,10 @@ public class OrderItemService {
             .orElseThrow(() -> new OrderItemNotFoundException("OrderItem not found with id : " + id));
     }
 
-    public OrderItemResponses orderItemResponses(Set<OrderItem> orderItems) {
-        return OrderItemResponses.of(
+    public ItemResponses orderItemResponses(Set<OrderItem> orderItems) {
+        return ItemResponses.of(
             orderItems.stream()
-                .map(OrderItemResponse::of)
+                .map(ItemResponse::of)
                 .collect(Collectors.toList()));
     }
 }

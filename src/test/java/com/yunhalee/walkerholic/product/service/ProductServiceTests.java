@@ -1,7 +1,6 @@
 package com.yunhalee.walkerholic.product.service;
 
 import com.yunhalee.walkerholic.MockBeans;
-import com.yunhalee.walkerholic.common.dto.PageSortRequest;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.productImage.domain.ProductImageTest;
 import com.yunhalee.walkerholic.productImage.dto.ProductImageResponse;
@@ -149,11 +148,10 @@ class ProductServiceTests extends MockBeans {
     public void find_products_by_sort_and_keyword() {
         //given
         setOtherProduct();
-        PageSortRequest request = new PageSortRequest(1, "lowest");
 
         //when
         doReturn(new PageImpl<>(Arrays.asList(firstProduct, product, thirdProduct))).when(productRepository).findAllByKeyword(any(), any());
-        ProductResponses responses = productService.getProducts(request, null, "ba");
+        ProductResponses responses = productService.getProducts(1, "lowest", null, "ba");
 
         //then
         assertThat(responses.getTotalElement()).isEqualTo(3L);
@@ -163,11 +161,10 @@ class ProductServiceTests extends MockBeans {
     public void find_products_by_sort_and_category_and_keyword() {
         //given
         setOtherProduct();
-        PageSortRequest request = new PageSortRequest(1, "lowest");
 
         //when
         doReturn(new PageImpl<>(Arrays.asList(secondProduct))).when(productRepository).findAllByCategory(any(), any(), any());
-        ProductResponses responses = productService.getProducts(request, "CLOTHES", "ba");
+        ProductResponses responses = productService.getProducts(1, "lowest", "CLOTHES", "ba");
 
         //then
         assertThat(responses.getTotalElement()).isEqualTo(1L);
@@ -177,12 +174,11 @@ class ProductServiceTests extends MockBeans {
     public void find_products_by_seller_and_sort_and_keyword() {
         //given
         setOtherProduct();
-        PageSortRequest request = new PageSortRequest(1, "lowest");
 
         //when
         when(userService.findUserById(anyInt())).thenReturn(user);
         doReturn(new PageImpl<>(Arrays.asList(product))).when(productRepository).findAllBySellerAndKeyword(any(), any(), any());
-        ProductResponses responses = productService.getProductsBySeller(1, request, null, "p");
+        ProductResponses responses = productService.getProductsBySeller(1, 1, "lowest", null, "p");
 
         //then
         assertThat(responses.getTotalElement()).isEqualTo(1);
@@ -193,12 +189,11 @@ class ProductServiceTests extends MockBeans {
     public void find_products_by_seller_and_sort_and_category_and_keyword() {
         //given
         setOtherProduct();
-        PageSortRequest request = new PageSortRequest(1, "lowest");
 
         //when
         when(userService.findUserById(anyInt())).thenReturn(user);
         doReturn(new PageImpl<>(Arrays.asList(secondProduct))).when(productRepository).findAllBySellerAndCategory(any(), any(), any(), any());
-        ProductResponses responses = productService.getProductsBySeller(1, request, "CLOTHES", "ba");
+        ProductResponses responses = productService.getProductsBySeller(1, 1, "lowest", "CLOTHES", "ba");
 
         //then
         assertThat(responses.getTotalElement()).isEqualTo(1);
