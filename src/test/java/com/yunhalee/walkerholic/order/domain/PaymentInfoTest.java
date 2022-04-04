@@ -4,5 +4,5 @@ import java.math.BigDecimal;
 
 public class PaymentInfoTest {
 
-    public static final Payment PAYMENT_INFO = new Payment(BigDecimal.TEN, "testPaymentMethod");
+    public static final Payment PAYMENT_INFO = new Payment(BigDecimal.TEN, "testPaymentMethod", "testTransactionId");
 }

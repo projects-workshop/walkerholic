@@ -17,6 +17,7 @@ public class OrderResponse {
     private Integer id;
     private String orderStatus;
     private String paymentMethod;
+    private String transactionId;
     private LocalDateTime paidAt;
     private boolean isDelivered;
     private LocalDateTime deliveredAt;
@@ -30,6 +31,7 @@ public class OrderResponse {
         this.id = order.getId();
         this.orderStatus = order.getOrderStatus().name();
         this.paymentMethod = order.getPaymentMethod();
+        this.transactionId = order.getTransactionId();
         this.paidAt = order.getPaidAt();
         this.isDelivered = order.isDelivered();
         this.deliveredAt = order.getDeliveredAt();

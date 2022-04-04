@@ -34,6 +34,7 @@ public class OrderTest {
     void setUp() {
         order = Order.of(UserTest.USER.getId(),
             BigDecimal.TEN,
+            PaymentInfoTest.PAYMENT_INFO.getTransactionId(),
             PaymentInfoTest.PAYMENT_INFO.getPaymentMethod(),
             AddressTest.ADDRESS);
         order.addOrderItem(OrderItemTest.FIRST_ORDER_ITEM);

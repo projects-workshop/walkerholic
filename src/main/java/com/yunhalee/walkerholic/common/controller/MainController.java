@@ -1,5 +1,6 @@
 package com.yunhalee.walkerholic.common.controller;
 
+import com.yunhalee.walkerholic.common.dto.PaypalClient;
 import com.yunhalee.walkerholic.user.dto.LevelDTO;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.user.domain.Level;
@@ -14,8 +15,11 @@ import java.util.stream.Collectors;
 @RestController
 public class MainController {
 
-    @Value("${paypal_client_id}")
+    @Value("${paypal.client.id}")
     private String PAYPAL_CLIENT_ID;
+
+    @Value("${paypal.client.secret}")
+    private String PAYPAL_CLIENT_SECRET;
 
     @GetMapping("/levels")
     public List<LevelDTO> getLevels() {
@@ -31,7 +35,7 @@ public class MainController {
     }
 
     @GetMapping("/paypal")
-    public String getPAYPAL_CLIENT_ID() {
-        return PAYPAL_CLIENT_ID;
+    public PaypalClient getPAYPAL_CLIENT_ID() {
+        return new PaypalClient(PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET);
     }
 }

@@ -23,9 +23,13 @@ public class Payment {
     @Column(name = "paid_at")
     private LocalDateTime paidAt;
 
-    public Payment(BigDecimal shipping, String paymentMethod) {
+    @Column(name = "transaction_id")
+    private String transactionId;
+
+    public Payment(BigDecimal shipping, String paymentMethod, String transactionId) {
         this.shipping = shipping;
         this.paymentMethod = paymentMethod;
         this.paidAt = LocalDateTime.now();
+        this.transactionId = transactionId;
     }
 }

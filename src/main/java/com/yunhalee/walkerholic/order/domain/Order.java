@@ -48,12 +48,12 @@ public class Order extends BaseTimeEntity {
         this.orderItems = orderItems;
     }
 
-    public static Order of(Integer userId, BigDecimal shipping, String paymentMethod, Address address) {
+    public static Order of(Integer userId, BigDecimal shipping, String paymentMethod, String transactionId, Address address) {
         return Order.builder()
             .userId(userId)
             .orderStatus(OrderStatus.ORDER)
             .delivery(Delivery.builder().isDelivered(false).address(address).build())
-            .payment(new Payment(shipping, paymentMethod))
+            .payment(new Payment(shipping, paymentMethod, transactionId))
             .orderItems(new OrderItems())
             .build();
     }
@@ -80,6 +80,10 @@ public class Order extends BaseTimeEntity {
         return payment.getPaymentMethod();
     }
 
+    public String getTransactionId() {
+        return payment.getTransactionId();
+    }
+
     public LocalDateTime getPaidAt() {
         return payment.getPaidAt();
     }
@@ -104,4 +108,6 @@ public class Order extends BaseTimeEntity {
     public BigDecimal getTotalAmount() {
         return orderItems.getTotalAmount();
     }
+
+
 }

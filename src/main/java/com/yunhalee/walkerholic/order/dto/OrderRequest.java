@@ -15,21 +15,22 @@ public class OrderRequest {
     private Integer userId;
     private Float shipping;
     private String paymentMethod;
+    private String transactionId;
     private AddressResponse address;
-    private List<OrderItemRequest> orderItems;
 
-    public OrderRequest(Integer userId, Float shipping, String paymentMethod, AddressResponse address, List<OrderItemRequest> orderItems) {
+    public OrderRequest(Integer userId, Float shipping, String paymentMethod, String transactionId, AddressResponse address) {
         this.userId = userId;
         this.shipping = shipping;
         this.paymentMethod = paymentMethod;
+        this.transactionId = transactionId;
         this.address = address;
-        this.orderItems = orderItems;
     }
 
     public Order toOrder() {
         return Order.of(userId,
             BigDecimal.valueOf(shipping),
             paymentMethod,
+            transactionId,
             Address.builder()
                 .name(address.getName())
                 .country(address.getCountry())

@@ -18,7 +18,6 @@ import com.yunhalee.walkerholic.order.dto.OrderResponse;
 import com.yunhalee.walkerholic.order.dto.SimpleOrderResponse;
 import com.yunhalee.walkerholic.order.exception.NothingToPayException;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
-import com.yunhalee.walkerholic.orderitem.dto.OrderItemRequest;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.productImage.domain.ProductImageTest;
@@ -41,6 +40,7 @@ class OrderServiceTests extends MockBeans {
     private static final Address ADDRESS = AddressTest.ADDRESS;
     private static final Float SHIPPING = 10.0f;
     private static final String PAYMENT_METHOD = "testPaymentMethod";
+    private static final String TRANSACTION_ID = "testTransactionId";
 
     private static final String NOTHING_TO_PAY_EXCEPTION = "Nothing to pay. Please add items.";
 
@@ -96,8 +96,8 @@ class OrderServiceTests extends MockBeans {
             UserTest.USER.getId(),
             SHIPPING,
             PAYMENT_METHOD,
-            new AddressResponse(ADDRESS),
-            Arrays.asList(new OrderItemRequest(2, product.getId())));
+            TRANSACTION_ID,
+            new AddressResponse(ADDRESS));
 
         //when
         when(cartService.findCartByUserId(anyInt())).thenReturn(cart);
@@ -118,8 +118,8 @@ class OrderServiceTests extends MockBeans {
             UserTest.SELLER.getId(),
             SHIPPING,
             PAYMENT_METHOD,
-            new AddressResponse(ADDRESS),
-            Arrays.asList(new OrderItemRequest(2, product.getId())));
+            TRANSACTION_ID,
+            new AddressResponse(ADDRESS));
 
         when(cartService.findCartByUserId(anyInt())).thenReturn(emptyCart);
         assertThatThrownBy(() -> orderService.createOrder(request))
