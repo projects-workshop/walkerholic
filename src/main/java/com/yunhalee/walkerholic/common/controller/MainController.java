@@ -1,25 +1,16 @@
 package com.yunhalee.walkerholic.common.controller;
 
-import com.yunhalee.walkerholic.common.dto.PaypalClient;
-import com.yunhalee.walkerholic.user.dto.LevelDTO;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.user.domain.Level;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.yunhalee.walkerholic.user.dto.LevelDTO;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class MainController {
-
-    @Value("${paypal.client.id}")
-    private String PAYPAL_CLIENT_ID;
-
-    @Value("${paypal.client.secret}")
-    private String PAYPAL_CLIENT_SECRET;
 
     @GetMapping("/levels")
     public List<LevelDTO> getLevels() {
@@ -34,8 +25,4 @@ public class MainController {
             .collect(Collectors.toList());
     }
 
-    @GetMapping("/paypal")
-    public PaypalClient getPAYPAL_CLIENT_ID() {
-        return new PaypalClient(PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET);
-    }
 }
