@@ -23,15 +23,9 @@ public class CartService {
     }
 
     public Integer createCart(Integer userId) {
-        checkCartExist(userId);
-        Cart cart = cartRepository.save(Cart.of(userId));
+        Cart cart = cartRepository.findByUserId(userId)
+            .orElseGet(() -> cartRepository.save(Cart.of(userId)));
         return cart.getId();
-    }
-
-    private void checkCartExist(Integer userId) {
-        if (cartRepository.existsByUserId(userId)) {
-            throw new CartAlreadyExist("Only one cart can be created per user.");
-        }
     }
 
     public void emptyCart(Cart cart) {
@@ -41,12 +35,9 @@ public class CartService {
 
     @Transactional(readOnly = true)
     public CartResponse getCart(Integer userId) {
-        Optional<Cart> cart = cartRepository.findByUserId(userId);
-        if (cart.isPresent()) {
-            return new CartResponse(cart.get(),
-                cartItemService.cartItemResponses(cart.get().getCartItems()));
-        }
-        return new CartResponse();
+        Cart cart = cartRepository.findByUserId(userId)
+            .orElseGet(() -> new Cart());
+        return CartResponse.of(cart, cartItemService.cartItemResponses(cart.getCartItems()));
     }
 
     public Cart findCartByUserId(Integer userId) {

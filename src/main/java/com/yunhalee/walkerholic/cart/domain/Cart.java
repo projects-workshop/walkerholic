@@ -25,7 +25,7 @@ public class Cart extends BaseTimeEntity {
     private Integer userId;
 
     @Embedded
-    private CartItems cartItems;
+    private CartItems cartItems = new CartItems();
 
     public Cart(Integer userId) {
         this.userId = userId;
