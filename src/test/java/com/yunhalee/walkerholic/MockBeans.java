@@ -1,15 +1,18 @@
 package com.yunhalee.walkerholic;
 
+import static org.mockito.Mockito.mockStatic;
+
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
 import com.yunhalee.walkerholic.activity.service.ActivityService;
 import com.yunhalee.walkerholic.cart.domain.CartRepository;
 import com.yunhalee.walkerholic.cart.service.CartService;
 import com.yunhalee.walkerholic.cartItem.domain.CartItemRepository;
 import com.yunhalee.walkerholic.cartItem.service.CartItemService;
-import com.yunhalee.walkerholic.common.service.NotificationService;
+import com.yunhalee.walkerholic.common.notification.mapper.NotificationMapper;
+import com.yunhalee.walkerholic.common.notification.sender.DefaultNotificationSender;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
-import com.yunhalee.walkerholic.common.service.notificationSender.MailNotificationSender;
-import com.yunhalee.walkerholic.common.service.notificationSender.SMSNotificationSender;
+import com.yunhalee.walkerholic.common.notification.sender.MailNotificationSender;
+import com.yunhalee.walkerholic.common.notification.sender.SMSNotificationSender;
 import com.yunhalee.walkerholic.follow.domain.FollowRepository;
 import com.yunhalee.walkerholic.follow.service.FollowService;
 import com.yunhalee.walkerholic.likepost.domain.LikePostRepository;
@@ -31,11 +34,10 @@ import com.yunhalee.walkerholic.useractivity.domain.UserActivityRepository;
 import com.yunhalee.walkerholic.useractivity.service.UserActivityService;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
@@ -104,9 +106,6 @@ public class MockBeans {
     protected OrderItemService orderItemService;
 
     @MockBean
-    protected NotificationService notificationService;
-
-    @MockBean
     protected MailNotificationSender mailNotificationSender;
 
     @MockBean
@@ -129,4 +128,9 @@ public class MockBeans {
 
     @MockBean
     protected CartItemService cartItemService;
+
+
+
+
+
 }

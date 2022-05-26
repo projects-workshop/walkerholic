@@ -1,4 +1,4 @@
-package com.yunhalee.walkerholic.common.service.notificationSender;
+package com.yunhalee.walkerholic.common.notification.sender;
 
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.user.domain.User;

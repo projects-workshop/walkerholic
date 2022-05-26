@@ -1,4 +1,4 @@
-package com.yunhalee.walkerholic.common.service.notificationSender;
+package com.yunhalee.walkerholic.common.notification.sender;
 
 import com.yunhalee.walkerholic.common.exception.InvalidValueException;
 import com.yunhalee.walkerholic.order.domain.Order;
@@ -7,22 +7,20 @@ import java.util.HashMap;
 import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
-@Component
 public class SMSNotificationSender implements NotificationSender {
 
+    @Value("COOL_SMS_API_KEY")
     private String apiKey;
-    private String apiSecret;
-    private String sender;
-    private String baseUrl;
 
-    public SMSNotificationSender(@Value("COOL_SMS_API_KEY") String apiKey, @Value("COOL_SMS_API_SECRET") String apiSecret, @Value("COOL_SMS_PHONE_NUMBER") String sender, @Value("${base-url}") String baseUrl) {
-        this.apiKey = apiKey;
-        this.apiSecret = apiSecret;
-        this.sender = sender;
-        this.baseUrl = baseUrl;
-    }
+    @Value("COOL_SMS_API_SECRET")
+    private String apiSecret;
+
+    @Value("COOL_SMS_PHONE_NUMBER")
+    private String sender;
+
+    @Value("${base-url}")
+    private String baseUrl;
 
     @Override
     public void sendCreateOrderNotification(Order order, User user) {

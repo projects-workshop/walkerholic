@@ -1,10 +1,8 @@
 package com.yunhalee.walkerholic.order.service;
 
 import com.yunhalee.walkerholic.cart.domain.Cart;
-import com.yunhalee.walkerholic.cart.domain.CartItems;
 import com.yunhalee.walkerholic.cart.service.CartService;
-import com.yunhalee.walkerholic.cartItem.domain.CartItem;
-import com.yunhalee.walkerholic.common.service.NotificationService;
+import com.yunhalee.walkerholic.common.notification.mapper.NotificationMapper;
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.order.dto.OrderRequest;
 import com.yunhalee.walkerholic.order.dto.OrderResponse;
@@ -21,12 +19,10 @@ import com.yunhalee.walkerholic.user.dto.UserIconResponse;
 import com.yunhalee.walkerholic.user.service.UserService;
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -41,18 +37,15 @@ public class OrderService {
     private UserService userService;
     private OrderItemService orderItemService;
     private CartService cartService;
-    private NotificationService notificationService;
 
     public OrderService(OrderRepository orderRepository,
         UserService userService,
         OrderItemService orderItemService,
-        CartService cartService,
-        NotificationService notificationService) {
+        CartService cartService) {
         this.orderRepository = orderRepository;
         this.userService = userService;
         this.orderItemService = orderItemService;
         this.cartService = cartService;
-        this.notificationService = notificationService;
     }
 
     public OrderResponse createOrder(OrderRequest request) {
@@ -61,7 +54,7 @@ public class OrderService {
         User user = userService.findUserById(request.getUserId());
         Order order = orderRepository.save(request.toOrder());
         Set<OrderItem> orderItems = saveOrderItems(cart, order);
-        notificationService.sendCreateOrderNotification(order, user);
+        NotificationMapper.of(user.getNotificationType()).sendCreateOrderNotification(order, user);
         return OrderResponse.of(order,
             UserIconResponse.of(user),
             orderItemService.orderItemResponses(orderItems));
@@ -109,7 +102,7 @@ public class OrderService {
         Order order = findOrderById(id);
         User user = userService.findUserById(order.getUserId());
         order.cancel();
-        notificationService.sendCancelOrderNotification(order, user);
+        NotificationMapper.of(user.getNotificationType()).sendCancelOrderNotification(order, user);
         return SimpleOrderResponse.of(order, UserIconResponse.of(user));
     }
 

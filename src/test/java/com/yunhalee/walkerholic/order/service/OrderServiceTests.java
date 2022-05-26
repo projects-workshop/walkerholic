@@ -5,6 +5,8 @@ import com.yunhalee.walkerholic.MockBeans;
 import com.yunhalee.walkerholic.cart.domain.Cart;
 import com.yunhalee.walkerholic.cartItem.domain.CartItemTest;
 import com.yunhalee.walkerholic.common.dto.ItemResponse;
+import com.yunhalee.walkerholic.common.notification.mapper.NotificationMapper;
+import com.yunhalee.walkerholic.common.notification.sender.DefaultNotificationSender;
 import com.yunhalee.walkerholic.order.domain.Address;
 import com.yunhalee.walkerholic.order.domain.AddressTest;
 import com.yunhalee.walkerholic.order.domain.DeliveryInfoTest;
@@ -28,9 +30,13 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;
+import org.mockito.MockedStatic;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -45,18 +51,23 @@ class OrderServiceTests extends MockBeans {
     private static final String NOTHING_TO_PAY_EXCEPTION = "Nothing to pay. Please add items.";
     private static final String ORDER_DUPLICATED_EXCEPTION = "Order is duplicated. Please try a few seconds later.";
 
+    private static final MockedStatic<NotificationMapper> notificationMapper = mockStatic(NotificationMapper.class);
+
+    @MockBean
+    protected DefaultNotificationSender defaultNotificationSender;
+
     @InjectMocks
     OrderService orderService = new OrderService(
         orderRepository,
         userService,
         orderItemService,
-        cartService,
-        notificationService);
+        cartService);
 
     private OrderItem orderItem;
     private Product product;
     private Order order;
     private Cart cart;
+
 
 
     @BeforeEach
@@ -100,6 +111,7 @@ class OrderServiceTests extends MockBeans {
             new AddressResponse(ADDRESS));
 
         //when
+        when(NotificationMapper.of(any())).thenReturn(defaultNotificationSender);
         when(cartService.findCartByUserId(anyInt())).thenReturn(cart);
         when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
         when(orderRepository.save(any())).thenReturn(order);
@@ -108,7 +120,7 @@ class OrderServiceTests extends MockBeans {
         OrderResponse orderResponse = orderService.createOrder(request);
 
         //then
-        verify(notificationService).sendCreateOrderNotification(any(), any());
+        verify(defaultNotificationSender).sendCreateOrderNotification(any(), any());
         isEqual(orderResponse.getItems().get(0), orderItem);
     }
 
@@ -161,15 +173,15 @@ class OrderServiceTests extends MockBeans {
     @Test
     public void cancel_order() {
         //when
+        when(NotificationMapper.of(any())).thenReturn(defaultNotificationSender);
         when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
         when(orderRepository.findById(anyInt())).thenReturn(Optional.of(order));
         SimpleOrderResponse response = orderService.cancelOrder(order.getId());
 
         //then
-        verify(notificationService).sendCancelOrderNotification(any(), any());
+        verify(defaultNotificationSender).sendCancelOrderNotification(any(), any());
         assertThat(product.getStock()).isEqualTo(52);
         assertThat(response.getOrderStatus()).isEqualTo(OrderStatus.CANCEL.name());
-
     }
 
     @Test

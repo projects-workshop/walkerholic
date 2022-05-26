@@ -14,6 +14,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "user")
@@ -64,7 +65,7 @@ public class User {
 
     @Column(name = "notification_type")
     @Enumerated(EnumType.STRING)
-    private NotificationType notificationType;
+    private NotificationType notificationType = NotificationType.NONE;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Post> posts = new HashSet<>();

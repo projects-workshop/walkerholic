@@ -1,26 +1,22 @@
-package com.yunhalee.walkerholic.common.service.notificationSender;
+package com.yunhalee.walkerholic.common.notification.sender;
 
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.user.domain.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Component;
 
-@Component
 public class MailNotificationSender implements NotificationSender {
 
+    @Autowired
     private JavaMailSender mailSender;
 
+    @Value("${spring.mail.username}")
     private String sender;
 
+    @Value("${base-url}")
     private String baseUrl;
-
-    public MailNotificationSender(JavaMailSender mailSender, @Value("${spring.mail.username}") String sender, @Value("${base-url}") String baseUrl) {
-        this.mailSender = mailSender;
-        this.sender = sender;
-        this.baseUrl = baseUrl;
-    }
 
     @Override
     public void sendCreateOrderNotification(Order order, User user) {
