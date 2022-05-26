@@ -100,15 +100,16 @@ public class ProductService {
 
     private Pageable pageable(Integer page, String sort) {
         if (sort.equals("highest")) {
-            return PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by(Sort.Direction.DESC, "price"));
+            return PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by(Sort.Direction.DESC, "productInfo.price"));
         } else if (sort.equals("lowest")) {
-            return PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by("price"));
+            return PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by("productInfo.price"));
         } else if (sort.equals("toprated")) {
-            return PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by(Sort.Direction.DESC, "average"));
+            return PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by(Sort.Direction.DESC, "reviewInfo.average"));
         }
         return PageRequest.of(page - 1, PRODUCT_PER_PAGE, Sort.by(sort));
     }
 
+    @Transactional
     public void deleteProduct(Integer id) {
         productImageService.deleteProduct(id);
         productRepository.deleteById(id);

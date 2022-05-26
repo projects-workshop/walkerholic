@@ -46,8 +46,13 @@ public class ProductImages {
     }
 
     public void deleteProductImage(List<String> deletedImages) {
-        this.productImages = this.productImages.stream()
+        changeProductImages(this.productImages.stream()
             .filter(productImage -> !deletedImages.contains(productImage.getFilePath()))
-            .collect(Collectors.toList());
+            .collect(Collectors.toList()));
+    }
+
+    private void changeProductImages(List<ProductImage> productImages) {
+        this.productImages.clear();
+        this.productImages.addAll(productImages);
     }
 }

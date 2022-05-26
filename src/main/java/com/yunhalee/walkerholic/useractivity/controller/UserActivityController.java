@@ -24,8 +24,7 @@ public class UserActivityController {
     }
 
     @PostMapping("/user-activities")
-    public ResponseEntity<UserActivityResponse> create(
-        @Valid @RequestBody UserActivityRequest userActivityRequest) {
+    public ResponseEntity<UserActivityResponse> create(@Valid @RequestBody UserActivityRequest userActivityRequest) {
         return ResponseEntity.ok(userActivityService.create(userActivityRequest));
     }
 

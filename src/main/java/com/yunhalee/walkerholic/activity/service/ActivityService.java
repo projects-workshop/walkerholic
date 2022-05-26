@@ -41,8 +41,7 @@ public class ActivityService {
     public ActivityResponse update(Integer id, ActivityRequest activityRequest) {
         Activity existingActivity = findActivityById(id);
         Activity requestActivity = activityRequest.toActivity();
-        s3ImageUploader.deleteOriginalImage(
-            existingActivity.getImageUrl(), activityRequest.getImageUrl());
+        s3ImageUploader.deleteOriginalImage(existingActivity.getImageUrl(), activityRequest.getImageUrl());
         Activity updatedActivity = existingActivity.update(requestActivity);
         return new ActivityResponse(updatedActivity);
     }

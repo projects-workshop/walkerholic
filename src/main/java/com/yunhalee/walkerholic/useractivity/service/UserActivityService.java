@@ -41,8 +41,7 @@ public class UserActivityService {
         Pageable pageable = PageRequest.of(page - 1, USER_ACTIVITY_PER_PAGE);
         Page<UserActivity> userActivityPage = userActivityRepository.findByUserId(pageable, id);
         List<UserActivity> userActivities = userActivityPage.getContent();
-        return new UserActivityResponses(userActivities, userActivityPage,
-            score(userActivities));
+        return new UserActivityResponses(userActivities, userActivityPage, score(userActivities));
     }
 
     public UserActivityResponse create(UserActivityRequest userActivityRequest) {
@@ -73,6 +72,7 @@ public class UserActivityService {
 
     private int score(List<UserActivity> userActivities) {
         return userActivities.stream()
+            .filter(u -> u.finished())
             .mapToInt(u -> u.getActivity().getScore())
             .sum();
     }

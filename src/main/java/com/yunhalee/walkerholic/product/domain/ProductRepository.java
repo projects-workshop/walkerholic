@@ -20,8 +20,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query(value = "SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.productInfo d LEFT JOIN FETCH p.productImages i LEFT JOIN FETCH i.productImages LEFT JOIN FETCH p.reviewInfo LEFT JOIN FETCH p.user u WHERE u.id=:id AND d.category=:category AND d.name LIKE %:keyword% ",
         countQuery = "SELECT count(DISTINCT p) FROM Product p")
-    Page<Product> findAllBySellerAndCategory(Pageable pageable, Integer id, Category category,
-        String keyword);
+    Page<Product> findAllBySellerAndCategory(Pageable pageable, Integer id, Category category, String keyword);
 
     @Query(value = "SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.productInfo d LEFT JOIN FETCH p.productImages i LEFT JOIN FETCH i.productImages LEFT JOIN FETCH p.reviewInfo LEFT JOIN FETCH p.user u WHERE u.id=:id AND d.name LIKE %:keyword%",
         countQuery = "SELECT count(DISTINCT p) FROM Product p")

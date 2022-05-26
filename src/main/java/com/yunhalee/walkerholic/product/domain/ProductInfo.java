@@ -2,6 +2,7 @@ package com.yunhalee.walkerholic.product.domain;
 
 import com.yunhalee.walkerholic.product.exception.NotEnoughStockException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
@@ -39,7 +40,7 @@ public class ProductInfo {
         this.brand = brand;
         this.category = category;
         this.stock = stock;
-        this.price = BigDecimal.valueOf(price);
+        this.price = BigDecimal.valueOf(price).setScale(2, RoundingMode.HALF_EVEN);
     }
 
     public static ProductInfo of(String name, String description, String brand, Category category, Integer stock, Float price) {

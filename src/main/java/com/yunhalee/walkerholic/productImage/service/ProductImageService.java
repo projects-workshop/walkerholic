@@ -56,8 +56,8 @@ public class ProductImageService {
     }
 
     private void removeImages(Product product, List<String> deletedImages) {
+        product.deleteProductImage(deletedImages);
         deletedImages.forEach(deletedImage -> {
-            product.deleteProductImage(deletedImages);
             productImageRepository.deleteByFilePath(deletedImage);
             s3ImageUploader.deleteByFilePath(deletedImage);
         });

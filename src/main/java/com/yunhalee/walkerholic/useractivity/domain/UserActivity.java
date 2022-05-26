@@ -5,6 +5,7 @@ import com.yunhalee.walkerholic.common.domain.BaseTimeEntity;
 import com.yunhalee.walkerholic.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "user_activity")
 @Getter
+@NoArgsConstructor
 public class UserActivity extends BaseTimeEntity {
 
     @Id
@@ -26,8 +28,7 @@ public class UserActivity extends BaseTimeEntity {
     private Integer distance;
 
     @Builder
-    public UserActivity(@NonNull ActivityStatus status, Integer distance, @NonNull User user,
-        @NonNull Activity activity) {
+    public UserActivity(@NonNull ActivityStatus status, Integer distance, @NonNull User user, @NonNull Activity activity) {
         this.status = status;
         this.distance = distance;
         this.user = user;

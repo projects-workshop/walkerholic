@@ -71,7 +71,6 @@ public class PostService {
     }
 
     public UserPostResponse getUserPosts(Integer id) {
-        checkPostExists(id);
         List<Post> posts = postRepository.findByUserId(id);
         List<Post> likePosts = postRepository.findByLikePostUserId(id);
         return new UserPostResponse(simplePostResponses(posts), simplePostResponses(likePosts));

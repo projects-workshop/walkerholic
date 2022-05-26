@@ -129,7 +129,9 @@ public class User {
     }
 
     private void minusScore(UserActivity userActivity){
-        score -= userActivity.getScore();
+        if (userActivity.finished()) {
+            score -= userActivity.getScore();
+        }
     }
 
     @Override

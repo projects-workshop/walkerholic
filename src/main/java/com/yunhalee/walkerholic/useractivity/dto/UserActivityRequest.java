@@ -6,9 +6,11 @@ import com.yunhalee.walkerholic.useractivity.domain.ActivityStatus;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Getter
+@NoArgsConstructor
 public class UserActivityRequest {
 
     private Integer userId;
@@ -20,8 +22,7 @@ public class UserActivityRequest {
     private boolean finished;
 
     @Builder
-    public UserActivityRequest(@NonNull Integer userId, Integer distance,
-        @NonNull Integer activityId, @NonNull boolean finished) {
+    public UserActivityRequest(@NonNull Integer userId, Integer distance, @NonNull Integer activityId, @NonNull boolean finished) {
         this.userId = userId;
         this.distance = distance;
         this.activityId = activityId;
