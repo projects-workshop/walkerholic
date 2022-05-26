@@ -17,12 +17,12 @@ public class CartController {
         this.cartService = cartService;
     }
 
-    @PostMapping("carts")
+    @PostMapping("/carts")
     public ResponseEntity createCart(@RequestParam("userId") Integer userId) {
         return ResponseEntity.ok(cartService.createCart(userId));
     }
 
-    @GetMapping("carts")
+    @GetMapping("/carts")
     public ResponseEntity<CartResponse> getCart(@RequestParam("userId") Integer userId) {
         return ResponseEntity.ok(cartService.getCart(userId));
     }

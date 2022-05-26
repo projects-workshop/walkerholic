@@ -19,12 +19,14 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 
 @RunWith(SpringRunner.class)
@@ -66,20 +68,22 @@ public class OrderRepositoryTests {
         product = productRepository.save(Product.of("first", "firstProduct", "test", Category.TUMBLER, 2, 2.00f, seller));
         ProductImage productImage = productImageRepository.save(ProductImage.of("first", "firstProduct", product));
         product.addProductImage(productImage);
-        firstOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY, user.getId());
-        secondOrder = save(OrderStatus.CANCEL, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY, user.getId());
-        thirdOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.DELIVERED_DELIVERY, user.getId());
-        fourthOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY, seller.getId());
-        fifthOrder = save(OrderStatus.CANCEL, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY, seller.getId());
+        firstOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY, user.getId(), "2020-1-1 10:22");
+        secondOrder = save(OrderStatus.CANCEL, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY, user.getId(), "2020-1-3 10:22");
+        thirdOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.DELIVERED_DELIVERY, user.getId(), "2021-1-3 10:45");
+        fourthOrder = save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY, seller.getId(), "2022-1-7 10:22");
+        fifthOrder = save(OrderStatus.CANCEL, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY, seller.getId(), "2022-1-10 10:22");
     }
 
-    private Order save(OrderStatus orderStatus, Payment payment, Delivery deliveryInfo, Integer userId) {
+    private Order save(OrderStatus orderStatus, Payment payment, Delivery deliveryInfo,
+        Integer userId, String timeSeparator) {
         Order order = Order.builder()
             .orderStatus(orderStatus)
             .payment(payment)
             .delivery(deliveryInfo)
             .userId(userId)
-            .orderItems(new OrderItems()).build();
+            .orderItems(new OrderItems())
+            .timeSeparator(timeSeparator).build();
         orderRepository.save(order);
         OrderItem orderItem = new OrderItem(10, product, order);
         orderItemRepository.save(orderItem);
@@ -147,8 +151,14 @@ public class OrderRepositoryTests {
     public void find_existence_by_created_at_between_from_to() {
         LocalDateTime from = LocalDateTime.now().minusSeconds(30);
         LocalDateTime to = LocalDateTime.now();
-
         assertThat(orderRepository.existsByCreatedAtBetweenAndUserId(from, to, user.getId())).isTrue();
+    }
+
+    @Test
+    public void check_duplicated_order() {
+        assertThatThrownBy(() -> save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY, user.getId(), "2020-1-1 10:22"))
+            .isInstanceOf(DataIntegrityViolationException.class)
+            .hasMessageContaining("idx_userId_timeSeparator");
     }
 
 }

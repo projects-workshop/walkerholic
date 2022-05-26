@@ -17,9 +17,9 @@ import com.yunhalee.walkerholic.order.domain.OrderRepository;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.dto.UserIconResponse;
 import com.yunhalee.walkerholic.user.service.UserService;
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,9 +50,9 @@ public class OrderService {
 
     public OrderResponse createOrder(OrderRequest request) {
         Cart cart = cartService.findCartByUserId(request.getUserId());
-        checkOrderValidity(cart, request.getUserId());
+        checkCartEmpty(cart);
         User user = userService.findUserById(request.getUserId());
-        Order order = orderRepository.save(request.toOrder());
+        Order order = saveOrder(request);
         Set<OrderItem> orderItems = saveOrderItems(cart, order);
         NotificationMapper.of(user.getNotificationType()).sendCreateOrderNotification(order, user);
         return OrderResponse.of(order,
@@ -60,22 +60,12 @@ public class OrderService {
             orderItemService.orderItemResponses(orderItems));
     }
 
-    private void checkOrderValidity(Cart cart, Integer userId) {
-        checkOrderDuplicated(userId);
-        checkCartEmpty(cart);
-    }
-
-    private void checkOrderDuplicated(Integer userId) {
-        if (isDuplicated(userId)) {
+    private Order saveOrder(OrderRequest request) {
+        try {
+            return orderRepository.save(request.toOrder());
+        } catch (DataIntegrityViolationException e) {
             throw new OrderDuplicated("Order is duplicated. Please try a few seconds later.");
         }
-    }
-
-    private boolean isDuplicated(Integer userId) {
-        return orderRepository.existsByCreatedAtBetweenAndUserId(
-            LocalDateTime.now().minusSeconds(2),
-            LocalDateTime.now(),
-            userId);
     }
 
     private void checkCartEmpty(Cart cart) {

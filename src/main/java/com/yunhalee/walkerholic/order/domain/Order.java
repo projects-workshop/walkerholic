@@ -3,6 +3,7 @@ package com.yunhalee.walkerholic.order.domain;
 import com.yunhalee.walkerholic.common.domain.BaseTimeEntity;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import java.math.BigDecimal;
+import java.time.format.DateTimeFormatter;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ import java.util.*;
 import lombok.NonNull;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "orders", indexes = @Index(name = "idx_userId_timeSeparator", columnList = "user_id, time_separator", unique = true))
 @Getter
 @NoArgsConstructor
 public class Order extends BaseTimeEntity {
@@ -33,19 +34,25 @@ public class Order extends BaseTimeEntity {
     @Embedded
     private Delivery delivery;
 
+    @Column(name = "user_id")
     private Integer userId;
 
     @Embedded
     private OrderItems orderItems;
 
+    @Column(name = "time_separator")
+    private String timeSeparator = LocalDateTime.now()
+        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+
     @Builder
-    public Order(Integer id, @NonNull OrderStatus orderStatus, @NonNull Payment payment, @NonNull Delivery delivery, @NonNull Integer userId, @NonNull OrderItems orderItems) {
+    public Order(Integer id, @NonNull OrderStatus orderStatus, @NonNull Payment payment, @NonNull Delivery delivery, @NonNull Integer userId, @NonNull OrderItems orderItems, String timeSeparator) {
         this.id = id;
         this.orderStatus = orderStatus;
         this.payment = payment;
         this.delivery = delivery;
         this.userId = userId;
         this.orderItems = orderItems;
+        this.timeSeparator = timeSeparator;
     }
 
     public static Order of(Integer userId, BigDecimal shipping, String paymentMethod, String transactionId, Address address) {
