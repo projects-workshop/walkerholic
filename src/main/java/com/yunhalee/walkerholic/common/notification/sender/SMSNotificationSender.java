@@ -7,7 +7,9 @@ import java.util.HashMap;
 import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 
+@Async
 public class SMSNotificationSender implements NotificationSender {
 
     @Value("COOL_SMS_API_KEY")

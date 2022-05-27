@@ -8,6 +8,7 @@ import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.productImage.domain.ProductImage;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -107,8 +108,7 @@ public class S3ImageUploader {
 
     public String uploadFile(String folderName, MultipartFile multipartFile) throws IOException {
         File uploadFile = convert(multipartFile)
-            .orElseThrow(
-                () -> new IllegalArgumentException("MultipartFile 형식을 File로 전환하는 데에 실패하였습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("MultipartFile 형식을 File로 전환하는 데에 실패하였습니다."));
         return upload(uploadFile, folderName);
     }
 

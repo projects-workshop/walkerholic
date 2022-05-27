@@ -151,8 +151,8 @@ class PostServiceTests extends MockBeans {
         likePost.addPostImage(PostImageTest.POST_IMAGE);
 
         //when
-        doReturn(new PageImpl<>(Arrays.asList(post, likePost))).when(postRepository).findByCreateAt(any());
-        doReturn(new PageImpl<>(Arrays.asList(likePost, post))).when(postRepository).findByLikePostSize(any());
+        doReturn(new PageImpl<>(Arrays.asList(post, likePost))).when(postRepository).findByCreateAt(any(), any());
+        doReturn(new PageImpl<>(Arrays.asList(likePost, post))).when(postRepository).findByLikePostSize(any(), any());
         SimplePostResponses response = postService.getHomePosts(page, sort);
 
         //then
@@ -169,8 +169,8 @@ class PostServiceTests extends MockBeans {
         likePost.addPostImage(PostImageTest.POST_IMAGE);
 
         //when
-        doReturn(new PageImpl<>(Arrays.asList(post, likePost))).when(postRepository).findByCreateAt(any());
-        doReturn(new PageImpl<>(Arrays.asList(likePost, post))).when(postRepository).findByLikePostSize(any());
+        doReturn(new PageImpl<>(Arrays.asList(post, likePost))).when(postRepository).findByCreateAt(any(), any());
+        doReturn(new PageImpl<>(Arrays.asList(likePost, post))).when(postRepository).findByLikePostSize(any(), any());
         SimplePostResponses response = postService.getHomePosts(page, sort);
 
         //then

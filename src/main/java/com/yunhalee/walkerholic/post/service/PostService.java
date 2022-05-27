@@ -21,6 +21,7 @@ import com.yunhalee.walkerholic.post.domain.PostRepository;
 import com.yunhalee.walkerholic.user.service.UserService;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -84,13 +85,15 @@ public class PostService {
     }
 
 
+    @Cacheable(value = "posts", key = "{#page, #sort}")
     public SimplePostResponses getHomePosts(Integer page, String sort) {
         Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
+        Long offset = (long) ((page - 1) * POST_PER_PAGE);
         if (sort.equals("newest")) {
-            Page<Post> pagePost = postRepository.findByCreateAt(pageable);
+            Page<Post> pagePost = postRepository.findByCreateAt(pageable, offset);
             return simplePostResponses(pagePost);
         }
-        Page<Post> pagePost = postRepository.findByLikePostSize(pageable);
+        Page<Post> pagePost = postRepository.findByLikePostSize(pageable, offset);
         return simplePostResponses(pagePost);
     }
 

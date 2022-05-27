@@ -2,8 +2,10 @@ package com.yunhalee.walkerholic.post.dto;
 
 import com.yunhalee.walkerholic.post.domain.Post;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class SimplePostResponse {
 
     private Integer id;

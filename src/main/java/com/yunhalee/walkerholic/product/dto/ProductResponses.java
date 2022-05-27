@@ -3,8 +3,10 @@ package com.yunhalee.walkerholic.product.dto;
 import com.yunhalee.walkerholic.user.dto.SellerUserResponse;
 import java.util.List;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class ProductResponses {
 
     private List<SimpleProductResponse> products;

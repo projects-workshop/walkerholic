@@ -37,7 +37,6 @@ public class ProductImageController {
     public ResponseEntity deleteImages(
         @PathVariable("id") Integer id,
         @RequestParam(value = "deletedImages") List<String> deletedImages) {
-        deletedImages.forEach(System.out::println);
         productImageService.deleteImages(id, deletedImages);
         return ResponseEntity.noContent().build();
     }

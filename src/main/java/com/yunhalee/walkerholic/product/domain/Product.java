@@ -12,7 +12,10 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "product")
+@Table(name = "product",  indexes = {
+    @Index(name = "idx_name", columnList = "name"),
+    @Index(name = "idx_category_name", columnList = "category, name")
+})
 @Getter
 @NoArgsConstructor
 public class Product extends BaseTimeEntity {

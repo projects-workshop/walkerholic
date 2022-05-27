@@ -100,7 +100,7 @@ public class PostRepositoryTests {
 
         //when
         Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
-        Page<Post> postPage = postRepository.findByLikePostSize(pageable);
+        Page<Post> postPage = postRepository.findByLikePostSize(pageable, (long)(page -1) * POST_PER_PAGE);
         List<Post> posts = postPage.getContent();
 
         //then

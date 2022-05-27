@@ -22,6 +22,7 @@ import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.product.domain.ProductRepository;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.EnumUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -76,6 +77,7 @@ public class ProductService {
             reviewResponses(reviews));
     }
 
+    @Cacheable(value = "products", key = "{#page, #sort, #category, #keyword}")
     public ProductResponses getProducts(Integer page, String sort, String category, String keyword) {
         Pageable pageable = pageable(page, sort);
         if (EnumUtils.isValidEnum(Category.class, category)) {

@@ -2,7 +2,9 @@ package com.yunhalee.walkerholic.common.notification.sender;
 
 import com.yunhalee.walkerholic.order.domain.Order;
 import com.yunhalee.walkerholic.user.domain.User;
+import org.springframework.scheduling.annotation.Async;
 
+@Async
 public class DefaultNotificationSender implements NotificationSender{
 
     @Override

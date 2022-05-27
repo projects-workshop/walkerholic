@@ -5,8 +5,10 @@ import java.math.BigDecimal;
 import lombok.Getter;
 
 import java.util.List;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class SimpleProductResponse {
 
     private Integer id;

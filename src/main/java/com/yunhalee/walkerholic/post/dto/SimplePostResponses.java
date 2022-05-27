@@ -2,8 +2,10 @@ package com.yunhalee.walkerholic.post.dto;
 
 import java.util.List;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class SimplePostResponses {
 
     private List<SimplePostResponse> posts;

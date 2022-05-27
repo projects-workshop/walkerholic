@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "post")
+@Table(name = "post", indexes = @Index(name = "idx_title", columnList = "title"))
 @NoArgsConstructor
 public class Post extends BaseTimeEntity {
 
