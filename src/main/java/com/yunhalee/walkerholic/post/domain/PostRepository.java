@@ -24,7 +24,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH i.postImages LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts LEFT JOIN FETCH p.user u WHERE p.id >= :offset ORDER BY p.createdAt DESC",
         countQuery = "SELECT count(DISTINCT p) FROM Post p")
-    Page<Post> findByCreateAt(Pageable pageable, Long offset);
+    Page<Post> findByCreateAt(Pageable pageable, Integer offset);
 
     @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH i.postImages LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts t LEFT JOIN FETCH t.user LEFT JOIN FETCH p.user u WHERE u.id in :followings",
         countQuery = "SELECT count(DISTINCT p) FROM Post p")
@@ -32,7 +32,7 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH i.postImages LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts k LEFT JOIN FETCH p.user u WHERE p.id >= :offset ORDER BY SIZE(k) DESC",
         countQuery = "SELECT count(DISTINCT p) FROM Post p")
-    Page<Post> findByLikePostSize(Pageable pageable, Long offset);
+    Page<Post> findByLikePostSize(Pageable pageable, Integer offset);
 
     @Query(value = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH p.postImages i LEFT JOIN FETCH i.postImages LEFT JOIN FETCH p.likePosts l LEFT JOIN FETCH l.likePosts LEFT JOIN FETCH p.user u WHERE p.title LIKE %:keyword% ORDER BY p.createdAt DESC",
         countQuery = "SELECT count(DISTINCT p) FROM Post p")

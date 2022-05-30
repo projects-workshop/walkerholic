@@ -88,7 +88,7 @@ public class PostService {
     @Cacheable(value = "posts", key = "{#page, #sort}")
     public SimplePostResponses getHomePosts(Integer page, String sort) {
         Pageable pageable = PageRequest.of(page - 1, POST_PER_PAGE);
-        Long offset = (long) ((page - 1) * POST_PER_PAGE);
+        Integer offset = ((page - 1) * POST_PER_PAGE);
         if (sort.equals("newest")) {
             Page<Post> pagePost = postRepository.findByCreateAt(pageable, offset);
             return simplePostResponses(pagePost);
