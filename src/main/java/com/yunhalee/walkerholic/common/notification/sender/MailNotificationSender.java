@@ -8,7 +8,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 
-@Async
 public class MailNotificationSender implements NotificationSender {
 
     @Autowired
@@ -21,6 +20,7 @@ public class MailNotificationSender implements NotificationSender {
     private String baseUrl;
 
     @Override
+    @Async
     public void sendCreateOrderNotification(Order order, User user) {
         sendMail(user.getEmail(),
             user.getFullname() + " : Created Order " + order.getId(),
@@ -32,6 +32,7 @@ public class MailNotificationSender implements NotificationSender {
     }
 
     @Override
+    @Async
     public void sendCancelOrderNotification(Order order, User user) {
         sendMail(user.getEmail(),
             user.getFullname() + " : Cancel Order " + order.getId(),

@@ -9,7 +9,6 @@ import net.nurigo.java_sdk.exceptions.CoolsmsException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 
-@Async
 public class SMSNotificationSender implements NotificationSender {
 
     @Value("COOL_SMS_API_KEY")
@@ -25,6 +24,7 @@ public class SMSNotificationSender implements NotificationSender {
     private String baseUrl;
 
     @Override
+    @Async
     public void sendCreateOrderNotification(Order order, User user) {
         sendSMS(user.getPhoneNumber(),
             "Hello" + user.getFirstname() + "! Your order has been made successfully. " +
@@ -35,6 +35,7 @@ public class SMSNotificationSender implements NotificationSender {
     }
 
     @Override
+    @Async
     public void sendCancelOrderNotification(Order order, User user) {
         sendSMS(user.getEmail(),
             "Hello" + user.getFirstname() + "! Your order has been canceled successfully. " +
