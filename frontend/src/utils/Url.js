@@ -1,0 +1,1 @@
+export const BASE_URL = 'https://walkerholic-backend.o-r.kr'

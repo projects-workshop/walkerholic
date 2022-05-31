@@ -1,0 +1,126 @@
+.postcard{
+    max-width: 63rem;
+    margin: auto;
+    border: 2px solid black;
+    border-radius: 13px;
+    box-shadow: 5px 5px #e8e8e8;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+
+/* Card Header */
+.postcard_header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px 0 10px;
+}
+
+.postcard_title{
+    font-size: 1.8rem;
+    font-weight: 600;
+    word-break: normal;
+}
+
+.postcard_user_info{
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 1rem;
+    margin-top: 10px;
+}
+
+.postcard_user_info img{
+    width: 20px;
+    height: 20px;
+    overflow: hidden;
+    border: 1px solid black;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.postcard_user_name{
+    font-size: 11px;
+    font-weight: 400;
+}
+
+/* Card Body */
+.cardbody_image{
+    width: 90%;
+    margin: auto;
+    margin-top: 3rem;
+}
+.cardbody_content{
+    margin-top: 3rem;
+    margin-left: 1rem;
+    font-size: 1.2rem;
+}
+
+.read_more{
+    color: #8f8f8f;
+    font-weight: 800;
+    margin-left: 20px;
+    cursor: pointer;
+}
+
+.read_more:hover{
+    color: #a3432f;
+}
+
+/* Card Footer */
+.cardfooter{
+    margin: 4rem 0 3rem 0;
+    text-align: center;
+}
+
+.cardfooter_icon{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cardfooter_icon i{
+    margin-left: 20px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.card_footer_likes{
+    position: absolute;
+    font-size: 8px;
+    text-align: right;
+    font-weight: 500;
+    top: 15%;
+    left: 64%;
+}
+
+.sharemodal{
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #0008;
+    z-index: 4;
+    width: 100%;
+    height: 100vh;
+    overflow: auto;
+}
+
+.sharemodal_icon{
+    max-width: 250px;
+    width: 100%;
+    background-color: white;
+    margin: 40vh auto;
+    padding: 20px;
+    border-radius: 5px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.sharemodal_close{
+    font-size: 1.6rem;
+    font-weight: 800;
+    transform: translate(10px, -20px);
+    cursor: pointer;
+}

@@ -1,0 +1,95 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.main{
+  min-height: calc(100vh - 9rem);
+}
+
+body a{
+  color: black;
+}
+
+body a:hover{
+  text-decoration: none;
+  cursor: pointer;
+  color: black;
+}
+
+body button{
+  padding: 3px 1rem 3px 1rem;
+  border: 2px solid black;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+body button:hover{
+  border: 2px solid #e0e0e0;
+}
+
+
+/* Loading */
+@import url('./styles/loading.css');
+
+/* Error */
+@import url('./styles/error.css');
+
+/* Header */
+@import url('./styles/header.css');
+
+/* Home */
+@import url('./styles/home.css');
+
+/* Login, Register */
+@import url('./styles/auth.css');
+
+/* Footer */
+@import url('./styles/footer.css');
+
+/* Profile */
+@import url('./styles/profile.css');
+
+/* Icon */
+@import url('./styles/icon.css');
+
+/* PostThumb */
+@import url('./styles/post_thumb.css');
+
+/* UserCard */
+@import url('./styles/user_card.css');
+
+/* Post */
+@import url('./styles/post.css');
+
+/* PostCard */
+@import url('./styles/post_card.css');
+
+/* Activity */
+@import url('./styles/activity.css');
+
+/* Product */
+@import url('./styles/product.css');
+
+/* Cart */
+@import url('./styles/cart.css');
+
+/* Order */
+@import url('./styles/order.css');
+
+/* List */
+@import url('./styles/list.css');
+
+/* About */
+@import url('./styles/about.css');
