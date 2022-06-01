@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class FollowController {
 
     private final FollowService followService;

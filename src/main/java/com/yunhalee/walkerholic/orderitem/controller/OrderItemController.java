@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api/order-items")
 public class OrderItemController {
 
     private final OrderItemService orderItemService;
@@ -13,7 +14,7 @@ public class OrderItemController {
         this.orderItemService = orderItemService;
     }
 
-    @DeleteMapping("/order-items/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteOrderItem(@PathVariable("id") Integer id) {
         orderItemService.deleteOrderItem(id);
         return ResponseEntity.noContent().build();

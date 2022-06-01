@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/posts/{id}/post-images")
+@RequestMapping("/api/posts/{id}/post-images")
 public class PostImageController {
 
     private final PostImageService postImageService;
