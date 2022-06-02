@@ -30,7 +30,7 @@ import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 
 function App() {
   
-  axios.defaults.baseURL = "http://localhost:8080/api";
+  axios.defaults.baseURL = "https://walkerholic.o-r.kr/api";
 
   const dispatch = useDispatch()
   

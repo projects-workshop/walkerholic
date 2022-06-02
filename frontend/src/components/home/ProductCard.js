@@ -1,4 +1,5 @@
 import React from 'react'
+import ProgressiveImage from 'react-progressive-graceful-image'
 import {Link} from 'react-router-dom'
 import Exclude from '../../images/Exclude.png'
 import Group from '../../images/Group (1).png'
@@ -8,9 +9,15 @@ function ProductCard({product}) {
         <div className="home_product">
             <Link to={`/product/${product.id}`}>
             <div className="home_product_image">
-                <img src={product.imagesUrl[0]} alt="" />
+                <ProgressiveImage src={product.imagesUrl[0]} >
+                    {(src) => <img src={src} alt="" />}
+                </ProgressiveImage>
+                {/* <img src={product.imagesUrl[0]} alt="" /> */}
                 <div className="home_product_image_tool">
-                        <img src={Exclude} alt="" />
+                    <ProgressiveImage src={Exclude} >
+                        {(src) => <img src={src} alt="" />}
+                    </ProgressiveImage>
+                        {/* <img src={Exclude} alt="" /> */}
                 </div>
             </div>
             <div className="home_product_name">
@@ -22,7 +29,10 @@ function ProductCard({product}) {
             {
                 product.stock===0 &&
                 <div className="home_product_soldout">
-                    <img src={Group} alt="" />
+                    <ProgressiveImage src={Group} >
+                        {(src) => <img src={src} alt="" />}
+                    </ProgressiveImage>
+                    {/* <img src={Group} alt="" /> */}
                     <div className="emoji">🍟</div>
                 </div>
             }

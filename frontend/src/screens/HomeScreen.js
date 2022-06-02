@@ -12,6 +12,7 @@ import { GET_AUTH_FOLLOWS } from '../_constants/AuthConstants';
 import { getCart } from '../_actions/OrderActions';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
+import ProgressiveImage from 'react-progressive-graceful-image';
 
 function HomeScreen(props) {
 
@@ -38,11 +39,6 @@ function HomeScreen(props) {
                   type:GET_AUTH_FOLLOWS,
                   payload:res1.data
                 })
-                // const res2 = await axios.get(`/cartItems/${id}`)
-                // dispatch({
-                //   type:GET_CARTITEMS_SUCCESS,
-                //   payload:res2.data
-                // })
                 dispatch(getCart(id))
               })
         }
@@ -72,7 +68,10 @@ function HomeScreen(props) {
                     <div className="home_image_description">
                         <strong>7, May, 2021 </strong> Don't eliminate preciousness
                     </div>
-                    <img src={Main} alt="" />
+                    <ProgressiveImage src={Main} >
+                        {(src) => <img src={src} alt="" />}
+                    </ProgressiveImage>
+                    {/* <img src={Main} alt="" /> */}
                 </div>
             </div>
             <div className="home_products_container">

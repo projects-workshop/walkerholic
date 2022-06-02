@@ -77,7 +77,7 @@ public class ProductService {
             reviewResponses(reviews));
     }
 
-//    @Cacheable(value = "products", key = "{#page, #sort, #category, #keyword}")
+    @Cacheable(value = "products", key = "{#page, #sort, #category, #keyword}")
     public ProductResponses getProducts(Integer page, String sort, String category, String keyword) {
         Pageable pageable = pageable(page, sort);
         if (EnumUtils.isValidEnum(Category.class, category)) {
