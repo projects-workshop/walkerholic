@@ -29,20 +29,20 @@ public class FollowService {
 
     @Transactional
     public FollowResponse follow(Integer fromId, Integer toId) {
-        checkFollowValidate(fromId, toId);
         User fromUser = userService.findUserById(fromId);
         User toUser = userService.findUserById(toId);
+        checkFollowValidate(fromUser, toUser);
         Follow follow = Follow.of(fromUser, toUser);
         followRepository.save(follow);
         return FollowResponse.of(follow.getId(), FollowUserResponse.of(follow.getToUser()));
     }
 
-    private void checkFollowValidate(Integer fromId, Integer toId) {
-        if (fromId.equals(toId)) {
+    private void checkFollowValidate(User fromUser, User toUser) {
+        if (fromUser.equals(toUser)) {
             throw new CannotFollowOneselfException("User cannot follow oneself.");
         }
-        if (followRepository.existsByFromUserIdAndToUserId(fromId, toId)) {
-            throw new FollowAlreadyExistException("user : " + fromId + "already followed user : " + toId);
+        if (followRepository.existsByFromUserAndToUser(fromUser, toUser)) {
+            throw new FollowAlreadyExistException("user : " + fromUser.getId() + "already followed user : " + toUser.getId());
         }
     }
 

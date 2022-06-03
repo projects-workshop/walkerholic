@@ -9,6 +9,7 @@ import { getActivities } from '../_actions/ActivityActions'
 
 function ActivityScreen() {
 
+    const auth = useSelector(state => state.auth)
     const activity = useSelector(state => state.activity)
 
     const dispatch = useDispatch()
@@ -22,9 +23,12 @@ function ActivityScreen() {
     return (
         <div className="activity">
             <Level/>
-            <div style={{marginTop:"4rem", textAlign:"right", marginRight:"4rem"}}>
-                <button onClick={()=>setIsCreate(!isCreate)}>Create Activity</button>
-            </div>
+            {
+                auth && auth.user && auth.user.role === "ADMIN" &&
+                <div style={{marginTop:"4rem", textAlign:"right", marginRight:"4rem"}}>
+                    <button onClick={()=>setIsCreate(!isCreate)}>Create Activity</button>
+                </div>
+            }
             {
                 activity.error && activity.error.message && <Error error = {activity.error.message}/>
             }

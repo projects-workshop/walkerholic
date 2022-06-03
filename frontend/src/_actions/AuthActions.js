@@ -48,7 +48,7 @@ export const login = ({email, password}) =>async(dispatch, getState)=>{
             payload:res.data
         })
 
-        localStorage.setItem("walkerholic_token", JSON.stringify(res.data.token))
+        localStorage.setItem("walkerholic_token", JSON.stringify(res.data.token).replace(/\"/gi, ""))
 
         return res.data.user.id
 

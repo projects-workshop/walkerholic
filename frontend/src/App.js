@@ -36,7 +36,7 @@ function App() {
   
   useEffect(() => {
     if(localStorage.getItem("walkerholic_token")){
-      const token = localStorage.getItem("walkerholic_token").replace(/\"/gi, "")
+      const token = localStorage.getItem("walkerholic_token")
       dispatch(auth(token)).then(async(id)=>{
         const res1 = await axios.get(`/follows/${id}`,{
           headers : {Authorization : `Bearer ${token}`}
