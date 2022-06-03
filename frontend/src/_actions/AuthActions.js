@@ -50,14 +50,14 @@ export const login = ({email, password}) =>async(dispatch, getState)=>{
 
         localStorage.setItem("walkerholic_token", JSON.stringify(res.data.token).replace(/\"/gi, ""))
 
-        return res.data.user.id
+        return res.data
 
     }catch(error){
         dispatch({
             type:LOGIN_FAIL,
             payload: error.response && error.response.data
             ? error.response.data
-            : error.message            
+            : error.message
         })
     }
 }

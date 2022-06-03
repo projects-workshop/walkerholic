@@ -32,16 +32,16 @@ function LoginScreen(props) {
     const handleSubmit = (e)=>{
         e.preventDefault();
 
-        dispatch(login({email, password})).then(async(id)=>{
-            const res = await axios.get(`/follows/${id}`,{
-                headers : {Authorization : `Bearer ${auth.token}`}
+        dispatch(login({email, password})).then(async(r)=>{
+            const res = await axios.get(`/follows/${r.user.id}`,{
+                headers : {Authorization : `Bearer ${r.token}`}
             })
             dispatch({
               type:GET_AUTH_FOLLOWS,
               payload:res.data
             })
         })
-        
+
     }
 
     return (
