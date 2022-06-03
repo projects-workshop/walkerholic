@@ -6,13 +6,14 @@ import ProductCard from '../components/home/ProductCard';
 import { Link } from 'react-router-dom';
 import { getHomePost } from '../_actions/PostActions';
 import HomePostCard from '../components/home/HomePostCard';
-import { auth } from '../_actions/AuthActions';
+import { authenticate } from '../_actions/AuthActions';
 import axios from 'axios';
 import { GET_AUTH_FOLLOWS } from '../_constants/AuthConstants';
 import { getCart } from '../_actions/OrderActions';
 import Error from '../components/Error';
 import Loading from '../components/Loading';
-import ProgressiveImage from 'react-progressive-graceful-image';
+import ProgressiveImage from "react-progressive-graceful-image";
+
 
 function HomeScreen(props) {
 
@@ -31,7 +32,7 @@ function HomeScreen(props) {
     useEffect(() => {
         if(token){
             localStorage.setItem("walkerholic_token", token)
-            dispatch(auth(token)).then(async(id)=>{
+            dispatch(authenticate(token)).then(async(id)=>{
                 const res1 = await axios.get(`/follows/${id}`,{
                     headers : {Authorization : `Bearer ${token}`}
                 })
@@ -50,7 +51,7 @@ function HomeScreen(props) {
             setPosts(res)
         })
         setIsLoad(false)
-    }, [dispatch])
+    }, [token])
 
     return (
         <div className="home">

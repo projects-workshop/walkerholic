@@ -63,7 +63,7 @@ export const login = ({email, password}) =>async(dispatch, getState)=>{
 }
 
 
-export const auth = (token) =>async(dispatch, getState)=>{
+export const authenticate = (token) =>async(dispatch, getState)=>{
 
     dispatch({
         type:AUTH_REQUEST
@@ -82,12 +82,15 @@ export const auth = (token) =>async(dispatch, getState)=>{
 
 
     }catch(error){
-        dispatch({
-            type:AUTH_FAIL,
-            payload: error.response && error.response.data
-            ? error.response.data
-            : error.message            
-        })
+
+        // dispatch({
+        //     type:AUTH_FAIL,
+        //     payload: error.response && error.response.data
+        //     ? error.response.data
+        //     : error.message
+        // })
+        localStorage.removeItem("walkerholic_token")
+
     }
 }
 

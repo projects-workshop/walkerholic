@@ -1,7 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import {Link, useHistory} from 'react-router-dom'
-import { auth } from '../../_actions/AuthActions'
+import {useHistory} from 'react-router-dom'
 
 function Sidebar({isOpen,setIsOpen}) {
 
