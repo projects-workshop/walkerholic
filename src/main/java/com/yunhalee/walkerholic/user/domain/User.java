@@ -98,17 +98,17 @@ public class User {
             .password(password).build();
     }
 
-    public User(String firstname, String lastname, String email, String password, String phoneNumber, String description, Role role) {
-        this.userInfo = UserInfo.builder()
-            .firstname(firstname)
-            .lastname(lastname)
-            .phoneNumber(phoneNumber)
-            .description(description)
-            .role(role).build();
-        this.userAuth = UserAuth.builder()
-            .email(email)
-            .password(password).build();
-    }
+//    public User(String firstname, String lastname, String email, String password, String phoneNumber, String description, Role role) {
+//        this.userInfo = UserInfo.builder()
+//            .firstname(firstname)
+//            .lastname(lastname)
+//            .phoneNumber(phoneNumber)
+//            .description(description)
+//            .role(role).build();
+//        this.userAuth = UserAuth.builder()
+//            .email(email)
+//            .password(password).build();
+//    }
 
     public String getFullName() {
         return this.userInfo.getFullname();
@@ -187,5 +187,9 @@ public class User {
 
     public String getDescription() {
         return userInfo.getDescription();
+    }
+
+    public NotificationType getNotificationType() {
+        return userInfo.getNotificationType();
     }
 }

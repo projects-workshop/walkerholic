@@ -3,8 +3,10 @@ package com.yunhalee.walkerholic.user.dto;
 import com.yunhalee.walkerholic.user.domain.Role;
 import com.yunhalee.walkerholic.user.domain.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class UserRequest {
 
     private String firstname;

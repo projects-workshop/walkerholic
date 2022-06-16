@@ -1,9 +1,10 @@
 package com.yunhalee.walkerholic.user.service;
 
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
+import com.yunhalee.walkerholic.user.dto.UserResponses;
 import com.yunhalee.walkerholic.util.FileUploadUtils;
 import com.yunhalee.walkerholic.user.dto.UserResponse;
-import com.yunhalee.walkerholic.user.dto.UserListDTO;
+import com.yunhalee.walkerholic.user.dto.UserListResponse;
 import com.yunhalee.walkerholic.user.dto.UserRegisterDTO;
 import com.yunhalee.walkerholic.user.dto.UserSearchDTO;
 import com.yunhalee.walkerholic.user.domain.Level;
@@ -12,7 +13,7 @@ import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.exception.UserEmailAlreadyExistException;
 import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
-import lombok.RequiredArgsConstructor;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,19 +37,19 @@ public class UserService {
 
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
-    private JavaMailSender mailSender;
-    private String sender;
+//    private JavaMailSender mailSender;
+//    private String sender;
     private S3ImageUploader s3ImageUploader;
 
     public UserService(UserRepository userRepository,
         PasswordEncoder passwordEncoder,
-        JavaMailSender mailSender,
-        @Value("${spring.mail.username}") String sender,
+//        JavaMailSender mailSender,
+//        @Value("${spring.mail.username}") String sender,
         S3ImageUploader s3ImageUploader) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.mailSender = mailSender;
-        this.sender = sender;
+//        this.mailSender = mailSender;
+//        this.sender = sender;
         this.s3ImageUploader = s3ImageUploader;
     }
 
@@ -57,17 +58,18 @@ public class UserService {
     }
 
 
-    public HashMap<String, Object> getUsers(Integer page, String sort) {
+    public UserResponses getUsers(Integer page, String sort) {
         Pageable pageable = PageRequest.of(page - 1, USER_LIST_PER_PAGE, Sort.by(sort));
         Page<User> userPage = userRepository.findAllUsers(pageable);
-        List<User> users = userPage.getContent();
-        List<UserListDTO> userListDTOS = new ArrayList<>();
-        users.forEach(user -> userListDTOS.add(new UserListDTO(user)));
-        HashMap<String, Object> userList = new HashMap<>();
-        userList.put("users", userListDTOS);
-        userList.put("totalElement", userPage.getTotalElements());
-        userList.put("totalPage", userPage.getTotalPages());
-        return userList;
+        return UserResponses.of(userResponses(userPage.getContent()),
+            userPage.getTotalElements(),
+            userPage.getTotalPages());
+    }
+
+    private List<UserResponse> userResponses(List<User> users) {
+        return users.stream()
+            .map(UserResponse::of)
+            .collect(Collectors.toList());
     }
 
     public List<UserSearchDTO> searchUser(String keyword) {

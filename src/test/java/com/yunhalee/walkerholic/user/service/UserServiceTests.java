@@ -1,60 +1,98 @@
 package com.yunhalee.walkerholic.user.service;
 
-import com.yunhalee.walkerholic.user.dto.UserResponse;
-import com.yunhalee.walkerholic.user.dto.UserListDTO;
-import com.yunhalee.walkerholic.user.dto.UserRegisterDTO;
-import com.yunhalee.walkerholic.user.dto.UserSearchDTO;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import com.yunhalee.walkerholic.MockBeans;
 import com.yunhalee.walkerholic.user.domain.User;
-import com.yunhalee.walkerholic.user.domain.UserRepository;
-import com.yunhalee.walkerholic.security.jwt.JwtTokenUtil;
-import com.yunhalee.walkerholic.security.jwt.service.JwtUserDetailsService;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import com.yunhalee.walkerholic.user.domain.UserTest;
+import com.yunhalee.walkerholic.user.dto.UserListResponse;
+import com.yunhalee.walkerholic.user.dto.UserRegisterDTO;
+import com.yunhalee.walkerholic.user.dto.UserResponse;
+import com.yunhalee.walkerholic.user.dto.UserResponses;
+import com.yunhalee.walkerholic.user.dto.UserSearchDTO;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
+class UserServiceTests extends MockBeans {
 
-import static org.junit.Assert.*;
+    private static final Integer ID = 1;
+    private static final String FIRST_NAME = "testFirstName";
+    private static final String LAST_NAME = "TestLastName";
+    private static final String EMAIL = "test@example.com";
+    private static final String PASSWORD = "123456";
+    private static final String PHONE_NUMBER = "";
+    private static final String DESCRIPTION = "";
+    private static final boolean IS_SELLER = false;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@Transactional
-public class UserServiceTests {
-
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    AuthenticationManager authenticationManager;
-
-    @Autowired
-    JwtTokenUtil jwtTokenUtil;
-
-    @Autowired
-    JwtUserDetailsService userDetailsService;
+    @InjectMocks
+    private UserService userService = new UserService(userRepository, passwordEncoder, s3ImageUploader);
 
 
+    @Test
+    void getUser() {
+        //when
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(UserTest.USER));
+        UserResponse userResponse = userService.getUser(ID);
+
+        //then
+        equals(userResponse, UserTest.USER);
+    }
+
+    @Test
+    public void getUsersByPage() {
+        //given
+        Integer page = 1;
+        String sort = "id";
+
+        //when
+        doReturn(new PageImpl<>(Arrays.asList(UserTest.USER, UserTest.SELLER))).when(userRepository).findAllUsers(any());
+        UserResponses userResponses= userService.getUsers(page, sort);
+
+        //then
+        assertThat(userResponses.getTotalPage()).isEqualTo(1);
+        assertThat(userResponses.getTotalElement()).isEqualTo(2);
+        assertThat(userResponses.getUsers().size()).isEqualTo(2);
+    }
+
+    @Test
+    public void getUserByKeyword() {
+        //given
+        String keyword = "lee";
+
+        //when
+        List<UserSearchDTO> userSearchDTOS = userService.searchUser(keyword);
+
+        //then
+        assertNotEquals(userSearchDTOS.size(), 0);
+        userSearchDTOS.forEach(userSearchDTO -> System.out
+            .println(userSearchDTO.getFirstname() + userSearchDTO.getLastname()));
+    }
     @Test
     public void singUp() throws IOException {
         //given
@@ -177,49 +215,6 @@ public class UserServiceTests {
         assertNotEquals(lastname, userResponse.getLastname());
     }
 
-    @Test
-    public void getUser() {
-        //given
-        Integer id = 17;
-
-        //when
-        UserResponse userResponse = userService.getUser(id);
-
-        //then
-        assertNotNull(userResponse.getId());
-        assertEquals(userResponse.getId(), id);
-    }
-
-    @Test
-    public void getUsersByPage() {
-        //given
-        Integer page = 1;
-        String sort = "id";
-
-        //when
-        HashMap<String, Object> response = userService.getUsers(page, sort);
-        List<UserListDTO> userListDTOS = (List<UserListDTO>) response.get("users");
-
-        //then
-        assertEquals(9, userListDTOS.size());
-        for (UserListDTO userListDTO : userListDTOS) {
-            System.out.println(userListDTO.getId());
-        }
-    }
-
-    @Test
-    public void getUserByKeyword() {
-        //given
-        String keyword = "lee";
-
-        //when
-        List<UserSearchDTO> userSearchDTOS = userService.searchUser(keyword);
-
-        //then
-        assertNotEquals(userSearchDTOS.size(), 0);
-        userSearchDTOS.forEach(userSearchDTO -> System.out
-            .println(userSearchDTO.getFirstname() + userSearchDTO.getLastname()));
-    }
 
     @Test
     public void deleteUser() {
@@ -233,5 +228,18 @@ public class UserServiceTests {
         assertNull(userRepository.findById(id));
     }
 
+
+    private void equals(UserResponse userResponse, User user) {
+        assertThat(userResponse.getId()).isEqualTo(user.getId());
+        assertThat(userResponse.getFirstname()).isEqualTo(user.getFirstname());
+        assertThat(userResponse.getLastname()).isEqualTo(user.getLastname());
+        assertThat(userResponse.getEmail()).isEqualTo(user.getEmail());
+        assertThat(userResponse.getRole()).isEqualTo(user.getRoleName());
+        assertThat(userResponse.getImageUrl()).isEqualTo(user.getImageUrl());
+        assertThat(userResponse.getPhoneNumber()).isEqualTo(user.getPhoneNumber());
+        assertThat(userResponse.getLevel()).isEqualTo(user.getLevelName());
+        assertThat(userResponse.getDescription()).isEqualTo(user.getDescription());
+        assertThat(userResponse.isSeller()).isEqualTo(user.isSeller());
+    }
 
 }

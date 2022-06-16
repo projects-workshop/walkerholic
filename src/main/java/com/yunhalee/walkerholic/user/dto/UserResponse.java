@@ -2,10 +2,12 @@ package com.yunhalee.walkerholic.user.dto;
 
 import com.yunhalee.walkerholic.user.domain.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
 @Getter
+@NoArgsConstructor
 public class UserResponse {
 
     private Integer id;

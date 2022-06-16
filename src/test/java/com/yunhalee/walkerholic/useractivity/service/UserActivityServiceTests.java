@@ -1,5 +1,12 @@
 package com.yunhalee.walkerholic.useractivity.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.yunhalee.walkerholic.MockBeans;
 import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.user.domain.Level;
@@ -7,36 +14,20 @@ import com.yunhalee.walkerholic.user.domain.Role;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.useractivity.domain.ActivityStatus;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
-import com.yunhalee.walkerholic.util.CommonMethod;
-import com.yunhalee.walkerholic.useractivity.dto.UserActivityResponses;
 import com.yunhalee.walkerholic.useractivity.dto.UserActivityRequest;
 import com.yunhalee.walkerholic.useractivity.dto.UserActivityResponse;
+import com.yunhalee.walkerholic.useractivity.dto.UserActivityResponses;
+import com.yunhalee.walkerholic.util.CommonMethod;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-@RunWith(SpringRunner.class)
-@ExtendWith(MockitoExtension.class)
-@Transactional
 class UserActivityServiceTests extends MockBeans {
 
     @InjectMocks
@@ -48,11 +39,12 @@ class UserActivityServiceTests extends MockBeans {
 
     @BeforeEach
     void setUp() {
-        user = new User("testFirstName",
-            "TestLastName",
-            "test@example.com",
-            "12345678",
-            Role.USER);
+        user = User.builder()
+            .firstname("testFirstName")
+            .lastname("TestLastName")
+            .email("test@example.com")
+            .password("12345678")
+            .role(Role.USER).build();
         activity = Activity.builder()
             .name("testActivity")
             .score(500)
