@@ -23,7 +23,7 @@ public class MailNotificationSender implements NotificationSender {
     @Async
     public void sendCreateOrderNotification(Order order, User user) {
         sendMail(user.getEmail(),
-            user.getFullname() + " : Created Order " + order.getId(),
+            user.getFullName() + " : Created Order " + order.getId(),
             "Hello" + user.getFirstname() + "! Your order has been made successfully. " +
                 "\n\nOrder Id :  " + order.getId() +
                 "\nTotal Amount : " + order.getTotalAmount() +
@@ -35,7 +35,7 @@ public class MailNotificationSender implements NotificationSender {
     @Async
     public void sendCancelOrderNotification(Order order, User user) {
         sendMail(user.getEmail(),
-            user.getFullname() + " : Cancel Order " + order.getId(),
+            user.getFullName() + " : Cancel Order " + order.getId(),
             "Hello" + user.getFirstname() + "! Your order has been canceled successfully. " +
                 "\n\nOrder Id :  " + order.getId() +
                 "\nTotal Amount : " + order.getTotalAmount() +

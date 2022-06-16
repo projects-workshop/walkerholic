@@ -3,7 +3,6 @@ package com.yunhalee.walkerholic.likepost.dto;
 import com.yunhalee.walkerholic.likepost.domain.LikePost;
 import com.yunhalee.walkerholic.user.domain.User;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 public class LikePostResponse {
@@ -25,6 +24,6 @@ public class LikePostResponse {
 
     public static LikePostResponse of(LikePost likePost) {
         User user = likePost.getUser();
-        return new LikePostResponse(likePost.getId(), user.getId(), user.getFullname(), user.getImageUrl());
+        return new LikePostResponse(likePost.getId(), user.getId(), user.getFullName(), user.getImageUrl());
     }
 }

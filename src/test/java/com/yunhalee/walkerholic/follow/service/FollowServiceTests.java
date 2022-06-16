@@ -15,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +52,7 @@ class FollowServiceTests extends MockBeans {
         FollowResponse response = followService.follow(fromUserId, toUserId);
 
         //then
-        assertThat(response.getUser().getFullname()).isEqualTo(UserTest.SELLER.getFullname());
+        assertThat(response.getUser().getFullname()).isEqualTo(UserTest.SELLER.getFullName());
     }
 
     @DisplayName("사용자는 자기자신을 팔로우 할 수 없다.")
@@ -101,7 +100,7 @@ class FollowServiceTests extends MockBeans {
         List<FollowResponse> followings = response.getFollowings();
 
         //then
-        assertThat(followings.get(0).getUser().getFullname()).isEqualTo(UserTest.SELLER.getFullname());
+        assertThat(followings.get(0).getUser().getFullname()).isEqualTo(UserTest.SELLER.getFullName());
     }
 
     @Test
@@ -115,7 +114,7 @@ class FollowServiceTests extends MockBeans {
         List<FollowResponse> followings = followService.getFollowings(1);
 
         //then
-        assertThat(followings.get(0).getUser().getFullname()).isEqualTo(UserTest.SELLER.getFullname());
+        assertThat(followings.get(0).getUser().getFullname()).isEqualTo(UserTest.SELLER.getFullName());
     }
 
     @Test
@@ -129,6 +128,6 @@ class FollowServiceTests extends MockBeans {
         List<FollowResponse> followers = followService.getFollowers(1);
 
         //then
-        assertThat(followers.get(0).getUser().getFullname()).isEqualTo(UserTest.USER.getFullname());
+        assertThat(followers.get(0).getUser().getFullname()).isEqualTo(UserTest.USER.getFullName());
     }
 }

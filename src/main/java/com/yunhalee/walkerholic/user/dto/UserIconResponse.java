@@ -14,7 +14,7 @@ public class UserIconResponse {
 
     private UserIconResponse(User user) {
         this.id = user.getId();
-        this.fullname = user.getFullname();
+        this.fullname = user.getFullName();
         this.imageUrl = user.getImageUrl();
     }
 

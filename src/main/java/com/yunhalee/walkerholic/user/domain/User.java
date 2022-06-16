@@ -2,13 +2,17 @@ package com.yunhalee.walkerholic.user.domain;
 
 import com.yunhalee.walkerholic.follow.domain.Follow;
 import com.yunhalee.walkerholic.likepost.domain.LikePost;
+import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
 import com.yunhalee.walkerholic.post.domain.Post;
 import com.yunhalee.walkerholic.security.oauth.domain.ProviderType;
 import java.util.Arrays;
 import java.util.Objects;
+import javassist.bytecode.MethodParametersAttribute;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -27,45 +31,45 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "firstname", nullable = false, length = 45)
-    private String firstname;
+//    @Column(name = "firstname", nullable = false, length = 45)
+//    private String firstname;
+//
+//    @Column(name = "lastname", nullable = false, length = 45)
+//    private String lastname;
+//
+//    @Column(length = 128, nullable = false, unique = true)
+//    private String email;
+//
+//    @Column(nullable = false)
+//    private String password;
+//
+//    @Column(name = "role")
+//    @Enumerated(EnumType.STRING)
+//    private Role role;
+//
+//    @Column(name = "image_url")
+//    private String imageUrl;
+//
+//    @Column(length = 13)
+//    private String phoneNumber;
+//
+//    @Column(name = "level")
+//    @Enumerated(EnumType.STRING)
+//    private Level level = Level.Starter;
+//
+//    private Integer score = 0;
+//
+//    private String description;
+//
+//    private boolean isSeller;
+    @Embedded
+    private UserInfo userInfo;
 
-    @Column(name = "lastname", nullable = false, length = 45)
-    private String lastname;
+    @Embedded
+    private UserAuth userAuth;
 
-    @Column(length = 128, nullable = false, unique = true)
-    private String email;
-
-    @Column(nullable = false)
-    private String password;
-
-    @Column(name = "role")
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
-    @Column(name = "image_url")
-    private String imageUrl;
-
-    @Column(length = 13)
-    private String phoneNumber;
-
-    @Column(name = "level")
-    @Enumerated(EnumType.STRING)
-    private Level level = Level.Starter;
-
-    private Integer score = 0;
-
-    private String description;
-
-    private boolean isSeller;
-
-    @Column(name = "provider_type")
-    @Enumerated(EnumType.STRING)
-    private ProviderType providerType;
-
-    @Column(name = "notification_type")
-    @Enumerated(EnumType.STRING)
-    private NotificationType notificationType = NotificationType.NONE;
+    @Embedded
+    private UserLevel userLevel = new UserLevel();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Post> posts = new HashSet<>();
@@ -79,59 +83,51 @@ public class User {
     @OneToMany(mappedBy = "toUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Follow> followers = new HashSet<>();
 
-    public User(Integer id, String firstname, String lastname, String email, String password, Role role) {
+
+    @Builder
+    public User(Integer id, @NonNull String firstname, @NonNull String lastname, @NonNull String email, @NonNull String password, String phoneNumber, String description, @NonNull Role role) {
         this.id = id;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-        this.password = password;
-        this.role = role;
+        this.userInfo = UserInfo.builder()
+            .firstname(firstname)
+            .lastname(lastname)
+            .phoneNumber(phoneNumber)
+            .description(description)
+            .role(role).build();
+        this.userAuth = UserAuth.builder()
+            .email(email)
+            .password(password).build();
     }
 
-    public User(String firstname, String lastname, String email, String password, Role role) {
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-        this.password = password;
-        this.role = role;
+    public User(String firstname, String lastname, String email, String password, String phoneNumber, String description, Role role) {
+        this.userInfo = UserInfo.builder()
+            .firstname(firstname)
+            .lastname(lastname)
+            .phoneNumber(phoneNumber)
+            .description(description)
+            .role(role).build();
+        this.userAuth = UserAuth.builder()
+            .email(email)
+            .password(password).build();
     }
 
-    @Transient
-    public String getFullname() {
-        return this.firstname + this.lastname;
+    public String getFullName() {
+        return this.userInfo.getFullname();
     }
 
     public Integer getScore(){
-        return score;
+        return this.userLevel.getScore();
     }
 
     public void updateLevel(UserActivity userActivity) {
-        addScore(userActivity);
-        changeLevel();
-    }
-
-    private void addScore(UserActivity userActivity) {
-        if (userActivity.finished()) {
-            score += userActivity.getScore();
-        }
-    }
-
-    private void changeLevel() {
-        this.level = Arrays.stream(Level.values())
-            .filter(level -> level.getMin() <= score && level.getMax() >= score)
-            .findFirst()
-            .orElse(this.level);
+        this.userLevel.updateLevel(userActivity);
     }
 
     public void deleteUserActivity(UserActivity userActivity) {
-        minusScore(userActivity);
-        changeLevel();
+        this.userLevel.deleteUserActivity(userActivity);
     }
 
-    private void minusScore(UserActivity userActivity){
-        if (userActivity.finished()) {
-            score -= userActivity.getScore();
-        }
+    public boolean isSeller() {
+        return this.userInfo.isSeller();
     }
 
     @Override
@@ -143,20 +139,53 @@ public class User {
             return false;
         }
         User user = (User) o;
-        return isSeller == user.isSeller && Objects.equals(id, user.id) && Objects
-            .equals(firstname, user.firstname) && Objects.equals(lastname, user.lastname)
-            && Objects.equals(email, user.email) && Objects
-            .equals(password, user.password) && role == user.role && Objects
-            .equals(imageUrl, user.imageUrl) && Objects.equals(phoneNumber, user.phoneNumber)
-            && level == user.level && Objects.equals(score, user.score) && Objects
-            .equals(description, user.description) && providerType == user.providerType;
+        return Objects.equals(id, user.id) && Objects
+            .equals(userInfo, user.userInfo) && Objects.equals(userAuth, user.userAuth)
+            && Objects.equals(userLevel, user.userLevel);
     }
 
     @Override
     public int hashCode() {
-        return Objects
-            .hash(id, firstname, lastname, email, password, role, imageUrl, phoneNumber, level,
-                score,
-                description, isSeller, providerType);
+        return Objects.hash(id, userInfo, userAuth, userLevel);
+    }
+
+    public String getFirstname() {
+        return userInfo.getFirstname();
+    }
+
+    public String getLastname() {
+        return userInfo.getLastname();
+    }
+
+    public String getEmail() {
+        return userAuth.getEmail();
+    }
+
+    public Role getRole() {
+        return userInfo.getRole();
+    }
+
+    public String getRoleName() {
+        return userInfo.getRoleName();
+    }
+
+    public String getImageUrl() {
+        return userInfo.getImageUrl();
+    }
+
+    public String getPhoneNumber() {
+        return userInfo.getPhoneNumber();
+    }
+
+    public Level getLevel() {
+        return userLevel.getLevel();
+    }
+
+    public String getLevelName() {
+        return userLevel.getLevelName();
+    }
+
+    public String getDescription() {
+        return userInfo.getDescription();
     }
 }

@@ -12,7 +12,7 @@ public class FollowUserResponse {
 
     private FollowUserResponse(User user) {
         this.id = user.getId();
-        this.fullname = user.getFullname();
+        this.fullname = user.getFullName();
         this.imageUrl = user.getImageUrl();
     }
 

@@ -4,7 +4,7 @@ package com.yunhalee.walkerholic.security.jwt.controller;
 import com.yunhalee.walkerholic.security.jwt.JwtTokenUtil;
 import com.yunhalee.walkerholic.security.jwt.service.JwtUserDetailsService;
 import com.yunhalee.walkerholic.security.jwt.dto.JwtRequest;
-import com.yunhalee.walkerholic.user.dto.UserDTO;
+import com.yunhalee.walkerholic.user.dto.UserResponse;
 import com.yunhalee.walkerholic.user.dto.UserRegisterDTO;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
@@ -52,9 +52,9 @@ public class JwtAuthenticationController {
         final String token = jwtTokenUtil.generateToken(userDetails.getUsername());
 
         User user = userRepository.findByEmail(userDetails.getUsername());
-        UserDTO userDTO = new UserDTO(user);
+        UserResponse userResponse = new UserResponse(user);
         HashMap<String, Object> map = new HashMap<>();
-        map.put("user", userDTO);
+        map.put("user", userResponse);
         map.put("token", token);
 
         return ResponseEntity.ok(map);
@@ -73,11 +73,11 @@ public class JwtAuthenticationController {
         throws IOException {
         UserRegisterDTO userRegisterDTO = new UserRegisterDTO(firstname, lastname, email, password,
             phoneNumber, description, isSeller);
-        UserDTO userDTO = userService.saveUser(userRegisterDTO, multipartFile);
-        final String token = jwtTokenUtil.generateToken(userDTO.getEmail());
+        UserResponse userResponse = userService.saveUser(userRegisterDTO, multipartFile);
+        final String token = jwtTokenUtil.generateToken(userResponse.getEmail());
 
         HashMap<String, Object> map = new HashMap<>();
-        map.put("user", userDTO);
+        map.put("user", userResponse);
         map.put("token", token);
 
         return ResponseEntity.ok(map);
@@ -88,9 +88,9 @@ public class JwtAuthenticationController {
     public ResponseEntity<?> authenticate(@Param("token") String token) {
         String email = jwtTokenUtil.getUsernameFromToken(token);
         User user = userRepository.findByEmail(email);
-        UserDTO userDTO = new UserDTO(user);
+        UserResponse userResponse = new UserResponse(user);
         HashMap<String, Object> map = new HashMap<>();
-        map.put("user", userDTO);
+        map.put("user", userResponse);
         map.put("token", token);
         return ResponseEntity.ok(map);
     }

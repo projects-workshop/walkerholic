@@ -2,7 +2,7 @@ package com.yunhalee.walkerholic.user.service;
 
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import com.yunhalee.walkerholic.util.FileUploadUtils;
-import com.yunhalee.walkerholic.user.dto.UserDTO;
+import com.yunhalee.walkerholic.user.dto.UserResponse;
 import com.yunhalee.walkerholic.user.dto.UserListDTO;
 import com.yunhalee.walkerholic.user.dto.UserRegisterDTO;
 import com.yunhalee.walkerholic.user.dto.UserSearchDTO;
@@ -30,21 +30,52 @@ import java.util.HashMap;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
-
-    private final UserRepository userRepository;
-
-    private final PasswordEncoder passwordEncoder;
 
     public static final int USER_LIST_PER_PAGE = 10;
 
-    private final JavaMailSender mailSender;
-
-    @Value("${spring.mail.username}")
+    private UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
+    private JavaMailSender mailSender;
     private String sender;
+    private S3ImageUploader s3ImageUploader;
 
-    private final S3ImageUploader s3ImageUploader;
+    public UserService(UserRepository userRepository,
+        PasswordEncoder passwordEncoder,
+        JavaMailSender mailSender,
+        @Value("${spring.mail.username}") String sender,
+        S3ImageUploader s3ImageUploader) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.mailSender = mailSender;
+        this.sender = sender;
+        this.s3ImageUploader = s3ImageUploader;
+    }
+
+    public UserResponse getUser(Integer id) {
+        return UserResponse.of(userRepository.findByUserId(id));
+    }
+
+
+    public HashMap<String, Object> getUsers(Integer page, String sort) {
+        Pageable pageable = PageRequest.of(page - 1, USER_LIST_PER_PAGE, Sort.by(sort));
+        Page<User> userPage = userRepository.findAllUsers(pageable);
+        List<User> users = userPage.getContent();
+        List<UserListDTO> userListDTOS = new ArrayList<>();
+        users.forEach(user -> userListDTOS.add(new UserListDTO(user)));
+        HashMap<String, Object> userList = new HashMap<>();
+        userList.put("users", userListDTOS);
+        userList.put("totalElement", userPage.getTotalElements());
+        userList.put("totalPage", userPage.getTotalPages());
+        return userList;
+    }
+
+    public List<UserSearchDTO> searchUser(String keyword) {
+        List<User> users = userRepository.findByKeyword(keyword);
+        List<UserSearchDTO> userSearchDTOS = new ArrayList<>();
+        users.forEach(user -> userSearchDTOS.add(new UserSearchDTO(user)));
+        return userSearchDTOS;
+    }
 
 
     private void saveProfileFile(MultipartFile multipartFile, User user, boolean isNew)
@@ -87,7 +118,7 @@ public class UserService {
 
     }
 
-    public UserDTO saveUser(UserRegisterDTO userRegisterDTO, MultipartFile multipartFile)
+    public UserResponse saveUser(UserRegisterDTO userRegisterDTO, MultipartFile multipartFile)
         throws IOException {
 
         if (!isEmailUnique(userRegisterDTO.getId(), userRegisterDTO.getEmail())) {
@@ -117,7 +148,7 @@ public class UserService {
 
             userRepository.save(existingUser);
 
-            return new UserDTO(existingUser);
+            return new UserResponse(existingUser);
 
         } else {  //새로운회원을 등록하는 경우
             User user = new User();
@@ -143,29 +174,10 @@ public class UserService {
 
             userRepository.save(user);
 
-            return new UserDTO(user);
+            return new UserResponse(user);
         }
     }
 
-    public UserDTO getUser(Integer id) {
-        User user = userRepository.findByUserId(id);
-        UserDTO userDTO = new UserDTO(user);
-
-        return new UserDTO(user);
-    }
-
-    public HashMap<String, Object> getUsers(Integer page, String sort) {
-        Pageable pageable = PageRequest.of(page - 1, USER_LIST_PER_PAGE, Sort.by(sort));
-        Page<User> userPage = userRepository.findAllUsers(pageable);
-        List<User> users = userPage.getContent();
-        List<UserListDTO> userListDTOS = new ArrayList<>();
-        users.forEach(user -> userListDTOS.add(new UserListDTO(user)));
-        HashMap<String, Object> userList = new HashMap<>();
-        userList.put("users", userListDTOS);
-        userList.put("totalElement", userPage.getTotalElements());
-        userList.put("totalPage", userPage.getTotalPages());
-        return userList;
-    }
 
     public Integer deleteUser(Integer id) {
         userRepository.deleteById(id);
@@ -174,13 +186,6 @@ public class UserService {
         return id;
     }
 
-
-    public List<UserSearchDTO> searchUser(String keyword) {
-        List<User> users = userRepository.findByKeyword(keyword);
-        List<UserSearchDTO> userSearchDTOS = new ArrayList<>();
-        users.forEach(user -> userSearchDTOS.add(new UserSearchDTO(user)));
-        return userSearchDTOS;
-    }
 
     public String sendForgotPassword(String email) {
         User user = userRepository.findByEmail(email);
@@ -195,7 +200,7 @@ public class UserService {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(email);
             message.setFrom(sender);
-            message.setSubject(user.getFullname() + " : New Temporary Password is here!");
+            message.setSubject(user.getFullName() + " : New Temporary Password is here!");
             message.setText("Hello" + user.getFirstname()
                 + "! We send your temporary password here. \nBut this is not secured so please change password once you sign into our site. \nPassword : "
                 + tempPassword);

@@ -57,7 +57,7 @@ public class ActivityDetailResponse {
             this.status = userActivity.getStatus().name();
             this.userId = userActivity.getUser().getId();
             this.userImageUrl = userActivity.getUser().getImageUrl();
-            this.userFullname = userActivity.getUser().getFullname();
+            this.userFullname = userActivity.getUser().getFullName();
             this.updatedAt = userActivity.getUpdatedAt();
         }
     }

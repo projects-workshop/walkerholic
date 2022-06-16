@@ -31,7 +31,7 @@ public class ReviewResponse {
         this.rating = review.getRating();
         this.comment = review.getComment();
         this.userId = review.getUser().getId();
-        this.userFullname = review.getUser().getFullname();
+        this.userFullname = review.getUser().getFullName();
         this.userImageUrl = review.getUser().getImageUrl();
         this.productId = review.getProduct().getId();
         this.createdAt = review.getCreatedAt();

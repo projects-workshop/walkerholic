@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.user.service;
 
-import com.yunhalee.walkerholic.user.dto.UserDTO;
+import com.yunhalee.walkerholic.user.dto.UserResponse;
 import com.yunhalee.walkerholic.user.dto.UserListDTO;
 import com.yunhalee.walkerholic.user.dto.UserRegisterDTO;
 import com.yunhalee.walkerholic.user.dto.UserSearchDTO;
@@ -74,19 +74,19 @@ public class UserServiceTests {
             "This is the file content".getBytes());
 
         //when
-        UserDTO userDTO = userService.saveUser(userRegisterDTO, multipartFile);
+        UserResponse userResponse = userService.saveUser(userRegisterDTO, multipartFile);
 
         //then
-        assertNotNull(userDTO.getId());
-        assertEquals(firstname, userDTO.getFirstname());
-        assertEquals(lastname, userDTO.getLastname());
-        assertEquals(email, userDTO.getEmail());
+        assertNotNull(userResponse.getId());
+        assertEquals(firstname, userResponse.getFirstname());
+        assertEquals(lastname, userResponse.getLastname());
+        assertEquals(email, userResponse.getEmail());
         assertTrue(passwordEncoder
-            .matches(password, userRepository.findById(userDTO.getId()).get().getPassword()));
-        assertEquals(phoneNumber, userDTO.getPhoneNumber());
-        assertEquals(description, userDTO.getDescription());
-        assertEquals("/profileUploads/" + userDTO.getId() + "/" + "sampleFile.txt",
-            userDTO.getImageUrl());
+            .matches(password, userRepository.findById(userResponse.getId()).get().getPassword()));
+        assertEquals(phoneNumber, userResponse.getPhoneNumber());
+        assertEquals(description, userResponse.getDescription());
+        assertEquals("/profileUploads/" + userResponse.getId() + "/" + "sampleFile.txt",
+            userResponse.getImageUrl());
     }
 
     @Test
@@ -110,13 +110,13 @@ public class UserServiceTests {
         final String token = jwtTokenUtil.generateToken(userDetails.getUsername());
 
         User user = userRepository.findByEmail(userDetails.getUsername());
-        UserDTO userDTO = new UserDTO(user);
+        UserResponse userResponse = new UserResponse(user);
 
         //then
-        assertNotNull(userDTO.getId());
-        assertEquals(userDTO.getEmail(), email);
+        assertNotNull(userResponse.getId());
+        assertEquals(userResponse.getEmail(), email);
         assertTrue(passwordEncoder
-            .matches(password, userRepository.findById(userDTO.getId()).get().getPassword()));
+            .matches(password, userRepository.findById(userResponse.getId()).get().getPassword()));
         assertNotNull(token);
     }
 
@@ -149,7 +149,7 @@ public class UserServiceTests {
             phoneNumber, description, false);
 
         //when
-        UserDTO userDTO = userService.saveUser(userRegisterDTO, null);
+        UserResponse userResponse = userService.saveUser(userRegisterDTO, null);
 
         //then
         fail("User Email is Duplicated");
@@ -171,10 +171,10 @@ public class UserServiceTests {
             password, phoneNumber, description, false);
 
         //when
-        UserDTO userDTO = userService.saveUser(userRegisterDTO, null);
+        UserResponse userResponse = userService.saveUser(userRegisterDTO, null);
 
         //then
-        assertNotEquals(lastname, userDTO.getLastname());
+        assertNotEquals(lastname, userResponse.getLastname());
     }
 
     @Test
@@ -183,11 +183,11 @@ public class UserServiceTests {
         Integer id = 17;
 
         //when
-        UserDTO userDTO = userService.getUser(id);
+        UserResponse userResponse = userService.getUser(id);
 
         //then
-        assertNotNull(userDTO.getId());
-        assertEquals(userDTO.getId(), id);
+        assertNotNull(userResponse.getId());
+        assertEquals(userResponse.getId(), id);
     }
 
     @Test

@@ -30,7 +30,7 @@ public class SimplePostResponse {
             post.getTitle(),
             post.getPostImages().get(0).getFilePath(),
             post.getUser().getImageUrl(),
-            post.getUser().getFullname(),
+            post.getUser().getFullName(),
             post.getUser().getId()
         );
     }

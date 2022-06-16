@@ -6,40 +6,34 @@ import lombok.Setter;
 
 
 @Getter
-@Setter
-public class UserDTO {
+public class UserResponse {
 
     private Integer id;
-
     private String firstname;
-
     private String lastname;
-
     private String email;
-
     private String role;
-
     private String imageUrl;
-
     private String phoneNumber;
-
     private String level;
-
     private String description;
-
     private boolean isSeller;
 
-    public UserDTO(User user) {
+    private UserResponse(User user) {
         this.id = user.getId();
         this.firstname = user.getFirstname();
         this.lastname = user.getLastname();
         this.email = user.getEmail();
-        this.role = user.getRole().name();
+        this.role = user.getRoleName();
         this.imageUrl = user.getImageUrl();
         this.phoneNumber = user.getPhoneNumber();
-        this.level = user.getLevel().getName();
+        this.level = user.getLevelName();
         this.description = user.getDescription();
         this.isSeller = user.isSeller();
+    }
+
+    public static UserResponse of(User user){
+        return new UserResponse(user);
     }
 
 }

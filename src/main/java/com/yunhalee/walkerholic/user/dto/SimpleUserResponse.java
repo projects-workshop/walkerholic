@@ -22,7 +22,7 @@ public class SimpleUserResponse {
 
     public static SimpleUserResponse of(User user) {
         return new SimpleUserResponse(user.getId(),
-            user.getFullname(),
+            user.getFullName(),
             user.getEmail(),
             user.getImageUrl(),
             user.getDescription());
