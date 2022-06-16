@@ -14,10 +14,10 @@ import com.yunhalee.walkerholic.user.dto.UserListResponse;
 import com.yunhalee.walkerholic.user.dto.UserRegisterDTO;
 import com.yunhalee.walkerholic.user.dto.UserResponse;
 import com.yunhalee.walkerholic.user.dto.UserResponses;
-import com.yunhalee.walkerholic.user.dto.UserSearchDTO;
+import com.yunhalee.walkerholic.user.dto.UserSearchResponse;
+import com.yunhalee.walkerholic.user.dto.UserSearchResponses;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -83,16 +84,17 @@ class UserServiceTests extends MockBeans {
     @Test
     public void getUserByKeyword() {
         //given
-        String keyword = "lee";
+        String keyword = "Name";
 
         //when
-        List<UserSearchDTO> userSearchDTOS = userService.searchUser(keyword);
+        when(userRepository.findByKeyword(anyString())).thenReturn(Arrays.asList(UserTest.USER, UserTest.SELLER));
+        UserSearchResponses userSearchResponses = userService.searchUser(keyword);
 
         //then
-        assertNotEquals(userSearchDTOS.size(), 0);
-        userSearchDTOS.forEach(userSearchDTO -> System.out
-            .println(userSearchDTO.getFirstname() + userSearchDTO.getLastname()));
+        assertThat(userSearchResponses.getUsers().size()).isEqualTo(2);
     }
+
+    
     @Test
     public void singUp() throws IOException {
         //given

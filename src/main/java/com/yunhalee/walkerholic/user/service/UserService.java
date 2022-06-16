@@ -2,11 +2,12 @@ package com.yunhalee.walkerholic.user.service;
 
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import com.yunhalee.walkerholic.user.dto.UserResponses;
+import com.yunhalee.walkerholic.user.dto.UserSearchResponses;
 import com.yunhalee.walkerholic.util.FileUploadUtils;
 import com.yunhalee.walkerholic.user.dto.UserResponse;
 import com.yunhalee.walkerholic.user.dto.UserListResponse;
 import com.yunhalee.walkerholic.user.dto.UserRegisterDTO;
-import com.yunhalee.walkerholic.user.dto.UserSearchDTO;
+import com.yunhalee.walkerholic.user.dto.UserSearchResponse;
 import com.yunhalee.walkerholic.user.domain.Level;
 import com.yunhalee.walkerholic.user.domain.Role;
 import com.yunhalee.walkerholic.user.domain.User;
@@ -14,20 +15,17 @@ import com.yunhalee.walkerholic.user.exception.UserEmailAlreadyExistException;
 import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -72,11 +70,15 @@ public class UserService {
             .collect(Collectors.toList());
     }
 
-    public List<UserSearchDTO> searchUser(String keyword) {
+    public UserSearchResponses searchUser(String keyword) {
         List<User> users = userRepository.findByKeyword(keyword);
-        List<UserSearchDTO> userSearchDTOS = new ArrayList<>();
-        users.forEach(user -> userSearchDTOS.add(new UserSearchDTO(user)));
-        return userSearchDTOS;
+        return UserSearchResponses.of(userSearchResponses(users));
+    }
+
+    private List<UserSearchResponse> userSearchResponses(List<User> users) {
+        return users.stream()
+            .map(UserSearchResponse::of)
+            .collect(Collectors.toList());
     }
 
 
