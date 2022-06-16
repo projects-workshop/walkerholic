@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api/orders")
 public class OrderController {
 
     private final OrderService orderService;
@@ -17,37 +18,37 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @PostMapping("/orders")
+    @PostMapping
     public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderRequest request) {
         return ResponseEntity.ok(orderService.createOrder(request));
     }
 
-    @PutMapping("/orders/{id}/delivery")
+    @PutMapping("/{id}/delivery")
     public ResponseEntity<SimpleOrderResponse> deliverOrder(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(orderService.deliverOrder(id));
     }
 
-    @PutMapping("/orders/{id}/cancellation")
+    @PutMapping("/{id}/cancellation")
     public ResponseEntity<SimpleOrderResponse> cancelOrder(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(orderService.cancelOrder(id));
     }
 
-    @GetMapping("/orders/{id}")
+    @GetMapping("/{id}")
     public OrderResponse getOrder(@PathVariable("id") Integer id) {
         return orderService.getOrder(id);
     }
 
-    @GetMapping(value = "/orders", params = "page")
+    @GetMapping( params = "page")
     public ResponseEntity<OrderResponses> getOrderList(@RequestParam("page") Integer page) {
         return ResponseEntity.ok(orderService.getOrderList(page));
     }
 
-    @GetMapping(value = "/orders", params = {"page", "sellerId"})
+    @GetMapping( params = {"page", "sellerId"})
     public ResponseEntity<OrderResponses> getOrderListBySeller(@RequestParam("page") Integer page, @RequestParam("sellerId") Integer sellerId) {
         return ResponseEntity.ok(orderService.getOrderListBySeller(page, sellerId));
     }
 
-    @GetMapping(value = "/orders", params = {"page", "userId"})
+    @GetMapping( params = {"page", "userId"})
     public ResponseEntity<OrderResponses> getOrderListByUser(@RequestParam("page") Integer page, @RequestParam("userId") Integer userId) {
         return ResponseEntity.ok(orderService.getOrderListByUser(page, userId));
     }

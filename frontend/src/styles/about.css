@@ -1,0 +1,65 @@
+.about{
+    max-width: 90rem;
+    margin: auto;
+}
+
+.about_image{
+    margin-top: 3rem;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.about_image img{
+    width: 100%;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+.about_title{
+    position: absolute;
+    top: 3rem;
+    right: 10px;
+    color: rgba(255 , 255,  255, 0.8);
+    font-size: 5rem;
+    font-weight: 900;
+    text-align: right;
+}
+
+.about_description{
+    position: absolute;
+    bottom: 6rem;
+    left: 2rem;
+    color: rgba(255 , 255,  255, 0.8);
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+@media (max-width:1070px){
+    .about_description{
+        font-size: 1.5rem;
+        bottom: 5rem;
+    }
+}
+
+@media (max-width:740px){
+    .about_title{
+        font-size: 3.5rem;
+    }
+    .about_description{
+        font-size: 1.2rem;
+        bottom: 4rem;
+    }
+}
+
+@media (max-width:550px){
+    .about_title{
+        font-size: 2.4rem;
+        top: 1.5rem;
+    }
+    .about_description{
+        font-size: 14px;
+        bottom: 3rem;
+    }
+}

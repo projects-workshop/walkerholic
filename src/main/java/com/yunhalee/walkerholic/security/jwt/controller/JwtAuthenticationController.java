@@ -40,7 +40,7 @@ public class JwtAuthenticationController {
 
     private final UserService userService;
 
-    @PostMapping("/signin")
+    @PostMapping("/api/signin")
     public ResponseEntity<?> signin(@RequestBody JwtRequest authenticationRequest)
         throws Exception {
 
@@ -61,7 +61,7 @@ public class JwtAuthenticationController {
 
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/api/signup")
     public ResponseEntity<?> signup(@RequestParam("firstname") String firstname,
         @RequestParam("lastname") String lastname,
         @RequestParam("email") String email,
@@ -84,7 +84,7 @@ public class JwtAuthenticationController {
     }
 
 
-    @PostMapping("/authenticate")
+    @PostMapping("/api/authenticate")
     public ResponseEntity<?> authenticate(@Param("token") String token) {
         String email = jwtTokenUtil.getUsernameFromToken(token);
         User user = userRepository.findByEmail(email);

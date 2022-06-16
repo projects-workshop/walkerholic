@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api/cart-items")
 public class CartItemController {
 
     private final CartItemService cartItemService;
@@ -21,17 +23,17 @@ public class CartItemController {
         this.cartItemService = cartItemService;
     }
 
-    @PostMapping("/cart-items")
+    @PostMapping
     public ResponseEntity<ItemResponse> createCartItem(@RequestBody CartItemRequest request) {
         return ResponseEntity.ok(cartItemService.create(request));
     }
 
-    @PutMapping("/cart-items/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ItemResponse> updateQty(@PathVariable("id") Integer id, @Param("qty") Integer qty) {
         return ResponseEntity.ok(cartItemService.update(id, qty));
     }
 
-    @DeleteMapping("/cart-items/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteCartItem(@PathVariable("id") Integer id) {
         cartItemService.deleteCartItem(id);
         return ResponseEntity.noContent().build();

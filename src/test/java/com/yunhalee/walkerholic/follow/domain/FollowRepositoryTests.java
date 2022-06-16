@@ -85,6 +85,11 @@ public class FollowRepositoryTests {
         follows.forEach(f -> assertThat(hasEqualFromUserOrEqualToUser(f, fromUser)).isTrue());
     }
 
+    @Test
+    public void check_exists_of_follow_by_fromId_and_toId() {
+        assertThat(followRepository.existsByFromUserAndToUser(fromUser, toUser)).isTrue();
+    }
+
     private boolean hasEqualFromUserOrEqualToUser(Follow follow, User user) {
         return follow.getFromUser().equals(user) || follow.getToUser().equals(user);
     }

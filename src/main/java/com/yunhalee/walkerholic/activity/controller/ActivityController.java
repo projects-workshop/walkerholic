@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/activities")
+@RequestMapping("/api/activities")
 public class ActivityController {
 
     private final ActivityService activityService;

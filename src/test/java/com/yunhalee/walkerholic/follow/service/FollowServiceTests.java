@@ -23,6 +23,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -46,7 +47,7 @@ class FollowServiceTests extends MockBeans {
         Integer toUserId = 2;
         when(userService.findUserById(fromUserId)).thenReturn(UserTest.USER);
         when(userService.findUserById(toUserId)).thenReturn(UserTest.SELLER);
-        when(followRepository.existsByFromUserIdAndToUserId(anyInt(), anyInt())).thenReturn(false);
+        when(followRepository.existsByFromUserAndToUser(any(), any())).thenReturn(false);
 
         //when
         FollowResponse response = followService.follow(fromUserId, toUserId);
@@ -71,7 +72,7 @@ class FollowServiceTests extends MockBeans {
     @Test
     void follow_user_already_followed_is_invalid() {
         //given
-        when(followRepository.existsByFromUserIdAndToUserId(anyInt(), anyInt())).thenReturn(true);
+        when(followRepository.existsByFromUserAndToUser(any(), any())).thenReturn(true);
 
         assertThatThrownBy(() -> followService.follow(1, 3))
             .isInstanceOf(FollowAlreadyExistException.class)
