@@ -18,6 +18,8 @@ import lombok.NonNull;
 @NoArgsConstructor
 public class UserInfo {
 
+    private static final String DEFAULT_IMAGE_URL = "https://walkerholic-with-you.s3.ap-northeast-2.amazonaws.com/globe-asia-solid.svg";
+
     @Column(name = "firstname", nullable = false, length = 45)
     private String firstname;
 
@@ -35,7 +37,7 @@ public class UserInfo {
     private Role role;
 
     @Column(name = "image_url")
-    private String imageUrl;
+    private String imageUrl = DEFAULT_IMAGE_URL;
 
     @Column(length = 13)
     private String phoneNumber;
@@ -144,5 +146,9 @@ public class UserInfo {
         this.imageUrl = toUser.getImageUrl();
         this.phoneNumber = toUser.getPhoneNumber();
         this.description = toUser.getDescription();
+    }
+
+    public boolean isDefaultImageUrl() {
+        return this.imageUrl.equals(DEFAULT_IMAGE_URL);
     }
 }

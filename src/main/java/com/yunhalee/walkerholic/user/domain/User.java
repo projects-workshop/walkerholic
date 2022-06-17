@@ -24,8 +24,6 @@ import org.hibernate.annotations.ColumnDefault;
 @Entity
 @Table(name = "user")
 @Getter
-@Setter
-@NoArgsConstructor
 public class User {
 
     @Id
@@ -72,17 +70,17 @@ public class User {
     @Embedded
     private UserLevel userLevel = new UserLevel();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Post> posts = new HashSet<>();
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<Post> posts = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<LikePost> likePosts = new HashSet<>();
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<LikePost> likePosts = new HashSet<>();
 
-    @OneToMany(mappedBy = "fromUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Follow> followings = new HashSet<>();
-
-    @OneToMany(mappedBy = "toUser", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Follow> followers = new HashSet<>();
+//    @OneToMany(mappedBy = "fromUser", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<Follow> followings = new HashSet<>();
+//
+//    @OneToMany(mappedBy = "toUser", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<Follow> followers = new HashSet<>();
 
 
     @Builder
@@ -182,6 +180,10 @@ public class User {
 
     public NotificationType getNotificationType() {
         return userInfo.getNotificationType();
+    }
+
+    public boolean isDefaultImage() {
+        return userInfo.isDefaultImageUrl();
     }
 
 

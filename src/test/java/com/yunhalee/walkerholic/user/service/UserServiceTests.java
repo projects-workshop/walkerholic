@@ -2,11 +2,11 @@ package com.yunhalee.walkerholic.user.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.yunhalee.walkerholic.MockBeans;
@@ -40,7 +40,7 @@ class UserServiceTests extends MockBeans {
 
 
     @InjectMocks
-    private UserService userService = new UserService(userRepository, passwordEncoder, s3ImageUploader);
+    private UserService userService = new UserService(userRepository, passwordEncoder, s3ImageUploader, cartService);
 
 
     @Test
@@ -133,14 +133,13 @@ class UserServiceTests extends MockBeans {
 
     @Test
     public void deleteUser() {
-        //given
-        Integer id = 17;
-
         //when
-        userService.deleteUser(id);
+        userService.delete(ID);
 
         //then
-        assertNull(userRepository.findById(id));
+        verify(cartService).deleteByUserId(any());
+        verify(s3ImageUploader).deleteByFilePath(any());
+        verify(userRepository).delete(any());
     }
 
 

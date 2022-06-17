@@ -6,6 +6,8 @@ import java.util.Objects;
 import lombok.Getter;
 
 import javax.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "follow")
@@ -19,10 +21,12 @@ public class Follow {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "from_user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User fromUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_user_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private User toUser;
 
     public Follow() {

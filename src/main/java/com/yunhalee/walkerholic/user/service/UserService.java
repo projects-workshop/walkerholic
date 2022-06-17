@@ -1,5 +1,6 @@
 package com.yunhalee.walkerholic.user.service;
 
+import com.yunhalee.walkerholic.cart.service.CartService;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import com.yunhalee.walkerholic.user.dto.UserRequest;
 import com.yunhalee.walkerholic.user.dto.UserResponses;
@@ -40,17 +41,20 @@ public class UserService {
 //    private JavaMailSender mailSender;
 //    private String sender;
     private S3ImageUploader s3ImageUploader;
+    private CartService cartService;
 
     public UserService(UserRepository userRepository,
         PasswordEncoder passwordEncoder,
 //        JavaMailSender mailSender,
 //        @Value("${spring.mail.username}") String sender,
-        S3ImageUploader s3ImageUploader) {
+        S3ImageUploader s3ImageUploader,
+        CartService cartService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
 //        this.mailSender = mailSender;
 //        this.sender = sender;
         this.s3ImageUploader = s3ImageUploader;
+        this.cartService = cartService;
     }
 
     public UserResponse getUser(Integer id) {
@@ -121,12 +125,19 @@ public class UserService {
         return request.toUser(passwordEncoder.encode(request.getPassword()));
     }
 
-    public Integer deleteUser(Integer id) {
-        userRepository.deleteById(id);
-        String dir = "profileUploads/" + id;
-        FileUploadUtils.deleteDir(dir);
-        return id;
+    public void delete(Integer id) {
+        User user = findUserById(id);
+        cartService.deleteByUserId(id);
+        deleteImage(user);
+        userRepository.delete(user);
     }
+
+    private void deleteImage(User user) {
+        if (!user.isDefaultImage()) {
+            s3ImageUploader.deleteByFilePath(user.getImageUrl());
+        }
+    }
+
 
 
     public String sendForgotPassword(String email) {

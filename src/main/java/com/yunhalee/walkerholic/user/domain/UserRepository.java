@@ -14,7 +14,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByEmail(String email);
 
-    @Query(value = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.userInfo LEFT JOIN FETCH u.userAuth LEFT JOIN FETCH u.userLevel LEFT JOIN FETCH u.posts p LEFT JOIN FETCH u.likePosts l WHERE u.id=?1")
+    @Query(value = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.userInfo LEFT JOIN FETCH u.userAuth LEFT JOIN FETCH u.userLevel LEFT JOIN FETCH u.posts p WHERE u.id=?1")
     User findByUserId(Integer id);
 
     @Query(value = "SELECT DISTINCT u FROM User u ",
