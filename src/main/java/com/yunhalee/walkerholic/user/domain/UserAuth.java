@@ -8,12 +8,10 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Embeddable
 @Getter
-@NoArgsConstructor
 public class UserAuth {
 
     @Column(length = 128, nullable = false, unique = true)
@@ -60,5 +58,9 @@ public class UserAuth {
         if (!updatedPassword.isBlank() || !updatedPassword.isEmpty()) {
             this.password = updatedPassword;
         }
+    }
+
+    public void changePassword(String changedPassword) {
+        this.password = changedPassword;
     }
 }

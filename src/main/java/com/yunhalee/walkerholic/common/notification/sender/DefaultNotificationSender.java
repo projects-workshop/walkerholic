@@ -15,4 +15,11 @@ public class DefaultNotificationSender implements NotificationSender{
     @Async
     public void sendCancelOrderNotification(Order order, User user) {
     }
+
+    @Override
+    @Async
+    public void sendForgotPasswordNotification(User user, String tempPassword) {
+    }
+
+
 }

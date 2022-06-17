@@ -34,7 +34,7 @@ public class UserResponse {
         this.isSeller = user.isSeller();
     }
 
-    public static UserResponse of(User user){
+    public static UserResponse of(User user) {
         return new UserResponse(user);
     }
 

@@ -70,11 +70,12 @@ public class FollowRepositoryTests {
     @Test
     public void find_follows_by_user_id() {
         //given
-        User user = userRepository.save(new User("firstName",
-            "firstName",
-            "testUser@example.com",
-            "12345678",
-            Role.USER));
+        User user = userRepository.save(User.builder()
+            .firstname("firstName")
+            .lastname("lastName")
+            .email("testUser@example.com")
+            .password("12345678")
+            .role(Role.USER).build());
         followRepository.save(Follow.of(user, fromUser));
 
         //when

@@ -14,14 +14,15 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     Optional<User> findByEmail(String email);
 
-    @Query(value = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.userInfo LEFT JOIN FETCH u.userAuth LEFT JOIN FETCH u.userLevel LEFT JOIN FETCH u.posts p WHERE u.id=?1")
-    User findByUserId(Integer id);
+    @Override
+    @Query(value = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.userInfo LEFT JOIN FETCH u.userAuth LEFT JOIN FETCH u.userLevel WHERE u.id=?1")
+    Optional<User> findById(Integer id);
 
-    @Query(value = "SELECT DISTINCT u FROM User u ",
+    @Query(value = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.userInfo LEFT JOIN FETCH u.userAuth LEFT JOIN FETCH u.userLevel",
         countQuery = "SELECT count(DISTINCT u) FROM User u")
     Page<User> findAllUsers(Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT u FROM User u WHERE u.firstname LIKE %:keyword% OR u.lastname LIKE %:keyword%")
+    @Query(value = "SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.userInfo LEFT JOIN FETCH u.userAuth LEFT JOIN FETCH u.userLevel WHERE u.firstname LIKE %:keyword% OR u.lastname LIKE %:keyword%")
     List<User> findByKeyword(String keyword);
 
     boolean existsByEmail(String email);

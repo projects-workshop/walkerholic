@@ -30,17 +30,17 @@ public class UserRequest {
         this.isSeller = isSeller;
     }
 
-    public User toUser( String encodedPassword) {
+    public User toUser(String encodedPassword) {
         if (isSeller) {
             return User.builder()
-            .firstname(firstname)
-            .lastname(lastname)
-            .email(email)
-            .password(encodedPassword)
-            .imageUrl(imageUrl)
-            .phoneNumber(phoneNumber)
-            .description(description)
-            .role(Role.SELLER).build();
+                .firstname(firstname)
+                .lastname(lastname)
+                .email(email)
+                .password(encodedPassword)
+                .imageUrl(imageUrl)
+                .phoneNumber(phoneNumber)
+                .description(description)
+                .role(Role.SELLER).build();
         }
         return User.builder()
             .firstname(firstname)
@@ -59,6 +59,7 @@ public class UserRequest {
                 .firstname(firstname)
                 .lastname(lastname)
                 .email(email)
+                .password("")
                 .imageUrl(imageUrl)
                 .phoneNumber(phoneNumber)
                 .description(description)
@@ -68,6 +69,7 @@ public class UserRequest {
             .firstname(firstname)
             .lastname(lastname)
             .email(email)
+            .password("")
             .imageUrl(imageUrl)
             .phoneNumber(phoneNumber)
             .description(description)

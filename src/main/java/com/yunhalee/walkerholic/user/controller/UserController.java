@@ -4,6 +4,7 @@ import com.yunhalee.walkerholic.user.dto.UserRequest;
 import com.yunhalee.walkerholic.user.dto.UserResponse;
 import com.yunhalee.walkerholic.user.dto.UserResponses;
 import com.yunhalee.walkerholic.user.dto.UserSearchResponses;
+import com.yunhalee.walkerholic.user.dto.UserTokenResponse;
 import com.yunhalee.walkerholic.user.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +37,12 @@ public class UserController {
     }
 
     @PostMapping("/users/images")
-    public ResponseEntity<String> saveImage(@RequestParam("multipartFile") MultipartFile multipartFile){
+    public ResponseEntity<String> saveImage(@RequestParam("multipartFile") MultipartFile multipartFile) {
         return ResponseEntity.ok(userService.uploadImage(multipartFile));
     }
 
     @PostMapping("/users")
-    public ResponseEntity<UserResponse> create(@RequestBody UserRequest request) {
+    public ResponseEntity<UserTokenResponse> create(@RequestBody UserRequest request) {
         return ResponseEntity.ok(userService.create(request));
     }
 
@@ -56,9 +57,10 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/user/forgotPassword/{email}")
-    public ResponseEntity<?> sendForgotPassword(@PathVariable("email") String email) {
-        return new ResponseEntity<String>(userService.sendForgotPassword(email), HttpStatus.OK);
+    @PostMapping("/users/forgot-password")
+    public ResponseEntity sendForgotPassword(@RequestParam("email") String email) {
+        userService.sendForgotPassword(email);
+        return ResponseEntity.noContent().build();
     }
 
 

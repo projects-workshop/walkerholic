@@ -6,21 +6,28 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.common.notification.mapper.NotificationMapper;
+import com.yunhalee.walkerholic.common.notification.sender.DefaultNotificationSender;
+import com.yunhalee.walkerholic.user.domain.Role;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.domain.UserTest;
 import com.yunhalee.walkerholic.user.dto.UserRequest;
 import com.yunhalee.walkerholic.user.dto.UserResponse;
 import com.yunhalee.walkerholic.user.dto.UserResponses;
 import com.yunhalee.walkerholic.user.dto.UserSearchResponses;
+import com.yunhalee.walkerholic.user.dto.UserTokenResponse;
 import com.yunhalee.walkerholic.user.exception.UserEmailAlreadyExistException;
 import java.util.Arrays;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.MockedStatic;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 
 class UserServiceTests extends MockBeans {
@@ -38,13 +45,36 @@ class UserServiceTests extends MockBeans {
         UserTest.USER.getDescription(),
         UserTest.USER.isSeller());
 
+    private static final UserRequest UPDATE_REQUEST = new UserRequest(UserTest.SELLER.getFirstname(),
+        UserTest.SELLER.getLastname(),
+        UserTest.SELLER.getEmail(),
+        UserTest.SELLER.getPassword(),
+        UserTest.SELLER.getImageUrl(),
+        UserTest.SELLER.getPhoneNumber(),
+        UserTest.SELLER.getDescription(),
+        UserTest.SELLER.isSeller());
+
+    private static final User USER = User.builder()
+        .id(UserTest.USER.getId())
+        .firstname(UserTest.USER.getFirstname())
+        .lastname(UserTest.USER.getLastname())
+        .email(UserTest.USER.getEmail())
+        .password(UserTest.USER.getPassword())
+        .imageUrl(UserTest.USER.getImageUrl())
+        .role(Role.USER).build();
+
+
+    private static final MockedStatic<NotificationMapper> notificationMapper = mockStatic(NotificationMapper.class);
+
+    @MockBean
+    protected DefaultNotificationSender defaultNotificationSender;
 
     @InjectMocks
-    private UserService userService = new UserService(userRepository, passwordEncoder, s3ImageUploader, cartService);
+    private UserService userService = new UserService(userRepository, passwordEncoder, s3ImageUploader, cartService, jwtTokenUtil);
 
 
     @Test
-    void getUser() {
+    void get_user() {
         //when
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(UserTest.USER));
         UserResponse userResponse = userService.getUser(ID);
@@ -54,7 +84,7 @@ class UserServiceTests extends MockBeans {
     }
 
     @Test
-    public void getUsersByPage() {
+    public void get_users_by_page() {
         //given
         Integer page = 1;
         String sort = "id";
@@ -70,7 +100,7 @@ class UserServiceTests extends MockBeans {
     }
 
     @Test
-    public void getUserByKeyword() {
+    public void get_user_by_keyword() {
         //given
         String keyword = "Name";
 
@@ -85,14 +115,15 @@ class UserServiceTests extends MockBeans {
 
     @Test
     public void sing_up() {
-
         //when
+        when(passwordEncoder.encode(any())).thenReturn(UserTest.USER.getPassword());
         when(userRepository.existsByEmail(any())).thenReturn(false);
-        when(userRepository.save(any())).thenReturn(UserTest.USER);
-        UserResponse userResponse = userService.create(USER_REQUEST);
+        when(userRepository.save(any())).thenReturn(USER);
+        when(jwtTokenUtil.generateToken(anyString())).thenReturn("token");
+        UserTokenResponse response = userService.create(USER_REQUEST);
 
         //then
-        equals(userResponse, UserTest.USER);
+        equals(response.getUser(), USER);
     }
 
     @Test
@@ -104,42 +135,60 @@ class UserServiceTests extends MockBeans {
     }
 
     @Test
-    public void updateUser() {
-        //given
-        UserRequest updateRequest = new UserRequest(UserTest.SELLER.getFirstname(),
-            UserTest.SELLER.getLastname(),
-            UserTest.SELLER.getEmail(),
-            UserTest.SELLER.getPassword(),
-            UserTest.SELLER.getImageUrl(),
-            UserTest.SELLER.getPhoneNumber(),
-            UserTest.SELLER.getDescription(),
-            UserTest.SELLER.isSeller());
-
+    public void update_user() {
         //when
+        when(passwordEncoder.encode(any())).thenReturn(UserTest.SELLER.getPassword());
         when(userRepository.existsByEmail(any())).thenReturn(false);
-        when(userRepository.findById(any())).thenReturn(Optional.of(UserTest.USER));
-        UserResponse userResponse = userService.update(ID, USER_REQUEST);
+        when(userRepository.findById(any())).thenReturn(Optional.of(USER));
+        UserResponse userResponse = userService.update(ID, UPDATE_REQUEST);
 
         //then
-        assertThat(userResponse.getId()).isEqualTo(UserTest.USER.getId());
+        assertThat(userResponse.getId()).isEqualTo(USER.getId());
         assertThat(userResponse.getFirstname()).isEqualTo(UserTest.SELLER.getFirstname());
         assertThat(userResponse.getLastname()).isEqualTo(UserTest.SELLER.getLastname());
         assertThat(userResponse.getEmail()).isEqualTo(UserTest.SELLER.getEmail());
         assertThat(userResponse.getRole()).isEqualTo(UserTest.SELLER.getRoleName());
         assertThat(userResponse.getImageUrl()).isEqualTo(UserTest.SELLER.getImageUrl());
         assertThat(userResponse.isSeller()).isEqualTo(UserTest.SELLER.isSeller());
+        assertThat(USER.getPassword()).isEqualTo(UserTest.SELLER.getPassword());
+    }
+
+    @Test
+    public void update_with_already_exists_email_is_invalid() {
+        when(userRepository.existsByEmail(any())).thenReturn(true);
+        when(userRepository.findByEmail(any())).thenReturn(Optional.of(UserTest.SELLER));
+        assertThatThrownBy(() -> userService.update(ID, USER_REQUEST))
+            .isInstanceOf(UserEmailAlreadyExistException.class)
+            .hasMessageContaining(DUPLICATED_EMAIL_EXCEPTION);
     }
 
 
     @Test
-    public void deleteUser() {
+    public void delete_user() {
         //when
+        when(userRepository.findById(any())).thenReturn(Optional.of(USER));
         userService.delete(ID);
 
         //then
         verify(cartService).deleteByUserId(any());
         verify(s3ImageUploader).deleteByFilePath(any());
         verify(userRepository).delete(any());
+    }
+
+    @Test
+    public void send_forgot_password() {
+        //given
+        String tempPassword = "tempPassword";
+
+        //when
+        when(userRepository.findByEmail(any())).thenReturn(Optional.of(USER));
+        when(passwordEncoder.encode(any())).thenReturn(tempPassword);
+        when(NotificationMapper.of(any())).thenReturn(defaultNotificationSender);
+        userService.sendForgotPassword(USER.getEmail());
+
+        //then
+        verify(defaultNotificationSender).sendForgotPasswordNotification(any(), any());
+        assertThat(USER.getPassword()).isEqualTo(tempPassword);
     }
 
 

@@ -40,11 +40,12 @@ public class ReviewRepositoryTest {
 
     @Before
     public void setUp() {
-        user = new User("testFirstName",
-            "TestLastName",
-            "test@example.com",
-            "12345678",
-            Role.USER);
+        user = User.builder()
+            .firstname("firstName")
+            .lastname("lastName")
+            .email("testUser@example.com")
+            .password("12345678")
+            .role(Role.USER).build();
         userRepository.save(user);
 
         product = new Product("testProduct", "testBrand", Category.TUMBLER, 12, 1000f, "testDescription");

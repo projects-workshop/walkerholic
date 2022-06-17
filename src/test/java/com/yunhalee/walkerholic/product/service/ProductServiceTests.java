@@ -52,12 +52,12 @@ class ProductServiceTests extends MockBeans {
 
     @BeforeEach
     public void setUp() {
-        user = new User(1,
-            "testFirstName",
-            "TestLastName",
-            "test@example.com",
-            "12345678",
-            Role.USER);
+        user = User.builder()
+            .firstname("firstName")
+            .lastname("lastName")
+            .email("testUser@example.com")
+            .password("12345678")
+            .role(Role.USER).build();
 
         product = new Product(NAME,
             DESCRIPTION,

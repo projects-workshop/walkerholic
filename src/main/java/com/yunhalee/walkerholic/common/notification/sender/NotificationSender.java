@@ -8,4 +8,6 @@ public interface NotificationSender {
     void sendCreateOrderNotification(Order order, User user);
 
     void sendCancelOrderNotification(Order order, User user);
+
+    void sendForgotPasswordNotification(User user, String tempPassword);
 }

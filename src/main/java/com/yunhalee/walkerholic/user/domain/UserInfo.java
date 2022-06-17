@@ -1,5 +1,6 @@
 package com.yunhalee.walkerholic.user.domain;
 
+import com.yunhalee.walkerholic.security.oauth.domain.OAuth2UserInfo;
 import com.yunhalee.walkerholic.security.oauth.domain.ProviderType;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
 import java.util.Arrays;
@@ -15,7 +16,6 @@ import lombok.NonNull;
 
 @Embeddable
 @Getter
-@NoArgsConstructor
 public class UserInfo {
 
     private static final String DEFAULT_IMAGE_URL = "https://walkerholic-with-you.s3.ap-northeast-2.amazonaws.com/globe-asia-solid.svg";
@@ -25,12 +25,6 @@ public class UserInfo {
 
     @Column(name = "lastname", nullable = false, length = 45)
     private String lastname;
-//
-//    @Column(length = 128, nullable = false, unique = true)
-//    private String email;
-//
-//    @Column(nullable = false)
-//    private String password;
 
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
@@ -42,17 +36,7 @@ public class UserInfo {
     @Column(length = 13)
     private String phoneNumber;
 
-//    @Column(name = "level")
-//    @Enumerated(EnumType.STRING)
-//    private Level level = Level.Starter;
-//
-//    private Integer score = 0;
-
     private String description;
-
-//    @Column(name = "provider_type")
-//    @Enumerated(EnumType.STRING)
-//    private ProviderType providerType;
 
     @Column(name = "notification_type")
     @Enumerated(EnumType.STRING)
@@ -74,39 +58,6 @@ public class UserInfo {
     public String getFullname() {
         return this.firstname + this.lastname;
     }
-//
-//    public Integer getScore(){
-//        return score;
-//    }
-//
-//    public void updateLevel(UserActivity userActivity) {
-//        addScore(userActivity);
-//        changeLevel();
-//    }
-//
-//    private void addScore(UserActivity userActivity) {
-//        if (userActivity.finished()) {
-//            score += userActivity.getScore();
-//        }
-//    }
-//
-//    private void changeLevel() {
-//        this.level = Arrays.stream(Level.values())
-//            .filter(level -> level.getMin() <= score && level.getMax() >= score)
-//            .findFirst()
-//            .orElse(this.level);
-//    }
-//
-//    public void deleteUserActivity(UserActivity userActivity) {
-//        minusScore(userActivity);
-//        changeLevel();
-//    }
-//
-//    private void minusScore(UserActivity userActivity){
-//        if (userActivity.finished()) {
-//            score -= userActivity.getScore();
-//        }
-//    }
 
     public boolean isSeller() {
         return this.role == Role.SELLER;
@@ -150,5 +101,29 @@ public class UserInfo {
 
     public boolean isDefaultImageUrl() {
         return this.imageUrl.equals(DEFAULT_IMAGE_URL);
+    }
+
+    public void updateOAuth2User(OAuth2UserInfo userInfo) {
+        updateFirstName(userInfo.getFirstName());
+        updateLastName(userInfo.getLastName());
+        updateImageUrl(userInfo.getImageUrl());
+    }
+
+    private void updateFirstName(String firstname) {
+        if (!firstname.isEmpty() || !firstname.isBlank()) {
+            this.firstname = firstname;
+        }
+    }
+
+    private void updateLastName(String lastname) {
+        if (!lastname.isEmpty() || !lastname.isBlank()) {
+            this.lastname = lastname;
+        }
+    }
+
+    private void updateImageUrl(String imageUrl) {
+        if (!imageUrl.isEmpty() || !imageUrl.isBlank()) {
+            this.imageUrl = imageUrl;
+        }
     }
 }

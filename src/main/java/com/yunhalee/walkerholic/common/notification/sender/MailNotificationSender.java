@@ -43,6 +43,18 @@ public class MailNotificationSender implements NotificationSender {
                 "\n\nFor more Details visit " + baseUrl + "/order/" + order.getId());
     }
 
+    @Override
+    @Async
+    public void sendForgotPasswordNotification(User user, String tempPassword) {
+        sendMail(user.getEmail(),
+            user.getFullName() + " : New Temporary Password is here!",
+            "Hello" + user.getFirstname()
+                + "! We send your temporary password here. \nBut this is not secured so please change password once you sign into our site. \nPassword : "
+                + tempPassword);
+    }
+
+
+
     private void sendMail(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);

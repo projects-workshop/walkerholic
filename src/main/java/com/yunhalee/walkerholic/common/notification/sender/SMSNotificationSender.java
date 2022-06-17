@@ -45,6 +45,16 @@ public class SMSNotificationSender implements NotificationSender {
                 "\n\nFor more Details visit " + baseUrl + "/order/" + order.getId());
     }
 
+    @Override
+    @Async
+    public void sendForgotPasswordNotification(User user, String tempPassword) {
+        sendSMS(user.getEmail(),
+            "Hello" + user.getFirstname()
+                + "! We send your temporary password here. \nBut this is not secured so please change password once you sign into our site. \nPassword : "
+                + tempPassword);
+    }
+
+
     private void sendSMS(String to, String text) {
         Message sms = new Message(apiKey, apiSecret);
         HashMap<String, String> params = new HashMap<>();

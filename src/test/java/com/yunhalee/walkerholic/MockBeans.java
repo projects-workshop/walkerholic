@@ -28,6 +28,7 @@ import com.yunhalee.walkerholic.product.domain.ProductRepository;
 import com.yunhalee.walkerholic.product.service.ProductService;
 import com.yunhalee.walkerholic.productImage.service.ProductImageService;
 import com.yunhalee.walkerholic.review.domain.ReviewRepository;
+import com.yunhalee.walkerholic.security.jwt.JwtTokenUtil;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.user.service.UserService;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivityRepository;
@@ -132,6 +133,9 @@ public class MockBeans {
 
     @MockBean
     protected PasswordEncoder passwordEncoder;
+
+    @MockBean
+    protected JwtTokenUtil jwtTokenUtil;
 
 
 
