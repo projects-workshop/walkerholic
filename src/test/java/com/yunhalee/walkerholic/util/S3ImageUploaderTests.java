@@ -75,7 +75,7 @@ public class S3ImageUploaderTests {
         //given
 
         //when
-        String imageUrl = s3ImageUploader.uploadFile(FOLDER_NAME, multipartFile);
+        String imageUrl = s3ImageUploader.uploadImage(FOLDER_NAME, multipartFile);
 
         //then
         System.out.println(imageUrl);
@@ -85,7 +85,7 @@ public class S3ImageUploaderTests {
     @Test
     public void testDeleteFile() throws IOException {
         //given
-        s3ImageUploader.uploadFile(FOLDER_NAME, multipartFile);
+        s3ImageUploader.uploadImage(FOLDER_NAME, multipartFile);
 
         //when
         s3ImageUploader.deleteFile(FOLDER_NAME + "/" + ORIGINAL_FILE_NAME);
@@ -100,7 +100,7 @@ public class S3ImageUploaderTests {
     @Test
     public void testDeleteFolder() throws IOException {
         //given
-        s3ImageUploader.uploadFile(FOLDER_NAME, multipartFile);
+        s3ImageUploader.uploadImage(FOLDER_NAME, multipartFile);
 
         //when
         s3ImageUploader.removeFolder(FOLDER_NAME);

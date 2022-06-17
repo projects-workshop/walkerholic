@@ -8,6 +8,7 @@ public class UserTest {
         .lastname("TestLastName")
         .email("test@example.com")
         .password("12345678")
+        .imageUrl("test/image.png")
         .role(Role.USER).build();
 
     public static final User SELLER = User.builder()
@@ -16,6 +17,7 @@ public class UserTest {
         .lastname("sellerLastName")
         .email("sellerTestExample@example.com")
         .password("12345678")
+        .imageUrl("test/image.png")
         .role(Role.SELLER).build();
 
 }

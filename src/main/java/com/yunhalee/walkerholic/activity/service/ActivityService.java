@@ -68,9 +68,8 @@ public class ActivityService {
         return;
     }
 
-    public String uploadImage(MultipartFile multipartFile)
-        throws IOException {
-        String imageUrl = s3ImageUploader.uploadFile(UPLOAD_DIR, multipartFile);
+    public String uploadImage(MultipartFile multipartFile) {
+        String imageUrl = s3ImageUploader.uploadImage(UPLOAD_DIR, multipartFile);
         return imageUrl;
     }
 

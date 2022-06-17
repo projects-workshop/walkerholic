@@ -1,6 +1,7 @@
 package com.yunhalee.walkerholic.user.service;
 
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
+import com.yunhalee.walkerholic.user.dto.UserRequest;
 import com.yunhalee.walkerholic.user.dto.UserResponses;
 import com.yunhalee.walkerholic.user.dto.UserSearchResponses;
 import com.yunhalee.walkerholic.util.FileUploadUtils;
@@ -25,11 +26,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class UserService {
+
+    private static final String UPLOAD_DIR = "profileUploads";
 
     public static final int USER_LIST_PER_PAGE = 10;
 
@@ -81,22 +83,24 @@ public class UserService {
             .collect(Collectors.toList());
     }
 
-
-    private void saveProfileFile(MultipartFile multipartFile, User user, boolean isNew)
-        throws IOException {
-        try {
-            String uploadDir = "profileUploads/" + user.getId();
-            if (!isNew) {
-                s3ImageUploader.removeFolder(uploadDir);
-            }
-            String imageUrl = s3ImageUploader.uploadFile(uploadDir, multipartFile);
-            user.setImageUrl(imageUrl);
-
-        } catch (IOException ex) {
-            new IOException("Could not save file : " + multipartFile.getOriginalFilename());
-        }
-
+    public String uploadImage(MultipartFile multipartFile){
+        String imageUrl = s3ImageUploader.uploadImage(UPLOAD_DIR, multipartFile);
+        return imageUrl;
     }
+
+    public UserResponse create(UserRequest request) {
+        checkEmail(request.getEmail());
+        User user = request.toUser(passwordEncoder.encode(request.getPassword()));
+        userRepository.save(user);
+        return UserResponse.of(user);
+    }
+
+    private void checkEmail(String email) {
+        if (userRepository.existsByEmail(email)) {
+            throw new UserEmailAlreadyExistException( "Email already exists : " + email);
+        }
+    }
+
 
     private boolean isEmailUnique(Integer id, String email) {
         User existingUser = userRepository.findByEmail(email);

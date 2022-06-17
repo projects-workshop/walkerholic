@@ -13,25 +13,43 @@ public class UserRequest {
     private String lastname;
     private String email;
     private String password;
+    private String imageUrl;
     private String phoneNumber;
     private String description;
     private boolean isSeller;
 
 
-    public UserRequest(String firstname, String lastname, String email, String password, String phoneNumber, String description, boolean isSeller) {
+    public UserRequest(String firstname, String lastname, String email, String password, String imageUrl, String phoneNumber, String description, boolean isSeller) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
         this.password = password;
+        this.imageUrl = imageUrl;
         this.phoneNumber = phoneNumber;
         this.description = description;
         this.isSeller = isSeller;
     }
 
-    public User toUser(String imageUrl) {
+    public User toUser( String encodedPassword) {
         if (isSeller) {
-            return new User(firstname, lastname, email, password, phoneNumber, description, Role.SELLER);
+            return User.builder()
+            .firstname(firstname)
+            .lastname(lastname)
+            .email(email)
+            .password(encodedPassword)
+            .imageUrl(imageUrl)
+            .phoneNumber(phoneNumber)
+            .description(description)
+            .role(Role.SELLER).build();
         }
-        return new User(firstname, lastname, email, password, phoneNumber, description, Role.USER);
+        return User.builder()
+            .firstname(firstname)
+            .lastname(lastname)
+            .email(email)
+            .password(encodedPassword)
+            .imageUrl(imageUrl)
+            .phoneNumber(phoneNumber)
+            .description(description)
+            .role(Role.USER).build();
     }
 }

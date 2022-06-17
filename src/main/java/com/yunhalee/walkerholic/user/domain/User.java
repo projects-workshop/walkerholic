@@ -85,11 +85,12 @@ public class User {
 
 
     @Builder
-    public User(Integer id, @NonNull String firstname, @NonNull String lastname, @NonNull String email, @NonNull String password, String phoneNumber, String description, @NonNull Role role) {
+    public User(Integer id, @NonNull String firstname, @NonNull String lastname, @NonNull String email, @NonNull String password, String imageUrl, String phoneNumber, String description, @NonNull Role role) {
         this.id = id;
         this.userInfo = UserInfo.builder()
             .firstname(firstname)
             .lastname(lastname)
+            .imageUrl(imageUrl)
             .phoneNumber(phoneNumber)
             .description(description)
             .role(role).build();

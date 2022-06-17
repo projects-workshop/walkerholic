@@ -1,5 +1,6 @@
 package com.yunhalee.walkerholic.user.controller;
 
+import com.yunhalee.walkerholic.user.dto.UserRequest;
 import com.yunhalee.walkerholic.user.dto.UserResponse;
 import com.yunhalee.walkerholic.user.dto.UserRegisterDTO;
 import com.yunhalee.walkerholic.user.dto.UserResponses;
@@ -37,6 +38,16 @@ public class UserController {
     @GetMapping(value = "/users", params = "keyword")
     public ResponseEntity<UserSearchResponses> searchUser(@RequestParam("keyword") String keyword) {
         return ResponseEntity.ok(userService.searchUser(keyword));
+    }
+
+    @PostMapping("/users/images")
+    public ResponseEntity<String> saveImage(@RequestParam("multipartFile") MultipartFile multipartFile){
+        return ResponseEntity.ok(userService.uploadImage(multipartFile));
+    }
+
+    @PostMapping("/users")
+    public ResponseEntity<UserResponse> create(@RequestBody UserRequest request) {
+        return ResponseEntity.ok(userService.create(request));
     }
 
 

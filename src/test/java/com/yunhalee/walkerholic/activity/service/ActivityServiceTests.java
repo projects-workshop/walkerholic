@@ -18,7 +18,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,7 +103,7 @@ class ActivityServiceTests extends MockBeans {
             "text/plain",
             "This is the file content".getBytes());
         //when
-        when(s3ImageUploader.uploadFile(any(), any()))
+        when(s3ImageUploader.uploadImage(any(), any()))
             .thenReturn(UPLOAD_DIR + "/" + fileName);
         String imageUrl = activityService.uploadImage(multipartFile);
         //then
