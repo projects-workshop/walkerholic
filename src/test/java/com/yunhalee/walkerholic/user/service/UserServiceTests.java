@@ -1,63 +1,43 @@
 package com.yunhalee.walkerholic.user.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import com.yunhalee.walkerholic.MockBeans;
-import com.yunhalee.walkerholic.user.domain.User;
-import com.yunhalee.walkerholic.user.domain.UserTest;
-import com.yunhalee.walkerholic.user.dto.UserListResponse;
-import com.yunhalee.walkerholic.user.dto.UserRegisterDTO;
-import com.yunhalee.walkerholic.user.dto.UserRequest;
-import com.yunhalee.walkerholic.user.dto.UserResponse;
-import com.yunhalee.walkerholic.user.dto.UserResponses;
-import com.yunhalee.walkerholic.user.dto.UserSearchResponse;
-import com.yunhalee.walkerholic.user.dto.UserSearchResponses;
-import com.yunhalee.walkerholic.user.exception.UserEmailAlreadyExistException;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.multipart.MultipartFile;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.user.domain.User;
+import com.yunhalee.walkerholic.user.domain.UserTest;
+import com.yunhalee.walkerholic.user.dto.UserRequest;
+import com.yunhalee.walkerholic.user.dto.UserResponse;
+import com.yunhalee.walkerholic.user.dto.UserResponses;
+import com.yunhalee.walkerholic.user.dto.UserSearchResponses;
+import com.yunhalee.walkerholic.user.exception.UserEmailAlreadyExistException;
+import java.util.Arrays;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.springframework.data.domain.PageImpl;
 
 class UserServiceTests extends MockBeans {
 
     private static final Integer ID = 1;
-    private static final String FIRST_NAME = "testFirstName";
-    private static final String LAST_NAME = "TestLastName";
-    private static final String EMAIL = "test@example.com";
-    private static final String PASSWORD = "123456";
-    private static final String IMAGE_URL = "test/image.png";
-    private static final String PHONE_NUMBER = "";
-    private static final String DESCRIPTION = "";
-    private static final boolean IS_SELLER = false;
 
     private static final String DUPLICATED_EMAIL_EXCEPTION = "Email already exists : ";
 
-    private static final UserRequest USER_REQUEST = new UserRequest("testFirstName", "TestLastName", "test@example.com", "123456", "test/image.png", "", "", false);
+    private static final UserRequest USER_REQUEST = new UserRequest(UserTest.USER.getFirstname(),
+        UserTest.USER.getLastname(),
+        UserTest.USER.getEmail(),
+        UserTest.USER.getPassword(),
+        UserTest.USER.getImageUrl(),
+        UserTest.USER.getPhoneNumber(),
+        UserTest.USER.getDescription(),
+        UserTest.USER.isSeller());
+
 
     @InjectMocks
     private UserService userService = new UserService(userRepository, passwordEncoder, s3ImageUploader);
@@ -124,24 +104,30 @@ class UserServiceTests extends MockBeans {
     }
 
     @Test
-    public void updateUser() throws IOException {
+    public void updateUser() {
         //given
-        Integer id = 17;
-        String firstname = "test";
-        String lastname = "update";
-        String email = "test@example.com";
-        String password = "123456";
-        String phoneNumber = "01000000000";
-        String description = "This is test.";
-
-        UserRegisterDTO userRegisterDTO = new UserRegisterDTO(id, firstname, lastname, email,
-            password, phoneNumber, description, false);
+        UserRequest updateRequest = new UserRequest(UserTest.SELLER.getFirstname(),
+            UserTest.SELLER.getLastname(),
+            UserTest.SELLER.getEmail(),
+            UserTest.SELLER.getPassword(),
+            UserTest.SELLER.getImageUrl(),
+            UserTest.SELLER.getPhoneNumber(),
+            UserTest.SELLER.getDescription(),
+            UserTest.SELLER.isSeller());
 
         //when
-        UserResponse userResponse = userService.saveUser(userRegisterDTO, null);
+        when(userRepository.existsByEmail(any())).thenReturn(false);
+        when(userRepository.findById(any())).thenReturn(Optional.of(UserTest.USER));
+        UserResponse userResponse = userService.update(ID, USER_REQUEST);
 
         //then
-        assertNotEquals(lastname, userResponse.getLastname());
+        assertThat(userResponse.getId()).isEqualTo(UserTest.USER.getId());
+        assertThat(userResponse.getFirstname()).isEqualTo(UserTest.SELLER.getFirstname());
+        assertThat(userResponse.getLastname()).isEqualTo(UserTest.SELLER.getLastname());
+        assertThat(userResponse.getEmail()).isEqualTo(UserTest.SELLER.getEmail());
+        assertThat(userResponse.getRole()).isEqualTo(UserTest.SELLER.getRoleName());
+        assertThat(userResponse.getImageUrl()).isEqualTo(UserTest.SELLER.getImageUrl());
+        assertThat(userResponse.isSeller()).isEqualTo(UserTest.SELLER.isSeller());
     }
 
 

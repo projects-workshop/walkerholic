@@ -101,91 +101,25 @@ public class UserService {
         }
     }
 
-
-    private boolean isEmailUnique(Integer id, String email) {
-        User existingUser = userRepository.findByEmail(email);
-
-        //존재하지 않는 이메일 선택시 true
-        if (existingUser == null) {
-            return true;
-        }
-        boolean isCreatingNew = (id == null);
-
-        //이미 존재하는 이메일의 경우 회원의 신입 여부에 따라서 경우를 나눠준다.
-        if (isCreatingNew) {        //새로운 가입하려는 경우
-            if (existingUser != null) {
-                return false;
-            }
-        } else {                    //기존회원의 이메일변경 확인하는 경우
-            if (existingUser.getId() != id) {
-                return false;
-            }
-        }
-
-        return true;
-
+    public UserResponse update(Integer id, UserRequest request) {
+        checkEmail(id, request.getEmail());
+        User user = findUserById(id);
+        user.update(updateUser(request));
+        return UserResponse.of(user);
     }
 
-    public UserResponse saveUser(UserRegisterDTO userRegisterDTO, MultipartFile multipartFile)
-        throws IOException {
-
-        if (!isEmailUnique(userRegisterDTO.getId(), userRegisterDTO.getEmail())) {
-            throw new UserEmailAlreadyExistException(
-                "Email already exists : " + userRegisterDTO.getEmail());
-        }
-
-        if (userRegisterDTO.getId() != null) {  //기존회원의 프로필 수정하는 경우
-            User existingUser = userRepository.findById(userRegisterDTO.getId()).get();
-            existingUser.setFirstname(userRegisterDTO.getFirstname());
-            existingUser.setLastname(userRegisterDTO.getLastname());
-            existingUser.setEmail(userRegisterDTO.getEmail());
-            if (userRegisterDTO.getPassword() != null) {
-                existingUser.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
-            }
-            if (userRegisterDTO.isSeller()) {
-                existingUser.setRole(Role.SELLER);
-            } else {
-                existingUser.setRole(Role.USER);
-            }
-            existingUser.setDescription(userRegisterDTO.getDescription());
-            existingUser.setPhoneNumber(userRegisterDTO.getPhoneNumber());
-
-            if (multipartFile != null) {
-                saveProfileFile(multipartFile, existingUser, false);
-            }
-
-            userRepository.save(existingUser);
-
-            return new UserResponse(existingUser);
-
-        } else {  //새로운회원을 등록하는 경우
-            User user = new User();
-            user.setFirstname(userRegisterDTO.getFirstname());
-            user.setLastname(userRegisterDTO.getLastname());
-            user.setEmail(userRegisterDTO.getEmail());
-            user.setPassword(passwordEncoder.encode(userRegisterDTO.getPassword()));
-            user.setDescription(userRegisterDTO.getDescription());
-            user.setPhoneNumber(userRegisterDTO.getPhoneNumber());
-            if (userRegisterDTO.isSeller()) {
-                user.setRole(Role.SELLER);
-            } else {
-                user.setRole(Role.USER);
-            }
-            user.setLevel(Level.Starter);
-
-            //새로 생성한 유저의 id를 가져오기 위해서 미리 한번 저장해준다.
-            userRepository.save(user);
-
-            if (multipartFile != null) {
-                saveProfileFile(multipartFile, user, true);
-            }
-
-            userRepository.save(user);
-
-            return new UserResponse(user);
+    private void checkEmail(Integer id, String email) {
+        if (userRepository.existsByEmail(email) && (findUserByEmail(email).getId() != id)) {
+            throw new UserEmailAlreadyExistException( "Email already exists : " + email);
         }
     }
 
+    private User updateUser(UserRequest request) {
+        if (request.getPassword().isBlank() || request.getPassword().isEmpty()){
+            return request.toUser();
+        }
+        return request.toUser(passwordEncoder.encode(request.getPassword()));
+    }
 
     public Integer deleteUser(Integer id) {
         userRepository.deleteById(id);
@@ -222,18 +156,18 @@ public class UserService {
             'D', 'E', 'F',
             'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',
             'X', 'Y', 'Z'};
-
         String str = "";
-
-        int idx = 0;
         for (int i = 0; i < 10; i++) {
-            idx = (int) (charSet.length * Math.random());
-            str += charSet[idx];
+            str += charSet[(int) (charSet.length * Math.random())];
         }
         return str;
     }
 
     public User findUserById(Integer id) {
         return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User not found with id : " + id));
+    }
+
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found with email : " + email));
     }
 }

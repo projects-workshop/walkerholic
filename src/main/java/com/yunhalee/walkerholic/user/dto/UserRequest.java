@@ -52,4 +52,25 @@ public class UserRequest {
             .description(description)
             .role(Role.USER).build();
     }
+
+    public User toUser() {
+        if (isSeller) {
+            return User.builder()
+                .firstname(firstname)
+                .lastname(lastname)
+                .email(email)
+                .imageUrl(imageUrl)
+                .phoneNumber(phoneNumber)
+                .description(description)
+                .role(Role.SELLER).build();
+        }
+        return User.builder()
+            .firstname(firstname)
+            .lastname(lastname)
+            .email(email)
+            .imageUrl(imageUrl)
+            .phoneNumber(phoneNumber)
+            .description(description)
+            .role(Role.USER).build();
+    }
 }

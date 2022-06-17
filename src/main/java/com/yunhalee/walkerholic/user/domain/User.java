@@ -3,6 +3,7 @@ package com.yunhalee.walkerholic.user.domain;
 import com.yunhalee.walkerholic.follow.domain.Follow;
 import com.yunhalee.walkerholic.likepost.domain.LikePost;
 import com.yunhalee.walkerholic.product.domain.Product;
+import com.yunhalee.walkerholic.user.dto.UserRequest;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
 import com.yunhalee.walkerholic.post.domain.Post;
 import com.yunhalee.walkerholic.security.oauth.domain.ProviderType;
@@ -111,6 +112,11 @@ public class User {
 //            .password(password).build();
 //    }
 
+    public void update(User toUser) {
+        this.userAuth.update(toUser);
+        this.userInfo.update(toUser);
+    }
+
     public String getFullName() {
         return this.userInfo.getFullname();
     }
@@ -126,28 +132,8 @@ public class User {
     public void deleteUserActivity(UserActivity userActivity) {
         this.userLevel.deleteUserActivity(userActivity);
     }
-
     public boolean isSeller() {
         return this.userInfo.isSeller();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        User user = (User) o;
-        return Objects.equals(id, user.id) && Objects
-            .equals(userInfo, user.userInfo) && Objects.equals(userAuth, user.userAuth)
-            && Objects.equals(userLevel, user.userLevel);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, userInfo, userAuth, userLevel);
     }
 
     public String getFirstname() {
@@ -160,6 +146,10 @@ public class User {
 
     public String getEmail() {
         return userAuth.getEmail();
+    }
+
+    public String getPassword() {
+        return userAuth.getPassword();
     }
 
     public Role getRole() {
@@ -193,4 +183,25 @@ public class User {
     public NotificationType getNotificationType() {
         return userInfo.getNotificationType();
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        User user = (User) o;
+        return Objects.equals(id, user.id) && Objects
+            .equals(userInfo, user.userInfo) && Objects.equals(userAuth, user.userAuth)
+            && Objects.equals(userLevel, user.userLevel);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, userInfo, userAuth, userLevel);
+    }
+
 }

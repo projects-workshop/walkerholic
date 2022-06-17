@@ -50,4 +50,15 @@ public class UserAuth {
     public int hashCode() {
         return Objects.hash(email, password, providerType);
     }
+
+    public void update(User toUser) {
+        this.email = toUser.getEmail();
+        updatePassword(toUser.getPassword());
+    }
+
+    private void updatePassword(String updatedPassword) {
+        if (!updatedPassword.isBlank() || !updatedPassword.isEmpty()) {
+            this.password = updatedPassword;
+        }
+    }
 }

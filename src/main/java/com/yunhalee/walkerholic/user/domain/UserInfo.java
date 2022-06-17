@@ -136,4 +136,13 @@ public class UserInfo {
         return Objects
             .hash(firstname, lastname, role, imageUrl, phoneNumber, description, notificationType);
     }
+
+    public void update(User toUser) {
+        this.firstname = toUser.getFirstname();
+        this.lastname = toUser.getLastname();
+        this.role = toUser.getRole();
+        this.imageUrl = toUser.getImageUrl();
+        this.phoneNumber = toUser.getPhoneNumber();
+        this.description = toUser.getDescription();
+    }
 }

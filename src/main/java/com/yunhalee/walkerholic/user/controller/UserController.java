@@ -50,6 +50,12 @@ public class UserController {
         return ResponseEntity.ok(userService.create(request));
     }
 
+    @PostMapping("/users/{id}")
+    public ResponseEntity<UserResponse> update(@PathVariable("id") Integer id, @RequestBody UserRequest request) {
+        return ResponseEntity.ok(userService.update(id, request));
+    }
+
+
 
     @PostMapping("/user/save")
     public ResponseEntity<UserResponse> saveUser(@RequestParam("id") Integer id,
@@ -69,7 +75,7 @@ public class UserController {
     }
 
 
-    @DeleteMapping("/user/delete/{id}")
+    @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteuser(@PathVariable("id") String id) {
         Integer userId = Integer.parseInt(id);
         return new ResponseEntity<Integer>(userService.deleteUser(userId), HttpStatus.OK);
