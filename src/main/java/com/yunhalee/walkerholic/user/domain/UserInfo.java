@@ -16,6 +16,7 @@ import lombok.NonNull;
 
 @Embeddable
 @Getter
+@NoArgsConstructor
 public class UserInfo {
 
     private static final String DEFAULT_IMAGE_URL = "https://walkerholic-with-you.s3.ap-northeast-2.amazonaws.com/globe-asia-solid.svg";

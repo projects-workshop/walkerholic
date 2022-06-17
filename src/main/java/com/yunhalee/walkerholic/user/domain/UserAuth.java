@@ -8,10 +8,12 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Embeddable
 @Getter
+@NoArgsConstructor
 public class UserAuth {
 
     @Column(length = 128, nullable = false, unique = true)

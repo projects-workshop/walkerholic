@@ -117,7 +117,7 @@ class UserServiceTests extends MockBeans {
     public void sing_up() {
         //when
         when(passwordEncoder.encode(any())).thenReturn(UserTest.USER.getPassword());
-        when(userRepository.existsByEmail(any())).thenReturn(false);
+        when(userRepository.existsByUserAuthEmail(any())).thenReturn(false);
         when(userRepository.save(any())).thenReturn(USER);
         when(jwtTokenUtil.generateToken(anyString())).thenReturn("token");
         UserTokenResponse response = userService.create(USER_REQUEST);
@@ -128,7 +128,7 @@ class UserServiceTests extends MockBeans {
 
     @Test
     public void sing_up_with_already_exists_email_is_invalid() {
-        when(userRepository.existsByEmail(any())).thenReturn(true);
+        when(userRepository.existsByUserAuthEmail(any())).thenReturn(true);
         assertThatThrownBy(() -> userService.create(USER_REQUEST))
             .isInstanceOf(UserEmailAlreadyExistException.class)
             .hasMessageContaining(DUPLICATED_EMAIL_EXCEPTION);
@@ -138,7 +138,7 @@ class UserServiceTests extends MockBeans {
     public void update_user() {
         //when
         when(passwordEncoder.encode(any())).thenReturn(UserTest.SELLER.getPassword());
-        when(userRepository.existsByEmail(any())).thenReturn(false);
+        when(userRepository.existsByUserAuthEmail(any())).thenReturn(false);
         when(userRepository.findById(any())).thenReturn(Optional.of(USER));
         UserResponse userResponse = userService.update(ID, UPDATE_REQUEST);
 
@@ -155,8 +155,8 @@ class UserServiceTests extends MockBeans {
 
     @Test
     public void update_with_already_exists_email_is_invalid() {
-        when(userRepository.existsByEmail(any())).thenReturn(true);
-        when(userRepository.findByEmail(any())).thenReturn(Optional.of(UserTest.SELLER));
+        when(userRepository.existsByUserAuthEmail(any())).thenReturn(true);
+        when(userRepository.findByUserAuthEmail(any())).thenReturn(Optional.of(UserTest.SELLER));
         assertThatThrownBy(() -> userService.update(ID, USER_REQUEST))
             .isInstanceOf(UserEmailAlreadyExistException.class)
             .hasMessageContaining(DUPLICATED_EMAIL_EXCEPTION);
@@ -181,7 +181,7 @@ class UserServiceTests extends MockBeans {
         String tempPassword = "tempPassword";
 
         //when
-        when(userRepository.findByEmail(any())).thenReturn(Optional.of(USER));
+        when(userRepository.findByUserAuthEmail(any())).thenReturn(Optional.of(USER));
         when(passwordEncoder.encode(any())).thenReturn(tempPassword);
         when(NotificationMapper.of(any())).thenReturn(defaultNotificationSender);
         userService.sendForgotPassword(USER.getEmail());

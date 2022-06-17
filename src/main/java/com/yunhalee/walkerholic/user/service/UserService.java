@@ -95,7 +95,7 @@ public class UserService {
     }
 
     private void checkEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
+        if (userRepository.existsByUserAuthEmail(email)) {
             throw new UserEmailAlreadyExistException("Email already exists : " + email);
         }
     }
@@ -108,7 +108,7 @@ public class UserService {
     }
 
     private void checkEmail(Integer id, String email) {
-        if (userRepository.existsByEmail(email) && (findUserByEmail(email).getId() != id)) {
+        if (userRepository.existsByUserAuthEmail(email) && (findUserByEmail(email).getId() != id)) {
             throw new UserEmailAlreadyExistException("Email already exists : " + email);
         }
     }
@@ -159,7 +159,7 @@ public class UserService {
     }
 
     public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email)
+        return userRepository.findByUserAuthEmail(email)
             .orElseThrow(() -> new UserNotFoundException("User not found with email : " + email));
     }
 }

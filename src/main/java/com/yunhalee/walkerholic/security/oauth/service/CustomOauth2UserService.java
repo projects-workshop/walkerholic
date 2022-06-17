@@ -48,7 +48,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
             .valueOf(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory
             .getOAuth2UserInfo(providerType, user.getAttributes());
-        Optional<User> optionalUser = userRepository.findByEmail(userInfo.getEmail());
+        Optional<User> optionalUser = userRepository.findByUserAuthEmail(userInfo.getEmail());
         log.info(jwtTokenUtil.generateToken(userInfo.getEmail()));
         return new JwtUserDetails(user(optionalUser, userInfo, providerType), user.getAttributes());
     }
