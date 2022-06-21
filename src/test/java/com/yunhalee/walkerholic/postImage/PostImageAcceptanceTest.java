@@ -15,8 +15,7 @@ import org.springframework.http.MediaType;
 
 public class PostImageAcceptanceTest extends AcceptanceTest {
 
-    private final File postRequestFile = new File(
-        getClass().getClassLoader().getResource("postRequest").getPath());
+    private final File postRequestFile = new File(getClass().getClassLoader().getResource("postRequest").getPath());
     private String token;
     private Integer postId;
 
