@@ -57,7 +57,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/users/forgot-password")
+    @PostMapping(value = "/users", params = "email")
     public ResponseEntity sendForgotPassword(@RequestParam("email") String email) {
         userService.sendForgotPassword(email);
         return ResponseEntity.noContent().build();

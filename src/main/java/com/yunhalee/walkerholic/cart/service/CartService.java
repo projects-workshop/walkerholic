@@ -40,9 +40,9 @@ public class CartService {
         return CartResponse.of(cart, cartItemService.cartItemResponses(cart.getCartItems()));
     }
 
-    public void deleteByUserId(Integer userId) {
-        cartRepository.deleteByUserId(userId);
-    }
+//    public void deleteByUserId(Integer userId) {
+//        cartRepository.deleteByUserId(userId);
+//    }
 
     public Cart findCartByUserId(Integer userId) {
         return cartRepository.findByUserId(userId)

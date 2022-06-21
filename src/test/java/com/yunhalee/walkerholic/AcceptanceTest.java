@@ -6,6 +6,7 @@ import com.yunhalee.walkerholic.util.DatabaseCleanup;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.io.File;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,8 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(locations = "/config/application-test.properties")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AcceptanceTest {
+
+    public final File imageFile = new File(getClass().getClassLoader().getResource("image1.jpeg").getPath());
 
     @LocalServerPort
     int port;

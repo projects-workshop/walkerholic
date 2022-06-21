@@ -1,6 +1,5 @@
 package com.yunhalee.walkerholic.product.service;
 
-import com.yunhalee.walkerholic.common.dto.PageSortRequest;
 import com.yunhalee.walkerholic.productImage.dto.ProductImageResponse;
 import com.yunhalee.walkerholic.product.dto.ProductRequest;
 import com.yunhalee.walkerholic.product.dto.ProductResponse;
@@ -13,7 +12,6 @@ import com.yunhalee.walkerholic.review.domain.ReviewRepository;
 import com.yunhalee.walkerholic.review.dto.ReviewResponse;
 import com.yunhalee.walkerholic.user.dto.SimpleUserResponse;
 import com.yunhalee.walkerholic.user.dto.SellerUserResponse;
-import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import com.yunhalee.walkerholic.user.service.UserService;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.product.domain.Product;

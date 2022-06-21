@@ -70,7 +70,7 @@ class UserServiceTests extends MockBeans {
     protected DefaultNotificationSender defaultNotificationSender;
 
     @InjectMocks
-    private UserService userService = new UserService(userRepository, passwordEncoder, s3ImageUploader, cartService, jwtTokenUtil);
+    private UserService userService = new UserService(userRepository, passwordEncoder, s3ImageUploader, cartRepository, jwtTokenUtil);
 
 
     @Test
@@ -170,7 +170,7 @@ class UserServiceTests extends MockBeans {
         userService.delete(ID);
 
         //then
-        verify(cartService).deleteByUserId(any());
+        verify(cartRepository).deleteByUserId(any());
         verify(s3ImageUploader).deleteByFilePath(any());
         verify(userRepository).delete(any());
     }

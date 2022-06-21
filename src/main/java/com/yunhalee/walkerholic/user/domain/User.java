@@ -12,11 +12,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Entity
 @Table(name = "user")
 @Getter
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -41,6 +43,7 @@ public class User {
             .imageUrl(imageUrl)
             .phoneNumber(phoneNumber)
             .description(description)
+            .notificationType(NotificationType.NONE)
             .role(role).build();
         this.userAuth = UserAuth.builder()
             .email(email)

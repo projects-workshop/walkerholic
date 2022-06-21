@@ -1,5 +1,6 @@
 package com.yunhalee.walkerholic.user.service;
 
+import com.yunhalee.walkerholic.cart.domain.CartRepository;
 import com.yunhalee.walkerholic.cart.service.CartService;
 import com.yunhalee.walkerholic.common.notification.mapper.NotificationMapper;
 import com.yunhalee.walkerholic.common.service.S3ImageUploader;
@@ -36,18 +37,18 @@ public class UserService {
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     private S3ImageUploader s3ImageUploader;
-    private CartService cartService;
+    private CartRepository cartRepository;
     private JwtTokenUtil jwtTokenUtil;
 
     public UserService(UserRepository userRepository,
         PasswordEncoder passwordEncoder,
         S3ImageUploader s3ImageUploader,
-        CartService cartService,
+        CartRepository cartRepository,
         JwtTokenUtil jwtTokenUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.s3ImageUploader = s3ImageUploader;
-        this.cartService = cartService;
+        this.cartRepository = cartRepository;
         this.jwtTokenUtil = jwtTokenUtil;
     }
 
@@ -122,7 +123,7 @@ public class UserService {
 
     public void delete(Integer id) {
         User user = findUserById(id);
-        cartService.deleteByUserId(id);
+        cartRepository.deleteByUserId(id);
         deleteImage(user);
         userRepository.delete(user);
     }
