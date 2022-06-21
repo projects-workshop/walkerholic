@@ -88,13 +88,12 @@ public class UserAcceptanceTest extends AcceptanceTest {
 
     public static ExtractableResponse<Response> create_user_request(String imageUrl) {
         UserRequest request = new UserRequest(FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, imageUrl, PHONE_NUMBER, DESCRIPTION, IS_SELLER);
-        return RestAssured
-            .given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(request)
-            .when().post("/api/users")
-            .then().log().all()
-            .extract();
+        return create_request(request, "/users");
+    }
+
+    public static ExtractableResponse<Response> create_user_request(String email, String imageUrl) {
+        UserRequest request = new UserRequest(FIRST_NAME, LAST_NAME, email, PASSWORD, imageUrl, PHONE_NUMBER, DESCRIPTION, IS_SELLER);
+        return create_request(request, "/users");
     }
 
     public static void check_user_created(ExtractableResponse<Response> response) {

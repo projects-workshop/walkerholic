@@ -49,6 +49,16 @@ public class AcceptanceTest {
             .extract();
     }
 
+    public static ExtractableResponse<Response> create_request(Object request, String uri) {
+        return RestAssured
+            .given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(request)
+            .when().post("/api" + uri)
+            .then().log().all()
+            .extract();
+    }
+
     public static ExtractableResponse<Response> update_Request(Object request, String uri, String token) {
         return RestAssured
             .given().log().all()
