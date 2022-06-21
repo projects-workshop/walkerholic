@@ -60,10 +60,10 @@ public class PostImageService {
     }
 
     private void deletePostImage(Post post, List<String> deletedImages) {
+        post.deletePostImage(deletedImages);
         deletedImages.forEach(deletedImage -> {
             postImageRepository.deleteByFilePath(deletedImage);
             s3ImageUploader.deleteByFilePath(deletedImage);
-            post.deletePostImage(deletedImages);
         });
     }
 

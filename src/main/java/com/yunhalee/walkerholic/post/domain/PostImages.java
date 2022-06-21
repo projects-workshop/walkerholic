@@ -4,6 +4,7 @@ import com.yunhalee.walkerholic.postImage.domain.PostImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -37,8 +38,10 @@ public class PostImages {
     }
 
     public void deletePostImages(List<String> deletedImages) {
-        this.postImages = this.postImages.stream()
+        List<PostImage> postImages = this.postImages.stream()
             .filter(postImage -> !deletedImages.contains(postImage.getFilePath()))
             .collect(Collectors.toList());
+        this.postImages.clear();
+        this.postImages.addAll(postImages);
     }
 }
