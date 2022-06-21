@@ -68,29 +68,6 @@ public class UserInfo {
         return this.role.name();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        UserInfo userInfo = (UserInfo) o;
-        return Objects.equals(firstname, userInfo.firstname) && Objects
-            .equals(lastname, userInfo.lastname) && role == userInfo.role && Objects
-            .equals(imageUrl, userInfo.imageUrl) && Objects
-            .equals(phoneNumber, userInfo.phoneNumber) && Objects
-            .equals(description, userInfo.description)
-            && notificationType == userInfo.notificationType;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects
-            .hash(firstname, lastname, role, imageUrl, phoneNumber, description, notificationType);
-    }
-
     public void update(User toUser) {
         this.firstname = toUser.getFirstname();
         this.lastname = toUser.getLastname();
@@ -126,5 +103,28 @@ public class UserInfo {
         if (!imageUrl.isEmpty() || !imageUrl.isBlank()) {
             this.imageUrl = imageUrl;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        UserInfo userInfo = (UserInfo) o;
+        return Objects.equals(firstname, userInfo.firstname) && Objects
+            .equals(lastname, userInfo.lastname) && role == userInfo.role && Objects
+            .equals(imageUrl, userInfo.imageUrl) && Objects
+            .equals(phoneNumber, userInfo.phoneNumber) && Objects
+            .equals(description, userInfo.description)
+            && notificationType == userInfo.notificationType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects
+            .hash(firstname, lastname, role, imageUrl, phoneNumber, description, notificationType);
     }
 }

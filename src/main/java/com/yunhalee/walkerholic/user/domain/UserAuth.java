@@ -33,6 +33,22 @@ public class UserAuth {
         this.providerType = providerType;
     }
 
+    public void update(User toUser) {
+        this.email = toUser.getEmail();
+        updatePassword(toUser.getPassword());
+    }
+
+    private void updatePassword(String updatedPassword) {
+        if (!updatedPassword.isBlank() || !updatedPassword.isEmpty()) {
+            this.password = updatedPassword;
+        }
+    }
+
+    public void changePassword(String changedPassword) {
+        this.password = changedPassword;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -51,18 +67,4 @@ public class UserAuth {
         return Objects.hash(email, password, providerType);
     }
 
-    public void update(User toUser) {
-        this.email = toUser.getEmail();
-        updatePassword(toUser.getPassword());
-    }
-
-    private void updatePassword(String updatedPassword) {
-        if (!updatedPassword.isBlank() || !updatedPassword.isEmpty()) {
-            this.password = updatedPassword;
-        }
-    }
-
-    public void changePassword(String changedPassword) {
-        this.password = changedPassword;
-    }
 }
