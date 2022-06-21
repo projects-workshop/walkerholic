@@ -119,7 +119,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> delete_activity_request(ExtractableResponse<Response> response) {
         Integer id = response.body().jsonPath().getInt("id");
-        return delete_request("/users/" + id, token);
+        return delete_request("/activities/" + id, token);
     }
 
     private void check_activity_deleted(ExtractableResponse<Response> response) {

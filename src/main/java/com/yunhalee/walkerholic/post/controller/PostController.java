@@ -53,12 +53,12 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostsByFollowings(page, id));
     }
 
-    @GetMapping("/posts")
+    @GetMapping(value = "/posts", params = {"page", "sort"})
     public ResponseEntity<SimplePostResponses> getHomePosts(@RequestParam("page") Integer page, @RequestParam("sort") String sort) {
         return ResponseEntity.ok(postService.getHomePosts(page, sort));
     }
 
-    @GetMapping("/posts/search")
+    @GetMapping(value = "/posts", params = {"page", "sort", "keyword"})
     public ResponseEntity<SimplePostResponses> getSearchPosts(@RequestParam("page") Integer page, @RequestParam("sort") String sort, @RequestParam(value = "keyword") String keyword) {
         return ResponseEntity.ok(postService.getSearchPosts(page, sort, keyword));
     }

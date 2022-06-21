@@ -80,6 +80,15 @@ public class AcceptanceTest {
             .extract();
     }
 
+    public static ExtractableResponse<Response> find_request(String uri) {
+        return RestAssured
+            .given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/api" + uri)
+            .then().log().all()
+            .extract();
+    }
+
     public static ExtractableResponse<Response> delete_request(String uri, String token) {
         return RestAssured
             .given().log().all()
