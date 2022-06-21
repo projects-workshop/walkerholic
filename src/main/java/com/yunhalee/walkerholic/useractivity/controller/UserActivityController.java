@@ -29,12 +29,12 @@ public class UserActivityController {
         return ResponseEntity.ok(userActivityService.create(userActivityRequest));
     }
 
-    @PostMapping("/user-activities/{id}")
+    @PutMapping("/user-activities/{id}")
     public ResponseEntity<UserActivityResponse> update(@Valid @RequestBody UserActivityRequest userActivityRequest, @PathVariable("id") Integer id) {
         return ResponseEntity.ok(userActivityService.update(userActivityRequest, id));
     }
 
-    @DeleteMapping("/user-activities/{id}/users/{userId}")
+    @DeleteMapping("/users/{userId}/user-activities/{id}")
     public ResponseEntity<String> deleteUserActivity(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId) {
         return ResponseEntity.ok(userActivityService.deleteUserActivity(id, userId));
     }

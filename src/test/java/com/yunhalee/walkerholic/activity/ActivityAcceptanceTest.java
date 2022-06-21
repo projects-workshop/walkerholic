@@ -29,7 +29,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
         // given
         String imageUrl = createImageResponse.body().asString();
         // when
-        ExtractableResponse<Response> createResponse = create_activity_request(imageUrl);
+        ExtractableResponse<Response> createResponse = create_activity_request(imageUrl, token);
         // then
         check_activity_created(createResponse);
 
@@ -72,7 +72,8 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
     }
 
 
-    private ExtractableResponse<Response> create_activity_request(String imageUrl) {
+    public static ExtractableResponse<Response> create_activity_request(String imageUrl,
+        String token) {
         ActivityRequest request = ActivityRequest.builder()
             .name(NAME)
             .score(SCORE)
@@ -81,7 +82,7 @@ public class ActivityAcceptanceTest extends AcceptanceTest {
         return create_request(request, "/activities", token);
     }
 
-    private void check_activity_created(ExtractableResponse<Response> response) {
+    public static void check_activity_created(ExtractableResponse<Response> response) {
         check_ok_response(response);
     }
 

@@ -167,7 +167,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
 
     public static String user_token() {
         // when
-        ExtractableResponse<Response> createResponse = create_user_request(USER_IMAGE_URL);
+        ExtractableResponse<Response> createResponse = create_user_request(TEST_IMAGE_URL);
         // then
         check_user_created(createResponse);
         return createResponse.body().jsonPath().getString("token");
