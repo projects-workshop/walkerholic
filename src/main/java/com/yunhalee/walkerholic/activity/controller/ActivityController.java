@@ -6,6 +6,7 @@ import com.yunhalee.walkerholic.activity.dto.ActivityDetailResponse;
 import com.yunhalee.walkerholic.activity.service.ActivityService;
 import java.io.IOException;
 import javax.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,34 +23,34 @@ public class ActivityController {
     }
 
     @PostMapping
-    public ActivityResponse create(@Valid @RequestBody ActivityRequest activityRequest) {
-        return activityService.create(activityRequest);
+    public ResponseEntity<ActivityResponse> create(@Valid @RequestBody ActivityRequest activityRequest) {
+        return ResponseEntity.ok(activityService.create(activityRequest));
     }
 
     @PutMapping("/{id}")
-    public ActivityResponse update(@PathVariable("id") Integer id,
-        @Valid @RequestBody ActivityRequest activityRequest) {
-        return activityService.update(id, activityRequest);
+    public ResponseEntity<ActivityResponse> update(@PathVariable("id") Integer id, @Valid @RequestBody ActivityRequest activityRequest) {
+        return ResponseEntity.ok(activityService.update(id, activityRequest));
     }
 
     @PostMapping("/images")
-    public String uploadImage(@RequestParam("multipartFile") MultipartFile multipartFile) {
-        return activityService.uploadImage(multipartFile);
+    public ResponseEntity<String> uploadImage(@RequestParam("multipartFile") MultipartFile multipartFile) {
+        return ResponseEntity.ok(activityService.uploadImage(multipartFile));
     }
 
     @GetMapping("/{id}")
-    public ActivityDetailResponse activity(@PathVariable("id") Integer id) {
-        return activityService.activity(id);
+    public ResponseEntity<ActivityDetailResponse> activity(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(activityService.activity(id));
     }
 
     @GetMapping
-    public List<ActivityResponse> activities() {
-        return activityService.activities();
+    public ResponseEntity<List<ActivityResponse>> activities() {
+        return ResponseEntity.ok(activityService.activities());
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable("id") Integer id) {
+    public ResponseEntity delete(@PathVariable("id") Integer id) {
         activityService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

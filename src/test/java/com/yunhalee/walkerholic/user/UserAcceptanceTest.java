@@ -86,7 +86,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
     }
 
 
-    private ExtractableResponse<Response> create_user_request(String imageUrl) {
+    public static ExtractableResponse<Response> create_user_request(String imageUrl) {
         UserRequest request = new UserRequest(FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, imageUrl, PHONE_NUMBER, DESCRIPTION, IS_SELLER);
         return RestAssured
             .given().log().all()
@@ -97,7 +97,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private void check_user_created(ExtractableResponse<Response> response) {
+    public static void check_user_created(ExtractableResponse<Response> response) {
         check_ok_response(response);
     }
 
@@ -163,6 +163,14 @@ public class UserAcceptanceTest extends AcceptanceTest {
 
     private void check_user_deleted(ExtractableResponse<Response> response) {
         check_delete_response(response);
+    }
+
+    public static String user_token() {
+        // when
+        ExtractableResponse<Response> createResponse = create_user_request(USER_IMAGE_URL);
+        // then
+        check_user_created(createResponse);
+        return createResponse.body().jsonPath().getString("token");
     }
 
 

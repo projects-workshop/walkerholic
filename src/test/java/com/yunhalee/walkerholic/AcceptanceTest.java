@@ -20,6 +20,7 @@ import org.springframework.test.context.TestPropertySource;
 public class AcceptanceTest {
 
     public final File imageFile = new File(getClass().getClassLoader().getResource("image1.jpeg").getPath());
+    public static final String USER_IMAGE_URL = "https://walkerholic-with-you.s3.ap-northeast-2.amazonaws.com/testImage/image.jpeg";
 
     @LocalServerPort
     int port;
@@ -54,7 +55,7 @@ public class AcceptanceTest {
             .header("Authorization", "Bearer " + token)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(request)
-            .when().post("/api" + uri)
+            .when().put("/api" + uri)
             .then().log().all()
             .extract();
     }
@@ -64,7 +65,7 @@ public class AcceptanceTest {
             .given().log().all()
             .header("Authorization", "Bearer " + token)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/api" + uri)
+            .when().put("/api" + uri)
             .then().log().all()
             .extract();
     }
