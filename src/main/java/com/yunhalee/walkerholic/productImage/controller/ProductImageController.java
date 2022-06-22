@@ -27,16 +27,12 @@ public class ProductImageController {
     }
 
     @PostMapping
-    public ResponseEntity<SimpleProductImageResponses> createImages(
-        @PathVariable("id") Integer id,
-        @RequestParam(value = "multipartFile") List<MultipartFile> multipartFiles) {
+    public ResponseEntity<SimpleProductImageResponses> createImages(@PathVariable("id") Integer id, @RequestParam(value = "multipartFile") List<MultipartFile> multipartFiles) {
         return ResponseEntity.ok(productImageService.createImages(id, multipartFiles));
     }
 
     @DeleteMapping
-    public ResponseEntity deleteImages(
-        @PathVariable("id") Integer id,
-        @RequestParam(value = "deletedImages") List<String> deletedImages) {
+    public ResponseEntity deleteImages(@PathVariable("id") Integer id, @RequestParam(value = "deletedImages") List<String> deletedImages) {
         productImageService.deleteImages(id, deletedImages);
         return ResponseEntity.noContent().build();
     }
