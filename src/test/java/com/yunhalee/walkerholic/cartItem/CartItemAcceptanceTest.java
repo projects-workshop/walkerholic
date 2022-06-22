@@ -56,7 +56,7 @@ public class CartItemAcceptanceTest extends AcceptanceTest {
         // given
         user_cart_set_up();
         // when
-        ExtractableResponse<Response> createResponse = create_cart_item_request();
+        ExtractableResponse<Response> createResponse = create_cart_item_request(productId, cartId, token);
         // then
         check_cart_item_created(createResponse);
 
@@ -72,12 +72,12 @@ public class CartItemAcceptanceTest extends AcceptanceTest {
     }
 
 
-    private ExtractableResponse<Response> create_cart_item_request() {
+    public static ExtractableResponse<Response> create_cart_item_request(Integer productId, Integer cartId, String token) {
         CartItemRequest request = new CartItemRequest(QTY, productId, cartId);
         return create_request(request, "/cart-items", token);
     }
 
-    private void check_cart_item_created(ExtractableResponse<Response> response) {
+    public static void check_cart_item_created(ExtractableResponse<Response> response) {
         check_ok_response(response);
     }
 
