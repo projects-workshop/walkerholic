@@ -47,12 +47,11 @@ public class ReviewService {
         return new ReviewResponse(review);
     }
 
-    public Integer deleteReview(Integer id) {
+    public void deleteReview(Integer id) {
         Review review = findReviewById(id);
         Product product = review.getProduct();
         product.deleteReview(review.getRating());
         reviewRepository.deleteById(id);
-        return id;
     }
 
     private Review findReviewById(Integer id) {
