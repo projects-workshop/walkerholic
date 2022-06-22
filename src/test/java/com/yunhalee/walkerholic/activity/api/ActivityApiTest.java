@@ -1,5 +1,7 @@
 package com.yunhalee.walkerholic.activity.api;
 
+import static com.yunhalee.walkerholic.activity.domain.ActivityTest.FIRST_ACTIVITY;
+import static com.yunhalee.walkerholic.activity.domain.ActivityTest.SECOND_ACTIVITY;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -16,7 +18,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.yunhalee.walkerholic.ApiTest;
-import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.activity.dto.ActivityDetailResponse;
 import com.yunhalee.walkerholic.activity.dto.ActivityRequest;
 import com.yunhalee.walkerholic.activity.dto.ActivityResponse;
@@ -33,21 +34,6 @@ import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 
 
 public class ActivityApiTest extends ApiTest {
-
-    private static final Activity FIRST_ACTIVITY = Activity.builder()
-        .id(1)
-        .name("firstActivity")
-        .score(20)
-        .imageUrl("firstActivity/image.png")
-        .description("This is first activity.").build();
-
-    private static final Activity SECOND_ACTIVITY = Activity.builder()
-        .id(2)
-        .name("secondActivity")
-        .score(50)
-        .imageUrl("firstActivity/image.png")
-        .description("This is second activity.").build();
-
 
     private static final ActivityRequest REQUEST = new ActivityRequest(FIRST_ACTIVITY.getName(),
         FIRST_ACTIVITY.getScore(),

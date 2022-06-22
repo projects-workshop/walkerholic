@@ -31,10 +31,10 @@ public class UserActivityResponse {
 
     public UserActivityResponse(UserActivity userActivity, String level) {
         this.id = userActivity.getId();
-        this.activityId = userActivity.getActivity().getId();
-        this.activityName = userActivity.getActivity().getName();
-        this.activityImageUrl = userActivity.getActivity().getImageUrl();
-        this.score = userActivity.getActivity().getScore();
+        this.activityId = userActivity.activityId();
+        this.activityName = userActivity.activityName();
+        this.activityImageUrl = userActivity.activityImageUrl();
+        this.score = userActivity.activityScore();
         this.finished = userActivity.getStatus() == ActivityStatus.FINISHED;
         this.createdAt = userActivity.getCreatedAt();
         this.updatedAt = userActivity.getUpdatedAt();
@@ -43,10 +43,10 @@ public class UserActivityResponse {
 
     public UserActivityResponse(UserActivity userActivity) {
         this.id = userActivity.getId();
-        this.activityId = userActivity.getActivity().getId();
-        this.activityName = userActivity.getActivity().getName();
-        this.activityImageUrl = userActivity.getActivity().getImageUrl();
-        this.score = userActivity.getActivity().getScore();
+        this.activityId = userActivity.activityId();
+        this.activityName = userActivity.activityName();
+        this.activityImageUrl = userActivity.activityImageUrl();
+        this.score = userActivity.activityScore();
         this.finished = userActivity.getStatus() == ActivityStatus.FINISHED;
         this.createdAt = userActivity.getCreatedAt();
         this.updatedAt = userActivity.getUpdatedAt();

@@ -36,16 +36,6 @@ import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 public class UserApiTest extends ApiTest {
 
     private static final String TOKEN = "token";
-    private static final User USER = User.builder()
-        .id(1)
-        .firstname("testFirstName")
-        .lastname("TestLastName")
-        .email("test@example.com")
-        .password("12345678")
-        .imageUrl("test/image.png")
-        .phoneNumber("01000000000")
-        .description("This is testUser")
-        .role(Role.USER).build();
     private static final User SELLER = User.builder()
         .id(1)
         .firstname("test2FirstName")

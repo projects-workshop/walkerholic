@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yunhalee.walkerholic.activity.service.ActivityService;
 import com.yunhalee.walkerholic.security.jwt.service.JwtUserDetailsService;
+import com.yunhalee.walkerholic.user.domain.Role;
+import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.service.UserService;
+import com.yunhalee.walkerholic.useractivity.service.UserActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,6 +26,16 @@ import org.springframework.test.web.servlet.MockMvc;
 public abstract class ApiTest {
 
     protected static final MockMultipartFile MULTIPART_FILE = new MockMultipartFile("multipartFile", "image.png", "image/png", "image data".getBytes());
+    protected static final User USER = User.builder()
+        .id(1)
+        .firstname("testFirstName")
+        .lastname("TestLastName")
+        .email("test@example.com")
+        .password("12345678")
+        .imageUrl("test/image.png")
+        .phoneNumber("01000000000")
+        .description("This is testUser")
+        .role(Role.USER).build();
 
     @Autowired
     protected MockMvc mockMvc;
@@ -38,6 +51,9 @@ public abstract class ApiTest {
 
     @MockBean
     protected ActivityService activityService;
+
+    @MockBean
+    protected UserActivityService userActivityService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 

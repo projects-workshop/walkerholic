@@ -82,4 +82,20 @@ public class UserActivity extends BaseTimeEntity {
     public String userImageUrl() {
         return this.user.getImageUrl();
     }
+
+    public Integer activityId() {
+        return this.activity.getId();
+    }
+
+    public String activityName() {
+        return this.activity.getName();
+    }
+
+    public String activityImageUrl() {
+        return this.activity.getImageUrl();
+    }
+
+    public Integer activityScore() {
+        return this.activity.getScore();
+    }
 }
