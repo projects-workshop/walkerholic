@@ -66,4 +66,20 @@ public class UserActivity extends BaseTimeEntity {
     public Integer getScore() {
         return this.activity.getScore();
     }
+
+    public String getStatusName() {
+        return this.status.name();
+    }
+
+    public Integer userId() {
+        return this.user.getId();
+    }
+
+    public String userFullName() {
+        return this.user.getFullName();
+    }
+
+    public String userImageUrl() {
+        return this.user.getImageUrl();
+    }
 }

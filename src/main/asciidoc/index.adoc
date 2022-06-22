@@ -10,3 +10,4 @@ Yunha Lee;
 :operation-http-response-title: Example response
 
 include::users.adoc[]
+include::activities.adoc[]

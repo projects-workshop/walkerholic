@@ -2,6 +2,7 @@ package com.yunhalee.walkerholic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yunhalee.walkerholic.activity.service.ActivityService;
 import com.yunhalee.walkerholic.security.jwt.service.JwtUserDetailsService;
 import com.yunhalee.walkerholic.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +22,10 @@ import org.springframework.test.web.servlet.MockMvc;
 @TestPropertySource(locations = "/config/application-test.properties")
 public abstract class ApiTest {
 
-    @Autowired
-    protected MockMvc mockMvc;
-
     protected static final MockMultipartFile MULTIPART_FILE = new MockMultipartFile("multipartFile", "image.png", "image/png", "image data".getBytes());
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    protected MockMvc mockMvc;
 
     @MockBean
     protected PasswordEncoder passwordEncoder;
@@ -36,6 +35,11 @@ public abstract class ApiTest {
 
     @MockBean
     protected JwtUserDetailsService jwtUserDetailsService;
+
+    @MockBean
+    protected ActivityService activityService;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     protected String request(Object object) {
         try {

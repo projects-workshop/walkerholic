@@ -5,8 +5,10 @@ import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class UserActivityResponse {
 
     private Integer id;

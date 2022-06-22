@@ -1,14 +1,11 @@
 package com.yunhalee.walkerholic.useractivity.dto;
 
-import com.yunhalee.walkerholic.useractivity.domain.ActivityStatus;
-import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.Getter;
-import org.springframework.data.domain.Page;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class UserActivityResponses {
 
     private List<UserActivityResponse> activities;
@@ -19,52 +16,11 @@ public class UserActivityResponses {
 
     private int score;
 
-
-    public UserActivityResponses(List<UserActivity> userActivities,
-        Page<UserActivity> userActivityPage, int score) {
-        this.activities = UserActivityResponse.activities(userActivities);
-        this.totalPage = userActivityPage.getTotalPages();
-        this.totalElement = userActivityPage.getTotalElements();
+    public UserActivityResponses(List<UserActivityResponse> userActivities, Long totalElement, Integer totalPage, int score) {
+        this.activities = userActivities;
+        this.totalPage = totalPage;
+        this.totalElement = totalElement;
         this.score = score;
-    }
-
-    @Getter
-    static class UserActivityResponse {
-
-        private Integer id;
-
-        private Integer activityId;
-
-        private String activityImageUrl;
-
-        private String activityName;
-
-        private Integer score;
-
-        private boolean finished;
-
-        private LocalDateTime createdAt;
-
-        private LocalDateTime updatedAt;
-
-        static List<UserActivityResponse> activities(List<UserActivity> userActivities) {
-            List<UserActivityResponse> userActivitiesResponse = userActivities.stream()
-                .map(UserActivityResponse::new)
-                .collect(Collectors.toList());
-            return userActivitiesResponse;
-        }
-
-        public UserActivityResponse(UserActivity userActivity) {
-            this.id = userActivity.getId();
-            this.activityId = userActivity.getActivity().getId();
-            this.activityName = userActivity.getActivity().getName();
-            this.activityImageUrl = userActivity.getActivity().getImageUrl();
-            this.score = userActivity.getActivity().getScore();
-            this.finished = userActivity.getStatus() == ActivityStatus.FINISHED;
-            this.createdAt = userActivity.getCreatedAt();
-            this.updatedAt = userActivity.getUpdatedAt();
-        }
-
     }
 
 }

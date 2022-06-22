@@ -10,6 +10,7 @@ import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
 import com.yunhalee.walkerholic.useractivity.domain.UserActivityRepository;
 import com.yunhalee.walkerholic.useractivity.dto.UserActivityResponse;
 import com.yunhalee.walkerholic.useractivity.exception.UserActivityNotFoundException;
+import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +42,13 @@ public class UserActivityService {
         Pageable pageable = PageRequest.of(page - 1, USER_ACTIVITY_PER_PAGE);
         Page<UserActivity> userActivityPage = userActivityRepository.findByUserId(pageable, id);
         List<UserActivity> userActivities = userActivityPage.getContent();
-        return new UserActivityResponses(userActivities, userActivityPage, score(userActivities));
+        return new UserActivityResponses(userActivityResponses(userActivities), userActivityPage.getTotalElements(), userActivityPage.getTotalPages(), score(userActivities));
+    }
+
+    private List<UserActivityResponse> userActivityResponses(List<UserActivity> userActivities) {
+        return userActivities.stream()
+            .map(UserActivityResponse::new)
+            .collect(Collectors.toList());
     }
 
     public UserActivityResponse create(UserActivityRequest userActivityRequest) {

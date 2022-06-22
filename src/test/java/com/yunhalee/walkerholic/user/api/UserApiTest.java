@@ -29,6 +29,7 @@ import com.yunhalee.walkerholic.user.dto.UserTokenResponse;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 
@@ -131,6 +132,7 @@ public class UserApiTest extends ApiTest {
     void get_users() throws Exception {
         when(userService.getUsers(any(), any())).thenReturn(UserResponses.of(Arrays.asList(UserResponse.of(USER), UserResponse.of(SELLER)), 2L, 1));
         this.mockMvc.perform(get("/api/users")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .param("page", "1")
             .param("sort", "id")
             .accept(MediaType.APPLICATION_JSON))
@@ -152,6 +154,7 @@ public class UserApiTest extends ApiTest {
     void update_user() throws Exception {
         when(userService.update(any(), any())).thenReturn(UserResponse.of(USER));
         this.mockMvc.perform(put("/api/users/1")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .contentType(MediaTypes.HAL_JSON)
             .characterEncoding("utf-8")
             .content(request(REQUEST))
@@ -163,6 +166,7 @@ public class UserApiTest extends ApiTest {
     @Test
     void delete_user() throws Exception {
         this.mockMvc.perform(delete("/api/users/1")
+            .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent())
             .andDo(document("user-delete"));

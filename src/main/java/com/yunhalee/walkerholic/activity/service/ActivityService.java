@@ -7,7 +7,10 @@ import com.yunhalee.walkerholic.activity.dto.ActivityResponse;
 import com.yunhalee.walkerholic.activity.dto.ActivityDetailResponse;
 import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.activity.domain.ActivityRepository;
+import com.yunhalee.walkerholic.useractivity.domain.UserActivity;
+import com.yunhalee.walkerholic.useractivity.dto.SimpleUserActivityResponse;
 import java.io.IOException;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,9 +52,13 @@ public class ActivityService {
     @Transactional(readOnly = true)
     public ActivityDetailResponse activity(Integer id) {
         Activity activity = activityRepository.findByActivityId(id);
-        ActivityDetailResponse activityDetailResponse = new ActivityDetailResponse(activity);
+        return new ActivityDetailResponse(activity, simpleUserActivityResponses(activity.getUserActivities()));
+    }
 
-        return activityDetailResponse;
+    private List<SimpleUserActivityResponse> simpleUserActivityResponses(Set<UserActivity> activities) {
+        return activities.stream()
+            .map(SimpleUserActivityResponse::of)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

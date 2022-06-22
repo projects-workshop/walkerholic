@@ -45,8 +45,8 @@ public class Activity {
     }
 
     @Builder
-    public Activity(@NonNull String name, @NonNull Integer score, @NonNull String description,
-        String imageUrl) {
+    public Activity(Integer id, @NonNull String name, @NonNull Integer score, @NonNull String description, String imageUrl) {
+        this.id = id;
         this.name = name;
         this.score = score;
         this.description = description;

@@ -1,0 +1,62 @@
+ifndef::snippets[]
+:snippets: ../../../target/generated-snippets
+endif::[]
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+
+[[resources_activities]]
+== Activity
+
+[[resources_activity_create]]
+=== 활동 등록
+==== Request
+include::{snippets}/activity-create/http-request.adoc[]
+==== Response
+include::{snippets}/activity-create/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/activity-create/response-fields.adoc[]
+
+[[resources_activity_save_image]]
+=== 활동 이미지 등록
+==== Request
+include::{snippets}/activity-save-image/http-request.adoc[]
+==== Response
+include::{snippets}/activity-save-image/http-response.adoc[]
+
+[[resources_activity_get]]
+=== 단일 활동 조회
+==== Request
+include::{snippets}/activity-get-by-id/http-request.adoc[]
+==== Response
+include::{snippets}/activity-get-by-id/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/activity-get-by-id/response-fields.adoc[]
+
+[[resources_activities_get_all]]
+=== 모든 활동 조회
+==== Request
+include::{snippets}/activity-get-all/http-request.adoc[]
+==== Response
+include::{snippets}/activity-get-all/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/activity-get-all/response-fields.adoc[]
+
+[[resources_activity_update]]
+=== 활동 정보 수정
+==== Request
+include::{snippets}/activity-update/http-request.adoc[]
+==== Response
+include::{snippets}/activity-update/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/activity-update/response-fields.adoc[]
+
+[[resources_activity_delete]]
+=== 활동 삭제
+==== Request
+include::{snippets}/activity-delete/http-request.adoc[]
+==== Response
+include::{snippets}/activity-delete/http-response.adoc[]
+
