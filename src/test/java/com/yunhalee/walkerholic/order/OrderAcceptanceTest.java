@@ -71,7 +71,7 @@ public class OrderAcceptanceTest extends AcceptanceTest {
         // given
         user_cart_set_up();
         // when
-        ExtractableResponse<Response> createResponse = create_order_request();
+        ExtractableResponse<Response> createResponse = create_order_request(userId, token);
         // then
         check_order_created(createResponse);
 
@@ -106,7 +106,7 @@ public class OrderAcceptanceTest extends AcceptanceTest {
         // given
         user_cart_set_up();
         // when
-        ExtractableResponse<Response> createResponse = create_order_request();
+        ExtractableResponse<Response> createResponse = create_order_request(userId, token);
         // then
         check_order_created(createResponse);
 
@@ -122,7 +122,7 @@ public class OrderAcceptanceTest extends AcceptanceTest {
         // given
         user_cart_set_up();
         // when
-        ExtractableResponse<Response> createResponse = create_order_request();
+        ExtractableResponse<Response> createResponse = create_order_request(userId, token);
         // then
         check_order_created(createResponse);
 
@@ -137,7 +137,7 @@ public class OrderAcceptanceTest extends AcceptanceTest {
         check_order_not_canceled(cancelResponse);
     }
 
-    private ExtractableResponse<Response> create_order_request() {
+    public static ExtractableResponse<Response> create_order_request(Integer userId, String token) {
         OrderRequest request = new OrderRequest(userId, SHIPPING, PAYMENT_METHOD, TRANSACTION_ID, ADDRESS);
         return create_request(request, "/orders", token);
     }
