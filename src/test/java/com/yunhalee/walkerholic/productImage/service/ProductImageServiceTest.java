@@ -1,12 +1,11 @@
 package com.yunhalee.walkerholic.productImage.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.ServiceTest;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.product.domain.ProductTest;
 import com.yunhalee.walkerholic.productImage.domain.ProductImage;
@@ -19,7 +18,7 @@ import org.mockito.InjectMocks;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
-class ProductImageServiceTest extends MockBeans {
+class ProductImageServiceTest extends ServiceTest {
 
     private static final String NAME = "testImage";
     private static final String FILE_PATH = "https://walkerholic-test-you.s3.ap-northeast10.amazonaws.com/productUploads/testImageUrl";

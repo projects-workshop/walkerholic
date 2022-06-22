@@ -45,7 +45,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
-public class MockBeans {
+public class ServiceTest {
 
     @MockBean
     protected UserActivityRepository userActivityRepository;

@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.product.service;
 
-import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.ServiceTest;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.productImage.domain.ProductImageTest;
 import com.yunhalee.walkerholic.productImage.dto.ProductImageResponse;
@@ -28,7 +28,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class ProductServiceTests extends MockBeans {
+class ProductServiceTests extends ServiceTest {
 
     private static final String NAME = "testProduct";
     private static final String DESCRIPTION = "testDescription";

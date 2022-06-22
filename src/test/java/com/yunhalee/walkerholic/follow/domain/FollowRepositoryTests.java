@@ -1,6 +1,7 @@
 package com.yunhalee.walkerholic.follow.domain;
 
 
+import com.yunhalee.walkerholic.RepositoryTest;
 import com.yunhalee.walkerholic.user.domain.Role;
 import com.yunhalee.walkerholic.user.domain.User;
 import com.yunhalee.walkerholic.user.domain.UserRepository;
@@ -18,16 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
-@RunWith(SpringRunner.class)
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class FollowRepositoryTests {
-
-    @Autowired
-    FollowRepository followRepository;
-
-    @Autowired
-    UserRepository userRepository;
+public class FollowRepositoryTests extends RepositoryTest {
 
     private Follow follow;
     private User fromUser;

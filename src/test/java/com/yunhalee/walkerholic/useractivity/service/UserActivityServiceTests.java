@@ -7,7 +7,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.ServiceTest;
 import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.user.domain.Level;
 import com.yunhalee.walkerholic.user.domain.Role;
@@ -28,7 +28,7 @@ import org.mockito.InjectMocks;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
-class UserActivityServiceTests extends MockBeans {
+class UserActivityServiceTests extends ServiceTest {
 
     @InjectMocks
     private UserActivityService userActivityService;

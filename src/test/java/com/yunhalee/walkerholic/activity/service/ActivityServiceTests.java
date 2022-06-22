@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.activity.service;
 
-import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.ServiceTest;
 import com.yunhalee.walkerholic.activity.domain.Activity;
 import com.yunhalee.walkerholic.activity.dto.ActivityRequest;
 import com.yunhalee.walkerholic.activity.dto.ActivityResponse;
@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @ExtendWith(MockitoExtension.class)
 @Transactional
-class ActivityServiceTests extends MockBeans {
+class ActivityServiceTests extends ServiceTest {
 
     private static final String UPLOAD_DIR = "activity-uploads/";
     private static final String NAME = "testActivity";

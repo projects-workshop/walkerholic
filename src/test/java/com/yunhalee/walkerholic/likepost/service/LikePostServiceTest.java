@@ -1,22 +1,17 @@
 package com.yunhalee.walkerholic.likepost.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.ServiceTest;
 import com.yunhalee.walkerholic.likepost.domain.LikePost;
 import com.yunhalee.walkerholic.likepost.dto.LikePostRequest;
 import com.yunhalee.walkerholic.likepost.dto.LikePostResponse;
 import com.yunhalee.walkerholic.post.domain.PostTest;
 import com.yunhalee.walkerholic.user.domain.UserTest;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
-import org.mockito.AdditionalAnswers;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @ExtendWith(MockitoExtension.class)
 @Transactional
-class LikePostServiceTest extends MockBeans {
+class LikePostServiceTest extends ServiceTest {
 
     @InjectMocks
     private LikePostService likePostService;

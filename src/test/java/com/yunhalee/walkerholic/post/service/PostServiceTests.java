@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.post.service;
 
-import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.ServiceTest;
 import com.yunhalee.walkerholic.likepost.domain.LikePost;
 import com.yunhalee.walkerholic.postImage.domain.PostImageTest;
 import com.yunhalee.walkerholic.post.dto.PostRequest;
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class PostServiceTests extends MockBeans {
+class PostServiceTests extends ServiceTest {
 
     private static final String TITLE = "testTitle";
     private static final String CONTENT = "testContent";

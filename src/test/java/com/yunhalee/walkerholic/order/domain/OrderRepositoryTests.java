@@ -1,56 +1,28 @@
 package com.yunhalee.walkerholic.order.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import com.yunhalee.walkerholic.RepositoryTest;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItem;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.product.domain.Product;
-import com.yunhalee.walkerholic.product.domain.ProductRepository;
 import com.yunhalee.walkerholic.productImage.domain.ProductImage;
-import com.yunhalee.walkerholic.productImage.domain.ProductImageRepository;
 import com.yunhalee.walkerholic.user.domain.User;
-import com.yunhalee.walkerholic.orderitem.domain.OrderItemRepository;
-import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.user.domain.UserTest;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-
-@RunWith(SpringRunner.class)
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class OrderRepositoryTests {
+public class OrderRepositoryTests extends RepositoryTest {
 
     public static final int ORDER_LIST_PER_PAGE = 10;
-
-    @Autowired
-    OrderRepository orderRepository;
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    OrderItemRepository orderItemRepository;
-
-    @Autowired
-    ProductRepository productRepository;
-
-    @Autowired
-    ProductImageRepository productImageRepository;
-
 
     private User user;
     private User seller;
@@ -157,8 +129,7 @@ public class OrderRepositoryTests {
     @Test
     public void check_duplicated_order() {
         assertThatThrownBy(() -> save(OrderStatus.ORDER, PaymentInfoTest.PAYMENT_INFO, DeliveryInfoTest.NOT_DELIVERED_DELIVERY, user.getId(), "2020-1-1 10:22"))
-            .isInstanceOf(DataIntegrityViolationException.class)
-            .hasMessageContaining("idx_userId_timeSeparator");
+            .isInstanceOf(DataIntegrityViolationException.class);
     }
 
 }

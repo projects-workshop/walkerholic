@@ -2,7 +2,7 @@ package com.yunhalee.walkerholic.cart.service;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.ServiceTest;
 import com.yunhalee.walkerholic.cart.domain.Cart;
 import com.yunhalee.walkerholic.cart.dto.CartResponse;
 import com.yunhalee.walkerholic.cart.exception.CartAlreadyExist;
@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CartServiceTest extends MockBeans {
+class CartServiceTest extends ServiceTest {
 
     private static final String CART_ALREADY_EXIST_EXCEPTION = "Only one cart can be created per user.";
 

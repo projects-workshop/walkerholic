@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.cartItem.service;
 
-import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.ServiceTest;
 import com.yunhalee.walkerholic.cart.domain.Cart;
 import com.yunhalee.walkerholic.cart.domain.CartTest;
 import com.yunhalee.walkerholic.cartItem.domain.CartItem;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-class CartItemServiceTest extends MockBeans {
+class CartItemServiceTest extends ServiceTest {
 
     @InjectMocks
     CartItemService cartItemService = new CartItemService(

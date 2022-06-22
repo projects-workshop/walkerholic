@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.follow.service;
 
-import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.ServiceTest;
 import com.yunhalee.walkerholic.follow.domain.FollowTest;
 import com.yunhalee.walkerholic.follow.dto.FollowResponse;
 import com.yunhalee.walkerholic.follow.domain.Follow;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 @ExtendWith(MockitoExtension.class)
 @Transactional
-class FollowServiceTests extends MockBeans {
+class FollowServiceTests extends ServiceTest {
 
     private static final String CANNOT_FOLLOW_ONESELF = "User cannot follow oneself.";
     private static final String FOLLOW_ALREADY_EXIST = "already followed user";

@@ -2,39 +2,26 @@ package com.yunhalee.walkerholic.user.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.yunhalee.walkerholic.RepositoryTest;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 
 
-@RunWith(SpringRunner.class)
-@TestPropertySource(locations = "/config/application-test.properties")
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class UserRepositoryTests {
+public class UserRepositoryTests extends RepositoryTest {
 
-    @Autowired
-    UserRepository userRepository;
+    public static final int USER_LIST_PER_PAGE = 4;
 
     private User firstUser;
     private User secondUser;
     private User thirdUser;
     private User fourthUser;
     private User fifthUser;
-
-
-    public static final int USER_LIST_PER_PAGE = 4;
 
     @Before
     public void setUp() {

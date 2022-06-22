@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.review.service;
 
-import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.ServiceTest;
 import com.yunhalee.walkerholic.product.domain.Category;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.review.domain.Review;
@@ -20,7 +20,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +31,7 @@ import static org.mockito.Mockito.when;
 @RunWith(SpringRunner.class)
 @ExtendWith(MockitoExtension.class)
 @Transactional
-class ReviewServiceTest extends MockBeans {
+class ReviewServiceTest extends ServiceTest {
 
     @InjectMocks
     private ReviewService reviewService;

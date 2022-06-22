@@ -1,6 +1,6 @@
 package com.yunhalee.walkerholic.orderitem.service;
 
-import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.ServiceTest;
 import com.yunhalee.walkerholic.cartItem.domain.CartItem;
 import com.yunhalee.walkerholic.cartItem.domain.CartItemTest;
 import com.yunhalee.walkerholic.order.domain.DeliveryInfoTest;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class OrderItemServiceTests extends MockBeans {
+class OrderItemServiceTests extends ServiceTest {
 
     @InjectMocks
     OrderItemService orderItemService = new OrderItemService(

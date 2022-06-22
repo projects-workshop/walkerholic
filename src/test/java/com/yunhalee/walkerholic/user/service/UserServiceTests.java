@@ -10,7 +10,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.ServiceTest;
 import com.yunhalee.walkerholic.common.notification.mapper.NotificationMapper;
 import com.yunhalee.walkerholic.common.notification.sender.DefaultNotificationSender;
 import com.yunhalee.walkerholic.user.domain.Role;
@@ -30,7 +30,7 @@ import org.mockito.MockedStatic;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 
-class UserServiceTests extends MockBeans {
+class UserServiceTests extends ServiceTest {
 
     private static final Integer ID = 1;
 

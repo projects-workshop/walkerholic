@@ -1,7 +1,7 @@
 package com.yunhalee.walkerholic.order.service;
 
 
-import com.yunhalee.walkerholic.MockBeans;
+import com.yunhalee.walkerholic.ServiceTest;
 import com.yunhalee.walkerholic.cart.domain.Cart;
 import com.yunhalee.walkerholic.cartItem.domain.CartItemTest;
 import com.yunhalee.walkerholic.common.dto.ItemResponse;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.anyInt;
 
-class OrderServiceTests extends MockBeans {
+class OrderServiceTests extends ServiceTest {
 
     private static final Address ADDRESS = AddressTest.ADDRESS;
     private static final Float SHIPPING = 10.0f;

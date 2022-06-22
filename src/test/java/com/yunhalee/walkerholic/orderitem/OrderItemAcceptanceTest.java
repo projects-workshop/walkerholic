@@ -21,8 +21,7 @@ import org.junit.jupiter.api.Test;
 
 public class OrderItemAcceptanceTest extends AcceptanceTest {
 
-    private final File productRequestFile = new File(
-        getClass().getClassLoader().getResource("productRequest.txt").getPath());
+    private final File productRequestFile = new File(getClass().getClassLoader().getResource("productRequest.txt").getPath());
     private Integer userId;
     private String token;
     private Integer cartId;
