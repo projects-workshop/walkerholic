@@ -16,9 +16,9 @@ public class CartItemRequest {
         this.productId = productId;
     }
 
-    public CartItemRequest(Integer qty, Integer productId, Integer orderId) {
+    public CartItemRequest(Integer qty, Integer productId, Integer cartId) {
         this.qty = qty;
         this.productId = productId;
-        this.cartId = orderId;
+        this.cartId = cartId;
     }
 }

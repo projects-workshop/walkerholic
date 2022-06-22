@@ -29,18 +29,18 @@ public class CartAcceptanceTest extends AcceptanceTest {
         // given
         user_set_up();
         // when
-        ExtractableResponse<Response> createResponse = create_cart_request();
+        ExtractableResponse<Response> createResponse = create_cart_request(userId, token);
         // then
         check_cart_created(createResponse);
 
         // when
-        ExtractableResponse<Response> findResponse = find_cart_request();
+        ExtractableResponse<Response> findResponse = find_cart_request(userId, token);
         // then
         check_cart_found(findResponse);
     }
 
 
-    private ExtractableResponse<Response> create_cart_request() {
+    public static ExtractableResponse<Response> create_cart_request(Integer userId, String token) {
         return RestAssured
             .given().log().all()
             .header("Authorization", "Bearer " + token)
@@ -50,16 +50,16 @@ public class CartAcceptanceTest extends AcceptanceTest {
             .extract();
     }
 
-    private void check_cart_created(ExtractableResponse<Response> response) {
+    public static void check_cart_created(ExtractableResponse<Response> response) {
         check_ok_response(response);
     }
 
 
-    private ExtractableResponse<Response> find_cart_request() {
+    public static ExtractableResponse<Response> find_cart_request(Integer userId, String token) {
         return find_request("/carts?userId=" + userId, token);
     }
 
-    private void check_cart_found(ExtractableResponse<Response> response) {
+    public static void check_cart_found(ExtractableResponse<Response> response) {
         check_ok_response(response);
     }
 
