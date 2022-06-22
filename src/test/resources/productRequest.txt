@@ -1,0 +1,9 @@
+{
+  "name":"testProduct",
+  "description":"This is test product.",
+  "brand":"testBrand",
+  "category":"TUMBLER",
+  "stock":"100",
+  "price":"12",
+  "userId":"1"
+}
