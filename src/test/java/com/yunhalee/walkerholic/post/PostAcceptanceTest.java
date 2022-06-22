@@ -3,6 +3,7 @@ package com.yunhalee.walkerholic.post;
 import static com.yunhalee.walkerholic.user.UserAcceptanceTest.check_user_created;
 import static com.yunhalee.walkerholic.user.UserAcceptanceTest.create_user_request;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.yunhalee.walkerholic.AcceptanceTest;
 import com.yunhalee.walkerholic.post.dto.PostRequest;
 import io.restassured.RestAssured;
@@ -15,10 +16,6 @@ public class PostAcceptanceTest extends AcceptanceTest {
 
     private static final Integer PAGE = 1;
     private static final String SORT = "createdAt";
-    private static final String TITLE = "updateTestPost";
-    private static final String CONTENT = "This is updated post.";
-
-    private final File postRequestFile = new File(getClass().getClassLoader().getResource("postRequest").getPath());
     private Integer userId;
     private String token;
 
@@ -37,7 +34,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
         // given
         user_set_up();
         // when
-        ExtractableResponse<Response> createResponse = create_post_request(imageFile, postRequestFile, token);
+        ExtractableResponse<Response> createResponse = create_post_request(imageFile, postRequest(userId), token);
         // then
         check_post_created(createResponse);
 
@@ -84,13 +81,13 @@ public class PostAcceptanceTest extends AcceptanceTest {
 
     }
 
-    public static ExtractableResponse<Response> create_post_request(File imageFile, File requestFile, String token) {
+    public static ExtractableResponse<Response> create_post_request(File imageFile, String request, String token) {
         return RestAssured
             .given().log().all()
             .header("Authorization", "Bearer " + token)
             .contentType("multipart/form-data")
             .multiPart("multipartFile", imageFile, "image/jpeg")
-            .multiPart("postRequest", requestFile, "application/json")
+            .multiPart("postRequest", request, "application/json")
             .when().post("/api/posts")
             .then().log().all()
             .extract();
@@ -155,7 +152,7 @@ public class PostAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> update_post_request(ExtractableResponse<Response> response) {
         Integer id = response.body().jsonPath().getInt("id");
-        PostRequest request = new PostRequest(TITLE, CONTENT, userId);
+        PostRequest request = new PostRequest("updatePost", "testUpdatePost", userId);
         return update_Request(request, "/posts/" + id, token);
     }
 
@@ -172,6 +169,5 @@ public class PostAcceptanceTest extends AcceptanceTest {
     private void check_post_deleted(ExtractableResponse<Response> response) {
         check_delete_response(response);
     }
-
 
 }

@@ -28,9 +28,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@ExtendWith(MockitoExtension.class)
-@Transactional
 class ReviewServiceTest extends ServiceTest {
 
     @InjectMocks
@@ -136,7 +133,7 @@ class ReviewServiceTest extends ServiceTest {
     }
 
     @ParameterizedTest
-    @CsvSource({"4, 0.00", "1, 0.00", "5, 0.00"})
+    @CsvSource({"4, 0", "1, 0", "5, 0"})
     @DisplayName("리뷰를 삭제한다.")
     void delete_review(Integer reviewId, BigDecimal expected) {
         //when

@@ -27,9 +27,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@ExtendWith(MockitoExtension.class)
-@Transactional
 class FollowServiceTests extends ServiceTest {
 
     private static final String CANNOT_FOLLOW_ONESELF = "User cannot follow oneself.";
@@ -59,10 +56,8 @@ class FollowServiceTests extends ServiceTest {
     @Test
     void follow_oneself_is_invalid() {
         //given
-        Integer fromUserId = 1;
-        Integer toUserId = 1;
-
-        assertThatThrownBy(() -> followService.follow(fromUserId, toUserId))
+        when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
+        assertThatThrownBy(() -> followService.follow(1, 1))
             .isInstanceOf(CannotFollowOneselfException.class)
             .hasMessage(CANNOT_FOLLOW_ONESELF);
     }
@@ -70,10 +65,12 @@ class FollowServiceTests extends ServiceTest {
     @DisplayName("이미 팔로우 한 사람은 팔로우 할 수 없다.")
     @Test
     void follow_user_already_followed_is_invalid() {
-        //given
+        Integer fromUserId = 1;
+        Integer toUserId = 2;
+        when(userService.findUserById(fromUserId)).thenReturn(UserTest.USER);
+        when(userService.findUserById(toUserId)).thenReturn(UserTest.SELLER);
         when(followRepository.existsByFromUserAndToUser(any(), any())).thenReturn(true);
-
-        assertThatThrownBy(() -> followService.follow(1, 3))
+        assertThatThrownBy(() -> followService.follow(fromUserId, toUserId))
             .isInstanceOf(FollowAlreadyExistException.class)
             .hasMessageContaining(FOLLOW_ALREADY_EXIST);
     }

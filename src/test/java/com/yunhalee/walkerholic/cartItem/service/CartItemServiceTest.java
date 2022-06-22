@@ -9,6 +9,7 @@ import com.yunhalee.walkerholic.common.dto.ItemResponse;
 import com.yunhalee.walkerholic.product.domain.Product;
 import com.yunhalee.walkerholic.product.domain.ProductTest;
 import com.yunhalee.walkerholic.productImage.domain.ProductImageTest;
+import com.yunhalee.walkerholic.user.domain.UserTest;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ class CartItemServiceTest extends ServiceTest {
 
     @BeforeEach
     public void setUp() {
-        cart = CartTest.CART;
+        cart = new Cart(1, UserTest.USER.getId());
         product = ProductTest.FIRST_PRODUCT;
         product.addProductImage(ProductImageTest.PRODUCT_IMAGE);
         cartItem = CartItem.builder()

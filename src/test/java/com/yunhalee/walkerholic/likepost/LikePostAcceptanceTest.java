@@ -9,12 +9,10 @@ import com.yunhalee.walkerholic.AcceptanceTest;
 import com.yunhalee.walkerholic.likepost.dto.LikePostRequest;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.io.File;
 import org.junit.jupiter.api.Test;
 
 public class LikePostAcceptanceTest extends AcceptanceTest {
 
-    private final File postRequestFile = new File(getClass().getClassLoader().getResource("postRequest").getPath());
     private Integer userId;
     private String token;
     private Integer postId;
@@ -28,7 +26,7 @@ public class LikePostAcceptanceTest extends AcceptanceTest {
         token = userCreateResponse.body().jsonPath().getString("token");
 
         // when
-        ExtractableResponse<Response> postCreateResponse = create_post_request(imageFile, postRequestFile, token);
+        ExtractableResponse<Response> postCreateResponse = create_post_request(imageFile, postRequest(userId), token);
         // then
         check_post_created(postCreateResponse);
         postId = postCreateResponse.body().jsonPath().getInt("id");

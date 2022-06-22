@@ -24,10 +24,11 @@ public class ProductImageAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> userCreateResponse = create_user_request(TEST_IMAGE_URL);
         // then
         check_user_created(userCreateResponse);
+        Integer userId = userCreateResponse.body().jsonPath().getInt("user.id");
         token = userCreateResponse.body().jsonPath().getString("token");
 
         // when
-        ExtractableResponse<Response> productCreateResponse = create_product_request(imageFile, productRequestFile, token);
+        ExtractableResponse<Response> productCreateResponse = create_product_request(imageFile, productRequest(userId), token);
         // then
         check_product_created(productCreateResponse);
         productId = productCreateResponse.body().jsonPath().getInt("id");

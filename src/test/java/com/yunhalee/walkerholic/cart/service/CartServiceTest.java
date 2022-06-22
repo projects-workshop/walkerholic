@@ -1,11 +1,12 @@
 package com.yunhalee.walkerholic.cart.service;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import com.yunhalee.walkerholic.ServiceTest;
 import com.yunhalee.walkerholic.cart.domain.Cart;
 import com.yunhalee.walkerholic.cart.dto.CartResponse;
-import com.yunhalee.walkerholic.cart.exception.CartAlreadyExist;
 import com.yunhalee.walkerholic.cartItem.domain.CartItem;
 import com.yunhalee.walkerholic.cartItem.domain.CartItemTest;
 import com.yunhalee.walkerholic.common.dto.ItemResponse;
@@ -16,10 +17,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class CartServiceTest extends ServiceTest {
 
@@ -50,14 +47,6 @@ class CartServiceTest extends ServiceTest {
 
         // then
         assertThat(cartId).isEqualTo(cart.getId());
-    }
-
-    @Test
-    public void create_cart_with_existing_user_id_is_invalid() {
-        when(cartRepository.existsByUserId(any())).thenReturn(true);
-        assertThatThrownBy(() -> cartService.createCart(user.getId()))
-            .isInstanceOf(CartAlreadyExist.class)
-            .hasMessage(CART_ALREADY_EXIST_EXCEPTION);
     }
 
     @Test

@@ -64,10 +64,6 @@ class UserServiceTests extends ServiceTest {
         .role(Role.USER).build();
 
 
-    private static final MockedStatic<NotificationMapper> notificationMapper = mockStatic(NotificationMapper.class);
-
-    @MockBean
-    protected DefaultNotificationSender defaultNotificationSender;
 
     @InjectMocks
     private UserService userService = new UserService(userRepository, passwordEncoder, s3ImageUploader, cartRepository, jwtTokenUtil);

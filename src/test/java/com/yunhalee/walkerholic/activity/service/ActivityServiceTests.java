@@ -31,9 +31,6 @@ import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 
-@RunWith(SpringRunner.class)
-@ExtendWith(MockitoExtension.class)
-@Transactional
 class ActivityServiceTests extends ServiceTest {
 
     private static final String UPLOAD_DIR = "activity-uploads/";

@@ -13,17 +13,16 @@ import org.junit.jupiter.api.Test;
 
 public class ProductAcceptanceTest extends AcceptanceTest {
 
-    private static final String NAME = "productTest";
-    private static final String DESCRIPTION = "This is test product.";
+    private static final String NAME = "updateTest";
+    private static final String DESCRIPTION = "This is test update product.";
     private static final String BRAND = "testBrand";
-    private static final String CATEGORY = "TUMBLER";
-    private static final Integer STOCK = 100;
-    private static final Float PRICE = 10.0f;
+    private static final String CATEGORY = "CLOTHES";
+    private static final Integer STOCK = 280;
+    private static final Float PRICE = 12.0f;
     private static final Integer PAGE = 1;
     private static final String SORT = "createdAt";
     private static final String KEYWORD = "t";
 
-    private final File productRequestFile = new File(getClass().getClassLoader().getResource("productRequest.txt").getPath());
     private Integer userId;
     private String token;
 
@@ -41,7 +40,7 @@ public class ProductAcceptanceTest extends AcceptanceTest {
         // given
         user_set_up();
         // when
-        ExtractableResponse<Response> createResponse = create_product_request(imageFile, productRequestFile, token);
+        ExtractableResponse<Response> createResponse = create_product_request(imageFile, productRequest(userId), token);
         // then
         check_product_created(createResponse);
 
@@ -72,13 +71,13 @@ public class ProductAcceptanceTest extends AcceptanceTest {
 
     }
 
-    public static ExtractableResponse<Response> create_product_request(File imageFile, File requestFile, String token) {
+    public static ExtractableResponse<Response> create_product_request(File imageFile, String request, String token) {
         return RestAssured
             .given().log().all()
             .header("Authorization", "Bearer " + token)
             .contentType("multipart/form-data")
             .multiPart("multipartFile", imageFile, "image/jpeg")
-            .multiPart("productRequest", requestFile, "application/json")
+            .multiPart("productRequest", request, "application/json")
             .when().post("/api/products")
             .then().log().all()
             .extract();

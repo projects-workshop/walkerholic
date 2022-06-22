@@ -51,10 +51,10 @@ class OrderServiceTests extends ServiceTest {
     private static final String NOTHING_TO_PAY_EXCEPTION = "Nothing to pay. Please add items.";
     private static final String ORDER_DUPLICATED_EXCEPTION = "Order is duplicated. Please try a few seconds later.";
 
-    private static final MockedStatic<NotificationMapper> notificationMapper = mockStatic(NotificationMapper.class);
-
-    @MockBean
-    protected DefaultNotificationSender defaultNotificationSender;
+//    private static final MockedStatic<NotificationMapper> notificationMapper = mockStatic(NotificationMapper.class);
+//
+//    @MockBean
+//    protected DefaultNotificationSender defaultNotificationSender;
 
     @InjectMocks
     OrderService orderService = new OrderService(
@@ -101,7 +101,7 @@ class OrderServiceTests extends ServiceTest {
 
 
     @Test
-    public void create_order() {
+    void create_order() {
         //given
         OrderRequest request = new OrderRequest(
             UserTest.USER.getId(),
@@ -124,26 +124,8 @@ class OrderServiceTests extends ServiceTest {
         isEqual(orderResponse.getItems().get(0), orderItem);
     }
 
-
     @Test
-    public void create_duplicated_order_is_invalid() {
-        OrderRequest request = new OrderRequest(
-            UserTest.SELLER.getId(),
-            SHIPPING,
-            PAYMENT_METHOD,
-            TRANSACTION_ID,
-            new AddressResponse(ADDRESS));
-
-        when(cartService.findCartByUserId(anyInt())).thenReturn(cart);
-        when(orderRepository.existsByCreatedAtBetweenAndUserId(any(), any(), anyInt())).thenReturn(true);
-        assertThatThrownBy(() -> orderService.createOrder(request))
-            .isInstanceOf(OrderDuplicated.class)
-            .hasMessage(ORDER_DUPLICATED_EXCEPTION);
-    }
-
-
-    @Test
-    public void create_order_with_empty_cart_is_invalid() {
+    void create_order_with_empty_cart_is_invalid() {
         Cart emptyCart = new Cart(2, UserTest.SELLER.getId());
         OrderRequest request = new OrderRequest(
             UserTest.SELLER.getId(),
@@ -159,7 +141,7 @@ class OrderServiceTests extends ServiceTest {
     }
 
     @Test
-    public void deliver_order() {
+    void deliver_order() {
         //when
         when(orderRepository.findById(anyInt())).thenReturn(Optional.of(order));
         when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
@@ -171,7 +153,7 @@ class OrderServiceTests extends ServiceTest {
     }
 
     @Test
-    public void cancel_order() {
+    void cancel_order() {
         //when
         when(NotificationMapper.of(any())).thenReturn(defaultNotificationSender);
         when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);
@@ -185,7 +167,7 @@ class OrderServiceTests extends ServiceTest {
     }
 
     @Test
-    public void find_order() {
+    void find_order() {
         // when
         when(orderRepository.findByOrderId(anyInt())).thenReturn(order);
         when(userService.findUserById(anyInt())).thenReturn(UserTest.USER);

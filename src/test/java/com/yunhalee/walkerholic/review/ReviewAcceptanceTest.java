@@ -16,7 +16,6 @@ public class ReviewAcceptanceTest extends AcceptanceTest {
 
     private static final Integer RATING = 5;
     private static final String COMMENT = "This is test review.";
-    private final File productRequestFile = new File(getClass().getClassLoader().getResource("productRequest.txt").getPath());
     private Integer userId;
     private String token;
     private Integer productId;
@@ -30,7 +29,7 @@ public class ReviewAcceptanceTest extends AcceptanceTest {
         token = userCreateResponse.body().jsonPath().getString("token");
 
         // when
-        ExtractableResponse<Response> productCreateResponse = create_product_request(imageFile, productRequestFile, token);
+        ExtractableResponse<Response> productCreateResponse = create_product_request(imageFile, productRequest(userId), token);
         // then
         check_product_created(productCreateResponse);
         productId = productCreateResponse.body().jsonPath().getInt("id");

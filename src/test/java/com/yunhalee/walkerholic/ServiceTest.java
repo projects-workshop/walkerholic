@@ -10,22 +10,22 @@ import com.yunhalee.walkerholic.cartItem.domain.CartItemRepository;
 import com.yunhalee.walkerholic.cartItem.service.CartItemService;
 import com.yunhalee.walkerholic.common.notification.mapper.NotificationMapper;
 import com.yunhalee.walkerholic.common.notification.sender.DefaultNotificationSender;
-import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import com.yunhalee.walkerholic.common.notification.sender.MailNotificationSender;
 import com.yunhalee.walkerholic.common.notification.sender.SMSNotificationSender;
+import com.yunhalee.walkerholic.common.service.S3ImageUploader;
 import com.yunhalee.walkerholic.follow.domain.FollowRepository;
 import com.yunhalee.walkerholic.follow.service.FollowService;
 import com.yunhalee.walkerholic.likepost.domain.LikePostRepository;
 import com.yunhalee.walkerholic.order.domain.OrderRepository;
 import com.yunhalee.walkerholic.orderitem.domain.OrderItemRepository;
 import com.yunhalee.walkerholic.orderitem.service.OrderItemService;
-import com.yunhalee.walkerholic.postImage.domain.PostImageRepository;
 import com.yunhalee.walkerholic.post.domain.PostRepository;
 import com.yunhalee.walkerholic.post.service.PostService;
+import com.yunhalee.walkerholic.postImage.domain.PostImageRepository;
 import com.yunhalee.walkerholic.postImage.service.PostImageService;
-import com.yunhalee.walkerholic.productImage.domain.ProductImageRepository;
 import com.yunhalee.walkerholic.product.domain.ProductRepository;
 import com.yunhalee.walkerholic.product.service.ProductService;
+import com.yunhalee.walkerholic.productImage.domain.ProductImageRepository;
 import com.yunhalee.walkerholic.productImage.service.ProductImageService;
 import com.yunhalee.walkerholic.review.domain.ReviewRepository;
 import com.yunhalee.walkerholic.security.jwt.JwtTokenUtil;
@@ -40,12 +40,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
-public class ServiceTest {
+@TestPropertySource(locations = "/config/application-test.properties")
+public abstract class ServiceTest {
 
     @MockBean
     protected UserActivityRepository userActivityRepository;
@@ -136,6 +138,12 @@ public class ServiceTest {
 
     @MockBean
     protected JwtTokenUtil jwtTokenUtil;
+
+
+    protected static final MockedStatic<NotificationMapper> notificationMapper = mockStatic(NotificationMapper.class);
+
+    @MockBean
+    protected DefaultNotificationSender defaultNotificationSender;
 
 
 

@@ -9,13 +9,11 @@ import com.yunhalee.walkerholic.AcceptanceTest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.io.File;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
 public class PostImageAcceptanceTest extends AcceptanceTest {
 
-    private final File postRequestFile = new File(getClass().getClassLoader().getResource("postRequest").getPath());
     private String token;
     private Integer postId;
 
@@ -24,10 +22,11 @@ public class PostImageAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> userCreateResponse = create_user_request(TEST_IMAGE_URL);
         // then
         check_user_created(userCreateResponse);
+        Integer userId = userCreateResponse.body().jsonPath().getInt("user.id");
         token = userCreateResponse.body().jsonPath().getString("token");
 
         // when
-        ExtractableResponse<Response> postCreateResponse = create_post_request(imageFile, postRequestFile, token);
+        ExtractableResponse<Response> postCreateResponse = create_post_request(imageFile, postRequest(userId), token);
         // then
         check_post_created(postCreateResponse);
         postId = postCreateResponse.body().jsonPath().getInt("id");

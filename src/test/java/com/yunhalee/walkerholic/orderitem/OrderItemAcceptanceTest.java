@@ -46,7 +46,7 @@ public class OrderItemAcceptanceTest extends AcceptanceTest {
         cartId = findCartResponse.body().jsonPath().getInt("id");
 
         // when
-        ExtractableResponse<Response> productCreateResponse = create_product_request(imageFile, productRequestFile, token);
+        ExtractableResponse<Response> productCreateResponse = create_product_request(imageFile, productRequest(userId), token);
         // then
         check_product_created(productCreateResponse);
         Integer productId = productCreateResponse.body().jsonPath().getInt("id");

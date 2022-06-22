@@ -21,9 +21,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
-@ExtendWith(MockitoExtension.class)
-@Transactional
 class LikePostServiceTest extends ServiceTest {
 
     @InjectMocks

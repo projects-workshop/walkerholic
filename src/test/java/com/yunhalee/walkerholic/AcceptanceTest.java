@@ -2,6 +2,10 @@ package com.yunhalee.walkerholic;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yunhalee.walkerholic.post.dto.PostRequest;
+import com.yunhalee.walkerholic.product.dto.ProductRequest;
 import com.yunhalee.walkerholic.util.DatabaseCleanup;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -21,12 +25,23 @@ public class AcceptanceTest {
 
     public final File imageFile = new File(getClass().getClassLoader().getResource("image1.jpeg").getPath());
     public static final String TEST_IMAGE_URL = "https://walkerholic-with-you.s3.ap-northeast-2.amazonaws.com/testImage/image.jpeg";
+    private static final String TITLE = "testPost";
+    private static final String CONTENT = "This is test post.";
+    private static final String PRODUCT_NAME = "productTest";
+    private static final String DESCRIPTION = "This is test product.";
+    private static final String BRAND = "testBrand";
+    private static final String CATEGORY = "TUMBLER";
+    private static final Integer STOCK = 100;
+    private static final Float PRICE = 10.0f;
 
     @LocalServerPort
     int port;
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
+
+    @Autowired
+    protected ObjectMapper objectMapper;
 
     @BeforeEach
     public void setUp() {
@@ -123,5 +138,23 @@ public class AcceptanceTest {
 
     public static void check_unauthorized_response(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    protected String postRequest(Integer userId) {
+        try {
+            return objectMapper.writeValueAsString(new PostRequest(TITLE, CONTENT, userId));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    protected String productRequest(Integer userId) {
+        try {
+            return objectMapper.writeValueAsString(new ProductRequest(PRODUCT_NAME, DESCRIPTION, BRAND, CATEGORY, STOCK, PRICE, userId));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }
