@@ -9,7 +9,6 @@ import com.yunhalee.walkerholic.user.domain.UserRepository;
 import com.yunhalee.walkerholic.user.dto.UserResponse;
 import com.yunhalee.walkerholic.user.dto.UserTokenResponse;
 import com.yunhalee.walkerholic.user.exception.UserNotFoundException;
-import com.yunhalee.walkerholic.user.service.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

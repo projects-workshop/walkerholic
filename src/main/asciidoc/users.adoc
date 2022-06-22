@@ -1,0 +1,95 @@
+ifndef::snippets[]
+:snippets: ../../../target/generated-snippets
+endif::[]
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+
+[[resources_users]]
+== User
+
+[[resources_user_create]]
+=== 사용자 등록
+==== Request
+include::{snippets}/user-create/http-request.adoc[]
+==== Response
+include::{snippets}/user-create/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/user-create/response-fields.adoc[]
+
+[[resources_user_save_image]]
+=== 사용자 이미지 등록
+==== Request
+include::{snippets}/user-save-image/http-request.adoc[]
+==== Response
+include::{snippets}/user-save-image/http-response.adoc[]
+
+[[resources_user_sign_in_with_email_password]]
+=== 사용자 로그인 with 이메일, 패스워드
+==== Request
+include::{snippets}/user-login-with-email-and-password/http-request.adoc[]
+==== Response
+include::{snippets}/user-login-with-email-and-password/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/user-login-with-email-and-password/response-fields.adoc[]
+
+[[resources_user_sign_in_with_token]]
+=== 사용자 로그인 with 토큰
+==== Request
+include::{snippets}/user-login-with-token/http-request.adoc[]
+==== Response
+include::{snippets}/user-login-with-token/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/user-login-with-token/response-fields.adoc[]
+
+[[resources_user_get]]
+=== 단일 사용자 조회
+==== Request
+include::{snippets}/user-get-by-id/http-request.adoc[]
+==== Response
+include::{snippets}/user-get-by-id/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/user-get-by-id/response-fields.adoc[]
+
+[[resources_users_get_all]]
+=== 모든 사용자 조회 by 페이지, 분류
+==== Request
+include::{snippets}/user-get-all/http-request.adoc[]
+==== Response
+include::{snippets}/user-get-all/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/user-get-all/response-fields.adoc[]
+
+[[resources_users_get_all_by_keyword]]
+=== 사용자 검색
+==== Request
+include::{snippets}/user-get-all-by-keyword/http-request.adoc[]
+==== Response
+include::{snippets}/user-get-all-by-keyword/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/user-get-all-by-keyword/response-fields.adoc[]
+
+[[resources_user_update]]
+=== 사용자 정보 수정
+==== Request
+include::{snippets}/user-update/http-request.adoc[]
+==== Response
+include::{snippets}/user-update/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/user-update/response-fields.adoc[]
+
+[[resources_user_delete]]
+=== 사용자 삭제
+==== Request
+include::{snippets}/user-delete/http-request.adoc[]
+==== Response
+include::{snippets}/user-delete/http-response.adoc[]
+
+[[resources_user_send_forgot_password]]
+=== 사용자 임시 비밀번호 전송
+==== Request
+include::{snippets}/user-send-forget-password/http-request.adoc[]
+==== Response
+include::{snippets}/user-send-forget-password/http-response.adoc[]

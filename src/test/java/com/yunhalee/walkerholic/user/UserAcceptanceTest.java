@@ -3,6 +3,7 @@ package com.yunhalee.walkerholic.user;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.yunhalee.walkerholic.AcceptanceTest;
+import com.yunhalee.walkerholic.security.jwt.dto.JwtRequest;
 import com.yunhalee.walkerholic.user.dto.UserRequest;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -38,6 +39,16 @@ public class UserAcceptanceTest extends AcceptanceTest {
         // then
         check_user_created(createResponse);
         token = createResponse.body().jsonPath().getString("token");
+
+        // when
+        ExtractableResponse<Response> loginWithEmailAndPasswordResponse = login_with_email_and_password_request();
+        // then
+        check_login_with_email_and_password(loginWithEmailAndPasswordResponse);
+
+        // when
+        ExtractableResponse<Response> loginWithTokenResponse = login_with_token_request();
+        // then
+        check_login_token(loginWithTokenResponse);
 
         // when
         ExtractableResponse<Response> findResponse = find_user_request(createResponse);
@@ -99,6 +110,25 @@ public class UserAcceptanceTest extends AcceptanceTest {
     public static void check_user_created(ExtractableResponse<Response> response) {
         check_ok_response(response);
     }
+
+    private ExtractableResponse<Response> login_with_email_and_password_request() {
+        JwtRequest request = new JwtRequest(EMAIL, PASSWORD);
+        return create_request(request, "/sign-in");
+    }
+
+    private void check_login_with_email_and_password(ExtractableResponse<Response> response) {
+        check_ok_response(response);
+    }
+
+    private ExtractableResponse<Response> login_with_token_request() {
+        JwtRequest request = new JwtRequest(EMAIL, PASSWORD);
+        return create_request(request, "/sign-in");
+    }
+
+    private void check_login_token(ExtractableResponse<Response> response) {
+        check_ok_response(response);
+    }
+
 
     private ExtractableResponse<Response> find_user_request(ExtractableResponse<Response> response) {
         Integer id = response.body().jsonPath().getInt("user.id");

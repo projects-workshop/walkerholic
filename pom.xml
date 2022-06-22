@@ -145,6 +145,18 @@
 			<artifactId>flyway-mysql</artifactId>
 			<version>8.5.12</version>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.restdocs</groupId>
+			<artifactId>spring-restdocs-mockmvc</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.asciidoctor</groupId>
+			<artifactId>asciidoctor-maven-plugin</artifactId>
+			<version>2.2.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -170,63 +182,115 @@
 					</excludes>
 				</configuration>
 			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>com.github.eirslett</groupId>-->
+<!--				<artifactId>frontend-maven-plugin</artifactId>-->
+<!--				<version>1.12.0</version>-->
+<!--				<configuration>-->
+<!--					<workingDirectory>frontend</workingDirectory>-->
+<!--					<installDirectory>target</installDirectory>-->
+<!--				</configuration>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>install node and npm</id>-->
+<!--						<goals>-->
+<!--							<goal>install-node-and-npm</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<nodeVersion>v16.1.0</nodeVersion>-->
+<!--							<npmVersion>7.11.2</npmVersion>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--					<execution>-->
+<!--						<id>npm install</id>-->
+<!--						<goals>-->
+<!--							<goal>npm</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<arguments>install</arguments>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--					<execution>-->
+<!--						<id>npm run build</id>-->
+<!--						<goals>-->
+<!--							<goal>npm</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<arguments>run build</arguments>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
+<!--			<plugin>-->
+<!--				<artifactId>maven-antrun-plugin</artifactId>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<phase>generate-resources</phase>-->
+<!--						<configuration>-->
+<!--							<target>-->
+<!--								<copy todir="${project.build.directory}/classes/public">-->
+<!--									<fileset dir="${project.basedir}/frontend/build"/>-->
+<!--								</copy>-->
+<!--							</target>-->
+<!--						</configuration>-->
+<!--						<goals>-->
+<!--							<goal>run</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
+
+
 			<plugin>
-				<groupId>com.github.eirslett</groupId>
-				<artifactId>frontend-maven-plugin</artifactId>
-				<version>1.12.0</version>
-				<configuration>
-					<workingDirectory>frontend</workingDirectory>
-					<installDirectory>target</installDirectory>
-				</configuration>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctor-maven-plugin</artifactId>
+				<version>2.2.1</version>
 				<executions>
 					<execution>
-						<id>install node and npm</id>
+						<id>generate-docs</id>
+						<phase>package</phase>
 						<goals>
-							<goal>install-node-and-npm</goal>
+							<goal>process-asciidoc</goal>
 						</goals>
 						<configuration>
-							<nodeVersion>v16.1.0</nodeVersion>
-							<npmVersion>7.11.2</npmVersion>
+							<backend>html</backend>
+							<doctype>book</doctype>
 						</configuration>
 					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.springframework.restdocs</groupId>
+						<artifactId>spring-restdocs-asciidoctor</artifactId>
+						<version>2.0.1.RELEASE</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<executions>
 					<execution>
-						<id>npm install</id>
+						<id>copy-resources</id>
+						<phase>prepare-package</phase>
 						<goals>
-							<goal>npm</goal>
+							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-							<arguments>install</arguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>npm run build</id>
-						<goals>
-							<goal>npm</goal>
-						</goals>
-						<configuration>
-							<arguments>run build</arguments>
+							<outputDirectory>
+								${project.build.outputDirectory}/static/docs
+							</outputDirectory>
+							<resources>
+								<resource>
+									<directory>
+										${project.build.directory}/generated-docs
+									</directory>
+								</resource>
+							</resources>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>generate-resources</phase>
-						<configuration>
-							<target>
-								<copy todir="${project.build.directory}/classes/public">
-									<fileset dir="${project.basedir}/frontend/build"/>
-								</copy>
-							</target>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+
 		</plugins>
 	</build>
 
