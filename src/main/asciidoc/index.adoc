@@ -20,4 +20,6 @@ include::products.adoc[]
 include::product-images.adoc[]
 include::reviews.adoc[]
 include::carts.adoc[]
+include::cart-items.adoc[]
+
 

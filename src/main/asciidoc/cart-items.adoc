@@ -1,0 +1,37 @@
+ifndef::snippets[]
+:snippets: ../../../target/generated-snippets
+endif::[]
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+
+[[resources_cart_items]]
+== CartItem
+
+[[resources_cart_item_create]]
+=== 장바구니 상품 추가
+==== Request
+include::{snippets}/cart-item-create/http-request.adoc[]
+==== Response
+include::{snippets}/cart-item-create/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/cart-item-create/response-fields.adoc[]
+
+[[resources_cart_item_update]]
+=== 장바구니 상품 수량 수정
+==== Request
+include::{snippets}/cart-item-update/http-request.adoc[]
+==== Response
+include::{snippets}/cart-item-update/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/cart-item-update/response-fields.adoc[]
+
+[[resources_cart_item_delete]]
+=== 장바구니 상품 삭제
+==== Request
+include::{snippets}/cart-item-delete/http-request.adoc[]
+==== Response
+include::{snippets}/cart-item-delete/http-response.adoc[]
+
