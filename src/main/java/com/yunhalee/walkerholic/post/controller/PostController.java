@@ -25,7 +25,7 @@ public class PostController {
 
     @PostMapping("/posts")
     public ResponseEntity<PostResponse> createPost(@RequestPart("postRequest") PostRequest request, @RequestPart(value = "multipartFile") List<MultipartFile> multipartFiles) {
-        return new ResponseEntity<PostResponse>(postService.createPost(request, multipartFiles), HttpStatus.CREATED);
+        return new ResponseEntity<>(postService.createPost(request, multipartFiles), HttpStatus.CREATED);
     }
 
     @PutMapping("/posts/{id}")

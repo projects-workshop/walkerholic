@@ -56,12 +56,6 @@ public class UserApiTest extends ApiTest {
         FIRST_USER.getPhoneNumber(),
         FIRST_USER.getDescription(),
         FIRST_USER.isSeller());
-//    private final MockMultipartFile USER_REQUEST = new MockMultipartFile(
-//        "userRequest",
-//        "",
-//        "application/json",
-////        "{\"name\": \"testMember\",\"email\": \"testMember@example.com\",\"password\": \"123456\",\"description\": \"This is testMember\",\"phoneNumber\": \"01000000000\",\"ceo\": \"false\"}"
-//        request(new UserRequest(FIRST_NAME, LAST_NAME, EMAIL, PASSWORD, IMAGE_URL, PHONE_NUMBER, DESCRIPTION, IS_SELLER)).getBytes());
 
     @Test
     void save_image() throws Exception {
