@@ -1,14 +1,11 @@
 package com.yunhalee.walkerholic.order.domain;
 
-import com.yunhalee.walkerholic.order.exception.OrderNotPaidException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 @Embeddable
 @Getter

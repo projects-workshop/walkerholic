@@ -1,0 +1,20 @@
+ifndef::snippets[]
+:snippets: ../../../target/generated-snippets
+endif::[]
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+
+[[resources_order_items]]
+== OrderItem
+
+[[resources_order_item_delete]]
+=== 주문 상품 삭제
+==== Request
+include::{snippets}/order-item-delete/http-request.adoc[]
+==== Response
+include::{snippets}/order-item-delete/http-response.adoc[]
+
+

@@ -16,8 +16,6 @@ endif::[]
 include::{snippets}/cart-create/http-request.adoc[]
 ==== Response
 include::{snippets}/cart-create/http-response.adoc[]
-==== Response Field Description
-include::{snippets}/cart-create/response-fields.adoc[]
 
 [[resources_cart_get_by_user_id]]
 === 사용자 장바구니 조회

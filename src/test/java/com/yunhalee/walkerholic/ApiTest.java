@@ -7,6 +7,8 @@ import com.yunhalee.walkerholic.cart.service.CartService;
 import com.yunhalee.walkerholic.cartItem.service.CartItemService;
 import com.yunhalee.walkerholic.follow.service.FollowService;
 import com.yunhalee.walkerholic.likepost.service.LikePostService;
+import com.yunhalee.walkerholic.order.service.OrderService;
+import com.yunhalee.walkerholic.orderitem.service.OrderItemService;
 import com.yunhalee.walkerholic.post.service.PostService;
 import com.yunhalee.walkerholic.postImage.service.PostImageService;
 import com.yunhalee.walkerholic.product.service.ProductService;
@@ -78,6 +80,12 @@ public abstract class ApiTest {
 
     @MockBean
     protected CartItemService cartItemService;
+
+    @MockBean
+    protected OrderService orderService;
+
+    @MockBean
+    protected OrderItemService orderItemService;
 
 
     private ObjectMapper objectMapper = new ObjectMapper();

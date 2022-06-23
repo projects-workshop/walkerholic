@@ -51,11 +51,6 @@ class OrderServiceTests extends ServiceTest {
     private static final String NOTHING_TO_PAY_EXCEPTION = "Nothing to pay. Please add items.";
     private static final String ORDER_DUPLICATED_EXCEPTION = "Order is duplicated. Please try a few seconds later.";
 
-//    private static final MockedStatic<NotificationMapper> notificationMapper = mockStatic(NotificationMapper.class);
-//
-//    @MockBean
-//    protected DefaultNotificationSender defaultNotificationSender;
-
     @InjectMocks
     OrderService orderService = new OrderService(
         orderRepository,
