@@ -1,0 +1,30 @@
+ifndef::snippets[]
+:snippets: ../../../target/generated-snippets
+endif::[]
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+
+[[resources_carts]]
+== Cart
+
+[[resources_cart_create]]
+=== 장바구니 생성
+==== Request
+include::{snippets}/cart-create/http-request.adoc[]
+==== Response
+include::{snippets}/cart-create/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/cart-create/response-fields.adoc[]
+
+[[resources_cart_get_by_user_id]]
+=== 사용자 장바구니 조회
+==== Request
+include::{snippets}/cart-get-by-user-id/http-request.adoc[]
+==== Response
+include::{snippets}/cart-get-by-user-id/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/cart-get-by-user-id/response-fields.adoc[]
+

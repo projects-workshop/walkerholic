@@ -3,6 +3,7 @@ package com.yunhalee.walkerholic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yunhalee.walkerholic.activity.service.ActivityService;
+import com.yunhalee.walkerholic.cart.service.CartService;
 import com.yunhalee.walkerholic.follow.service.FollowService;
 import com.yunhalee.walkerholic.likepost.service.LikePostService;
 import com.yunhalee.walkerholic.post.service.PostService;
@@ -70,6 +71,9 @@ public abstract class ApiTest {
 
     @MockBean
     protected ReviewService reviewService;
+
+    @MockBean
+    protected CartService cartService;
 
 
     private ObjectMapper objectMapper = new ObjectMapper();
