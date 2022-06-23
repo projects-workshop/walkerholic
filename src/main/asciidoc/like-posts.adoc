@@ -1,0 +1,28 @@
+ifndef::snippets[]
+:snippets: ../../../target/generated-snippets
+endif::[]
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+
+[[resources_like_posts]]
+== LikePost
+
+[[resources_like_post_create]]
+=== 게시물 좋아요 표시 등록
+==== Request
+include::{snippets}/like-post-create/http-request.adoc[]
+==== Response
+include::{snippets}/like-post-create/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/like-post-create/response-fields.adoc[]
+
+[[resources_like_post_delete]]
+=== 게시물 좋아요 표시 삭제
+==== Request
+include::{snippets}/like-post-delete/http-request.adoc[]
+==== Response
+include::{snippets}/like-post-delete/http-response.adoc[]
+

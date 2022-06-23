@@ -1,5 +1,7 @@
 package com.yunhalee.walkerholic.post.api;
 
+import static com.yunhalee.walkerholic.likepost.api.LikePostApiTest.FIRST_LIKE_POST;
+import static com.yunhalee.walkerholic.likepost.api.LikePostApiTest.SECOND_LIKE_POST;
 import static com.yunhalee.walkerholic.postImage.api.PostImageApiTest.FIRST_POST_IMAGE;
 import static com.yunhalee.walkerholic.postImage.api.PostImageApiTest.SECOND_POST_IMAGE;
 import static com.yunhalee.walkerholic.user.domain.UserTest.FIRST_USER;
@@ -44,7 +46,7 @@ import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 
 public class PostApiTest extends ApiTest {
 
-    private static final Post FIRST_POST = new Post(1, "firstPost", "This is first post.", UserTest.FIRST_USER);
+    public static final Post FIRST_POST = new Post(1, "firstPost", "This is first post.", UserTest.FIRST_USER);
     private static final Post SECOND_POST = new Post(2, "secondPost", "This is second post.", UserTest.SECOND_USER);
     private PostRequest REQUEST = new PostRequest(FIRST_POST.getTitle(), FIRST_POST.getContent(), FIRST_USER.getId());
     private final MockMultipartFile POST_REQUEST = new MockMultipartFile(
@@ -52,9 +54,6 @@ public class PostApiTest extends ApiTest {
         "",
         "application/json",
         request(REQUEST).getBytes());
-
-    private static final LikePost FIRST_LIKE_POST = new LikePost(1, SECOND_USER, FIRST_POST);
-    private static final LikePost SECOND_LIKE_POST = new LikePost(2, THIRD_USER, FIRST_POST);
 
     @BeforeEach
     void setUp() {

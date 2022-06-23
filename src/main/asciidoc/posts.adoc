@@ -11,7 +11,7 @@ endif::[]
 == Post
 
 [[resources_post_create]]
-=== 게시물 생성 
+=== 게시물 생성
 ==== Request
 include::{snippets}/post-create/http-request.adoc[]
 ==== Response
