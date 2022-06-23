@@ -7,6 +7,7 @@ import com.yunhalee.walkerholic.follow.service.FollowService;
 import com.yunhalee.walkerholic.likepost.service.LikePostService;
 import com.yunhalee.walkerholic.post.service.PostService;
 import com.yunhalee.walkerholic.postImage.service.PostImageService;
+import com.yunhalee.walkerholic.product.service.ProductService;
 import com.yunhalee.walkerholic.security.jwt.service.JwtUserDetailsService;
 import com.yunhalee.walkerholic.user.service.UserService;
 import com.yunhalee.walkerholic.useractivity.service.UserActivityService;
@@ -58,6 +59,9 @@ public abstract class ApiTest {
 
     @MockBean
     protected LikePostService likePostService;
+
+    @MockBean
+    protected ProductService productService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 

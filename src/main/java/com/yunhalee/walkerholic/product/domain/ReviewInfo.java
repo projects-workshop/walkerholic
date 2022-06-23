@@ -9,7 +9,7 @@ public class ReviewInfo {
 
     private Integer totalCount = 0;
     private Integer totalScore = 0;
-    private BigDecimal average;
+    private BigDecimal average = BigDecimal.ZERO;
 
     public ReviewInfo() {
     }

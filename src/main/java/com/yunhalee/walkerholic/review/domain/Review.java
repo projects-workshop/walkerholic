@@ -39,9 +39,9 @@ public class Review extends BaseTimeEntity {
     private User user;
 
     @Builder
-    public Review(@NonNull Integer rating, String comment, @NonNull User user,
-        @NonNull Product product) {
+    public Review(Integer id, @NonNull Integer rating, String comment, @NonNull User user, @NonNull Product product) {
         checkRating(rating);
+        this.id = id;
         this.rating = rating;
         this.comment = comment;
         this.user = user;
