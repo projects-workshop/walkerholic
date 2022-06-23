@@ -11,3 +11,5 @@ Yunha Lee;
 
 include::users.adoc[]
 include::activities.adoc[]
+include::user-activities.adoc[]
+include::follows.adoc[]

@@ -1,0 +1,55 @@
+ifndef::snippets[]
+:snippets: ../../../target/generated-snippets
+endif::[]
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+
+[[resources_follows]]
+== Follow
+
+[[resources_follow_create]]
+=== 팔로우
+==== Request
+include::{snippets}/follow-create/http-request.adoc[]
+==== Response
+include::{snippets}/follow-create/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/follow-create/response-fields.adoc[]
+
+[[resources_follows_get_all]]
+=== 모든 팔로우 조회
+==== Request
+include::{snippets}/follow-get-all/http-request.adoc[]
+==== Response
+include::{snippets}/follow-get-all/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/follow-get-all/response-fields.adoc[]
+
+[[resources_followers_get_all]]
+=== 모든 팔로워 조회
+==== Request
+include::{snippets}/follow-get-all-followers/http-request.adoc[]
+==== Response
+include::{snippets}/follow-get-all-followers/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/follow-get-all-followers/response-fields.adoc[]
+
+[[resources_followings_get_all]]
+=== 모든 팔로잉 조회
+==== Request
+include::{snippets}/follow-get-all-followings/http-request.adoc[]
+==== Response
+include::{snippets}/follow-get-all-followings/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/follow-get-all-followings/response-fields.adoc[]
+
+[[resources_follow_delete]]
+=== 언팔로우
+==== Request
+include::{snippets}/follow-delete/http-request.adoc[]
+==== Response
+include::{snippets}/follow-delete/http-response.adoc[]
+

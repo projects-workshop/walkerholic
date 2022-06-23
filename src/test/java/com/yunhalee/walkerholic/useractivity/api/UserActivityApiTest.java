@@ -1,6 +1,7 @@
 package com.yunhalee.walkerholic.useractivity.api;
 
 import static com.yunhalee.walkerholic.activity.domain.ActivityTest.FIRST_ACTIVITY;
+import static com.yunhalee.walkerholic.user.domain.UserTest.FIRST_USER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -33,7 +34,7 @@ import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 
 public class UserActivityApiTest extends ApiTest {
 
-    private UserActivityRequest REQUEST = new UserActivityRequest(USER.getId(), 10, FIRST_ACTIVITY.getId(), true);
+    private UserActivityRequest REQUEST = new UserActivityRequest(FIRST_USER.getId(), 10, FIRST_ACTIVITY.getId(), true);
 
     private static final UserActivity FIRST_USER_ACTIVITY = UserActivity.builder()
         .status(ActivityStatus.ONGOING)

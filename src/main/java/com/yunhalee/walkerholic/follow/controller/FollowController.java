@@ -32,20 +32,17 @@ public class FollowController {
     }
 
     @GetMapping("/users/{id}/followers")
-    public ResponseEntity<List<FollowResponse>> getFollowers(@PathVariable("id") String id) {
-        Integer followId = Integer.parseInt(id);
-        return ResponseEntity.ok(followService.getFollowers(followId));
+    public ResponseEntity<List<FollowResponse>> getFollowers(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(followService.getFollowers(id));
     }
 
     @GetMapping("/users/{id}/followings")
-    public ResponseEntity<List<FollowResponse>> getFollowings(@PathVariable("id") String id) {
-        Integer followId = Integer.parseInt(id);
-        return ResponseEntity.ok(followService.getFollowings(followId));
+    public ResponseEntity<List<FollowResponse>> getFollowings(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(followService.getFollowings(id));
     }
 
-    @GetMapping("/follows/{id}")
-    public ResponseEntity<FollowsResponse> getFollows(@PathVariable("id") String id) {
-        Integer userId = Integer.parseInt(id);
-        return ResponseEntity.ok(followService.getFollows(userId));
+    @GetMapping("/users/{id}/follows")
+    public ResponseEntity<FollowsResponse> getFollows(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(followService.getFollows(id));
     }
 }

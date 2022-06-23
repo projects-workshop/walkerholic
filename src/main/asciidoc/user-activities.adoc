@@ -1,0 +1,46 @@
+ifndef::snippets[]
+:snippets: ../../../target/generated-snippets
+endif::[]
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+
+[[resources_user_activities]]
+== UserActivity
+
+[[resources_user_activity_create]]
+=== 사용자 액티비티 등록
+==== Request
+include::{snippets}/user-activity-create/http-request.adoc[]
+==== Response
+include::{snippets}/user-activity-create/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/user-activity-create/response-fields.adoc[]
+
+[[resources_user_activities_get_all]]
+=== 사용자의 모든 액티비티 조회
+==== Request
+include::{snippets}/user-activity-get-all/http-request.adoc[]
+==== Response
+include::{snippets}/user-activity-get-all/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/user-activity-get-all/response-fields.adoc[]
+
+[[resources_user_activity_update]]
+=== 사용자 액티비티 상태 정보 수정
+==== Request
+include::{snippets}/user-activity-update/http-request.adoc[]
+==== Response
+include::{snippets}/user-activity-update/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/user-activity-update/response-fields.adoc[]
+
+[[resources_user_activity_delete]]
+=== 사용자 액티비티 삭제
+==== Request
+include::{snippets}/user-activity-delete/http-request.adoc[]
+==== Response
+include::{snippets}/user-activity-delete/http-response.adoc[]
+

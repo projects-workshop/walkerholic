@@ -1,5 +1,6 @@
 package com.yunhalee.walkerholic.user.api;
 
+import static com.yunhalee.walkerholic.user.domain.UserTest.FIRST_USER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -47,14 +48,14 @@ public class UserApiTest extends ApiTest {
         .description("This is testSeller")
         .role(Role.SELLER).build();
 
-    private static final UserRequest REQUEST = new UserRequest(USER.getFirstname(),
-        USER.getLastname(),
-        USER.getEmail(),
-        USER.getPassword(),
-        USER.getImageUrl(),
-        USER.getPhoneNumber(),
-        USER.getDescription(),
-        USER.isSeller());
+    private static final UserRequest REQUEST = new UserRequest(FIRST_USER.getFirstname(),
+        FIRST_USER.getLastname(),
+        FIRST_USER.getEmail(),
+        FIRST_USER.getPassword(),
+        FIRST_USER.getImageUrl(),
+        FIRST_USER.getPhoneNumber(),
+        FIRST_USER.getDescription(),
+        FIRST_USER.isSeller());
 //    private final MockMultipartFile USER_REQUEST = new MockMultipartFile(
 //        "userRequest",
 //        "",
@@ -64,7 +65,7 @@ public class UserApiTest extends ApiTest {
 
     @Test
     void save_image() throws Exception {
-        when(userService.uploadImage(any())).thenReturn(USER.getImageUrl());
+        when(userService.uploadImage(any())).thenReturn(FIRST_USER.getImageUrl());
         this.mockMvc.perform(multipart("/api/users/images").file(MULTIPART_FILE)
             .accept(MediaType.MULTIPART_FORM_DATA))
             .andExpect(status().isOk())
@@ -73,7 +74,7 @@ public class UserApiTest extends ApiTest {
 
     @Test
     void create_user() throws Exception {
-        when(userService.create(any())).thenReturn(UserTokenResponse.of(UserResponse.of(USER), TOKEN));
+        when(userService.create(any())).thenReturn(UserTokenResponse.of(UserResponse.of(FIRST_USER), TOKEN));
         this.mockMvc.perform(post("/api/users")
             .contentType(MediaTypes.HAL_JSON)
             .characterEncoding("utf-8")
@@ -86,10 +87,10 @@ public class UserApiTest extends ApiTest {
 
     @Test
     void login_with_email_and_password() throws Exception {
-        when(jwtUserDetailsService.loadUserByUsername(any())).thenReturn(new JwtUserDetails(USER));
+        when(jwtUserDetailsService.loadUserByUsername(any())).thenReturn(new JwtUserDetails(FIRST_USER));
         when(passwordEncoder.matches(any(), any())).thenReturn(true);
-        when(jwtUserDetailsService.signIn(any())).thenReturn(UserTokenResponse.of(UserResponse.of(USER), TOKEN));
-        JwtRequest request = new JwtRequest(USER.getEmail(), USER.getPassword());
+        when(jwtUserDetailsService.signIn(any())).thenReturn(UserTokenResponse.of(UserResponse.of(FIRST_USER), TOKEN));
+        JwtRequest request = new JwtRequest(FIRST_USER.getEmail(), FIRST_USER.getPassword());
         this.mockMvc.perform(post("/api/sign-in")
             .contentType(MediaTypes.HAL_JSON)
             .characterEncoding("utf-8")
@@ -101,7 +102,7 @@ public class UserApiTest extends ApiTest {
 
     @Test
     void login_with_token() throws Exception {
-        when(jwtUserDetailsService.signInWithToken(any())).thenReturn(UserTokenResponse.of(UserResponse.of(USER), TOKEN));
+        when(jwtUserDetailsService.signInWithToken(any())).thenReturn(UserTokenResponse.of(UserResponse.of(FIRST_USER), TOKEN));
         this.mockMvc.perform(post("/api/sign-in")
             .param("token", TOKEN)
             .accept(MediaType.APPLICATION_JSON))
@@ -111,7 +112,7 @@ public class UserApiTest extends ApiTest {
 
     @Test
     void get_user() throws Exception {
-        when(userService.getUser(any())).thenReturn(UserResponse.of(USER));
+        when(userService.getUser(any())).thenReturn(UserResponse.of(FIRST_USER));
         this.mockMvc.perform(get("/api/users/1")
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -120,7 +121,7 @@ public class UserApiTest extends ApiTest {
 
     @Test
     void get_users() throws Exception {
-        when(userService.getUsers(any(), any())).thenReturn(UserResponses.of(Arrays.asList(UserResponse.of(USER), UserResponse.of(SELLER)), 2L, 1));
+        when(userService.getUsers(any(), any())).thenReturn(UserResponses.of(Arrays.asList(UserResponse.of(FIRST_USER), UserResponse.of(SELLER)), 2L, 1));
         this.mockMvc.perform(get("/api/users")
             .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .param("page", "1")
@@ -132,7 +133,7 @@ public class UserApiTest extends ApiTest {
 
     @Test
     void get_users_by_keyword() throws Exception {
-        when(userService.searchUser(any())).thenReturn(UserSearchResponses.of(Arrays.asList(UserSearchResponse.of(USER), UserSearchResponse.of(SELLER))));
+        when(userService.searchUser(any())).thenReturn(UserSearchResponses.of(Arrays.asList(UserSearchResponse.of(FIRST_USER), UserSearchResponse.of(SELLER))));
         this.mockMvc.perform(get("/api/users")
             .param("keyword", "test")
             .accept(MediaType.APPLICATION_JSON))
@@ -142,7 +143,7 @@ public class UserApiTest extends ApiTest {
 
     @Test
     void update_user() throws Exception {
-        when(userService.update(any(), any())).thenReturn(UserResponse.of(USER));
+        when(userService.update(any(), any())).thenReturn(UserResponse.of(FIRST_USER));
         this.mockMvc.perform(put("/api/users/1")
             .header(HttpHeaders.AUTHORIZATION, "Bearer token")
             .contentType(MediaTypes.HAL_JSON)
@@ -166,7 +167,7 @@ public class UserApiTest extends ApiTest {
     @Test
     void send_forgot_password_notification() throws Exception {
         this.mockMvc.perform(post("/api/users")
-            .param("email", USER.getEmail())
+            .param("email", FIRST_USER.getEmail())
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent())
             .andDo(document("user-send-forget-password"));
