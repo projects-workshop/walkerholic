@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yunhalee.walkerholic.activity.service.ActivityService;
 import com.yunhalee.walkerholic.follow.service.FollowService;
 import com.yunhalee.walkerholic.post.service.PostService;
+import com.yunhalee.walkerholic.postImage.service.PostImageService;
 import com.yunhalee.walkerholic.security.jwt.service.JwtUserDetailsService;
 import com.yunhalee.walkerholic.user.service.UserService;
 import com.yunhalee.walkerholic.useractivity.service.UserActivityService;
@@ -50,6 +51,9 @@ public abstract class ApiTest {
 
     @MockBean
     protected PostService postService;
+
+    @MockBean
+    protected PostImageService postImageService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 

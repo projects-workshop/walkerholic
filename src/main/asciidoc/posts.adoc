@@ -1,0 +1,91 @@
+ifndef::snippets[]
+:snippets: ../../../target/generated-snippets
+endif::[]
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+
+[[resources_posts]]
+== Post
+
+[[resources_post_create]]
+=== 게시물 생성 
+==== Request
+include::{snippets}/post-create/http-request.adoc[]
+==== Response
+include::{snippets}/post-create/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/post-create/response-fields.adoc[]
+
+[[resources_post_get_by_id]]
+=== 단일 게시물 조회
+==== Request
+include::{snippets}/post-get-by-id/http-request.adoc[]
+==== Response
+include::{snippets}/post-get-by-id/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/post-get-by-id/response-fields.adoc[]
+
+[[resources_posts_get_all_by_user]]
+=== 사용자의 모든 게시물 조회
+==== Request
+include::{snippets}/post-get-all-by-user/http-request.adoc[]
+==== Response
+include::{snippets}/post-get-all-by-user/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/post-get-all-by-user/response-fields.adoc[]
+
+[[resources_posts_get_all_by_random]]
+=== 추천 게시물 조회
+==== Request
+include::{snippets}/post-get-all-by-random/http-request.adoc[]
+==== Response
+include::{snippets}/post-get-all-by-random/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/post-get-all-by-random/response-fields.adoc[]
+
+[[resources_posts_get_all_by_followings]]
+=== 팔로우하는 사람의 게시물 조회
+==== Request
+include::{snippets}/post-get-all-by-followings/http-request.adoc[]
+==== Response
+include::{snippets}/post-get-all-by-followings/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/post-get-all-by-followings/response-fields.adoc[]
+
+[[resources_home_posts]]
+=== 메인 페이지의 게시물 조회
+==== Request
+include::{snippets}/post-get-all-home-posts/http-request.adoc[]
+==== Response
+include::{snippets}/post-get-all-home-posts/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/post-get-all-home-posts/response-fields.adoc[]
+
+[[resources_posts_get_all_by_keyword]]
+=== 게시물 키워드 검색 조회
+==== Request
+include::{snippets}/post-get-all-by-keyword/http-request.adoc[]
+==== Response
+include::{snippets}/post-get-all-by-keyword/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/post-get-all-by-keyword/response-fields.adoc[]
+
+[[resources_post_update]]
+=== 게시물 수정
+==== Request
+include::{snippets}/post-update/http-request.adoc[]
+==== Response
+include::{snippets}/post-update/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/post-update/response-fields.adoc[]
+
+[[resources_post_delete]]
+=== 게시물 삭제
+==== Request
+include::{snippets}/post-delete/http-request.adoc[]
+==== Response
+include::{snippets}/post-delete/http-response.adoc[]
+

@@ -1,5 +1,7 @@
 package com.yunhalee.walkerholic.post.api;
 
+import static com.yunhalee.walkerholic.postImage.api.PostImageApiTest.FIRST_POST_IMAGE;
+import static com.yunhalee.walkerholic.postImage.api.PostImageApiTest.SECOND_POST_IMAGE;
 import static com.yunhalee.walkerholic.user.domain.UserTest.FIRST_USER;
 import static com.yunhalee.walkerholic.user.domain.UserTest.SECOND_USER;
 import static com.yunhalee.walkerholic.user.domain.UserTest.THIRD_USER;
@@ -50,15 +52,6 @@ public class PostApiTest extends ApiTest {
         "",
         "application/json",
         request(REQUEST).getBytes());
-
-    private static final PostImage FIRST_POST_IMAGE = PostImage.builder()
-        .id(1)
-        .name("firstPostImage")
-        .filePath("testPostImage/image.png").build();
-    private static final PostImage SECOND_POST_IMAGE = PostImage.builder()
-        .id(2)
-        .name("secondPostImage")
-        .filePath("testPostImage/image.png").build();
 
     private static final LikePost FIRST_LIKE_POST = new LikePost(1, SECOND_USER, FIRST_POST);
     private static final LikePost SECOND_LIKE_POST = new LikePost(2, THIRD_USER, FIRST_POST);
@@ -137,7 +130,7 @@ public class PostApiTest extends ApiTest {
             .param("page", "1")
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andDo(document("post-get-all-by-random", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()), postResponsesFields()));
+            .andDo(document("post-get-all-by-followings", preprocessRequest(prettyPrint()), preprocessResponse(prettyPrint()), postResponsesFields()));
     }
 
 

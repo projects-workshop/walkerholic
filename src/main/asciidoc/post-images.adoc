@@ -1,0 +1,28 @@
+ifndef::snippets[]
+:snippets: ../../../target/generated-snippets
+endif::[]
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+
+[[resources_post_images]]
+== PostImage
+
+[[resources_post_image_create]]
+=== 게시물 이미지 등록
+==== Request
+include::{snippets}/post-image-create/http-request.adoc[]
+==== Response
+include::{snippets}/post-image-create/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/post-image-create/response-fields.adoc[]
+
+[[resources_post_image_delete]]
+=== 게시물 이미지 삭제
+==== Request
+include::{snippets}/post-image-delete/http-request.adoc[]
+==== Response
+include::{snippets}/post-image-delete/http-response.adoc[]
+
