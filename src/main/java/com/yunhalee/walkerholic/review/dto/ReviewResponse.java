@@ -30,10 +30,10 @@ public class ReviewResponse {
         this.id = review.getId();
         this.rating = review.getRating();
         this.comment = review.getComment();
-        this.userId = review.getUser().getId();
-        this.userFullname = review.getUser().getFullName();
-        this.userImageUrl = review.getUser().getImageUrl();
-        this.productId = review.getProduct().getId();
+        this.userId = review.userId();
+        this.userFullname = review.userFullName();
+        this.userImageUrl = review.userImageUrl();
+        this.productId = review.productId();
         this.createdAt = review.getCreatedAt();
         this.updatedAt = review.getUpdatedAt();
     }

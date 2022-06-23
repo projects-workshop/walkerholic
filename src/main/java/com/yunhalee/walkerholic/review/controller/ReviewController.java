@@ -24,8 +24,7 @@ public class ReviewController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ReviewResponse> update(@PathVariable("id") Integer id,
-        @Valid @RequestBody ReviewRequest reviewRequest) {
+    public ResponseEntity<ReviewResponse> update(@PathVariable("id") Integer id, @Valid @RequestBody ReviewRequest reviewRequest) {
         return ResponseEntity.ok(reviewService.update(reviewRequest, id));
     }
 

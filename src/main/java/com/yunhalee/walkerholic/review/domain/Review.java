@@ -73,4 +73,21 @@ public class Review extends BaseTimeEntity {
             throw new InvalidRatingException("Rating should be lesser than or equal to 5.");
         }
     }
+
+    public Integer userId() {
+        return this.user.getId();
+    }
+
+    public String userFullName() {
+        return this.user.getFullName();
+    }
+
+    public String userImageUrl() {
+        return this.user.getImageUrl();
+    }
+
+    public Integer productId() {
+        return this.product.getId();
+    }
+
 }

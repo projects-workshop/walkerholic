@@ -1,0 +1,37 @@
+ifndef::snippets[]
+:snippets: ../../../target/generated-snippets
+endif::[]
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+
+[[resources_reviews]]
+== Review
+
+[[resources_review_create]]
+=== 상품 리뷰 등록
+==== Request
+include::{snippets}/review-create/http-request.adoc[]
+==== Response
+include::{snippets}/review-create/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/review-create/response-fields.adoc[]
+
+[[resources_review_update]]
+=== 상품 리뷰 수정
+==== Request
+include::{snippets}/review-update/http-request.adoc[]
+==== Response
+include::{snippets}/review-update/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/review-update/response-fields.adoc[]
+
+[[resources_review_delete]]
+=== 상품 리뷰 삭제
+==== Request
+include::{snippets}/review-delete/http-request.adoc[]
+==== Response
+include::{snippets}/review-delete/http-response.adoc[]
+

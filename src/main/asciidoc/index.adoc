@@ -18,3 +18,5 @@ include::post-images.adoc[]
 include::like-posts.adoc[]
 include::products.adoc[]
 include::product-images.adoc[]
+include::reviews.adoc[]
+
