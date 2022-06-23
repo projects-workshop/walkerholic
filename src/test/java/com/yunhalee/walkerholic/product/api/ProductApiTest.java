@@ -1,8 +1,8 @@
 package com.yunhalee.walkerholic.product.api;
 
-import static com.yunhalee.walkerholic.postImage.api.ProductImageApiTest.FIRST_PRODUCT_IMAGE;
-import static com.yunhalee.walkerholic.postImage.api.ProductImageApiTest.SECOND_PRODUCT_IMAGE;
-import static com.yunhalee.walkerholic.postImage.api.ProductImageApiTest.THIRD_PRODUCT_IMAGE;
+import static com.yunhalee.walkerholic.productImage.api.ProductImageApiTest.FIRST_PRODUCT_IMAGE;
+import static com.yunhalee.walkerholic.productImage.api.ProductImageApiTest.SECOND_PRODUCT_IMAGE;
+import static com.yunhalee.walkerholic.productImage.api.ProductImageApiTest.THIRD_PRODUCT_IMAGE;
 import static com.yunhalee.walkerholic.review.api.ReviewApiTest.FIRST_REVIEW;
 import static com.yunhalee.walkerholic.review.api.ReviewApiTest.SECOND_REVIEW;
 import static com.yunhalee.walkerholic.user.domain.UserTest.FIRST_USER;

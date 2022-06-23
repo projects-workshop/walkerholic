@@ -1,0 +1,28 @@
+ifndef::snippets[]
+:snippets: ../../../target/generated-snippets
+endif::[]
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+
+[[resources_product_images]]
+== Product
+
+[[resources_product_image_create]]
+=== 상품 이미지 등록
+==== Request
+include::{snippets}/product-image-create/http-request.adoc[]
+==== Response
+include::{snippets}/product-image-create/http-response.adoc[]
+==== Response Field Description
+include::{snippets}/product-image-create/response-fields.adoc[]
+
+[[resources_product_image_delete]]
+=== 상품 이미지 삭제
+==== Request
+include::{snippets}/product-image-delete/http-request.adoc[]
+==== Response
+include::{snippets}/product-image-delete/http-response.adoc[]
+
